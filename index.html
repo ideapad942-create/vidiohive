@@ -1,3 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MALES MIKIR - VIDEO EDITION</title>
+    <style>
+        :root { --primary: #db2777; /* Pink for Video */ --success: #10b981; --dark: #0f172a; --bg: #fdf2f8; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .container { max-width: 950px; margin: auto; background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        
+        .tabs { display: flex; background: var(--dark); }
+        .tab-btn { flex: 1; padding: 18px; border: none; background: none; color: #94a3b8; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px; }
+        .tab-btn:hover { background: #1e293b; color: white; }
+        .tab-btn.active { color: white; background: var(--primary); cursor: default; border-bottom: 4px solid #f472b6; }
+
+        .content { padding: 30px; display: none; }
+        .content.active { display: block; }
+
+        .drop-zone { border: 2px dashed #fbcfe8; padding: 40px 20px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.2s; background: #fff1f2; }
+        .drop-zone:hover { border-color: var(--primary); background: #fff; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: var(--dark); }
+        .text-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .note { font-size: 11px; color: #64748b; margin-top: 5px; }
+
+        .result-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); display: flex; gap: 15px; }
+        .thumb-box { width: 120px; flex-shrink: 0; }
+        .thumb-img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; }
+        .meta-box { flex-grow: 1; }
+
+        .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 10px; display: block; }
+        .field-val { font-size: 12px; color: #1e293b; background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px solid #f1f5f9; margin-top: 4px; }
+
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        .btn-pink { background: var(--primary); color: white; }
+        .btn-green { background: var(--success); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 12px; }
+        
+        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+        .s-wait { background: #f1f5f9; color: #64748b; }
+        .s-run { background: #e0e7ff; color: #4338ca; animation: blink 1s infinite; }
+        .s-done { background: #d1fae5; color: #065f46; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="goToTab(0)">1. API KEY</button>
+        <button class="tab-btn" onclick="goToTab(1)">2. PILIH FOLDER</button>
+        <button class="tab-btn" onclick="goToTab(2)">3. PROSES VIDEO</button>
+        <button class="tab-btn" onclick="goToTab(3)">4. HASIL & CSV</button>
+    </div>
+
+    <div id="c0" class="content active">
+        <h2>🔑 API Setup</h2>
+        <div class="input-group">
+            <label class="input-label">Groq API Key</label>
+            <input type="password" id="apiKey" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxx">
+            <p class="note">Key tersimpan di browser anda (Local Storage).</p>
+        </div>
+        <button class="btn btn-pink" onclick="saveKey()">Simpan & Lanjut</button>
+    </div>
+
+    <div id="c1" class="content">
+        <h2>📁 Pilih Folder Video</h2>
+        
+        <div class="input-group" style="background: #fffbeeb0; padding:15px; border:1px solid #fcd34d; border-radius:8px;">
+            <label class="input-label">📍 Base Absolute Path (Wajib untuk CSV)</label>
+            <input type="text" id="basePath" class="text-input" placeholder="Contoh: C:\Users\Budi\Stock\Footage_Bali">
+            <p class="note">
+                <strong>PENTING:</strong> Browser tidak bisa membaca full path otomatis. <br>
+                Silakan buka folder video anda di file explorer, copy address bar-nya, dan paste disini. <br>
+                Ini agar di CSV nanti tertulis: <em>C:\Users\...\Video.mp4</em> (siap upload).
+            </p>
+        </div>
+
+        <div id="dropArea" class="drop-zone">
+            <span style="font-size:40px;">🎥</span><br>
+            <strong>Klik untuk Pilih Folder</strong>
+            <p style="font-size:12px; color:#94a3b8;">Mendukung .mp4, .mov, .avi</p>
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(this.files)">
+        </div>
+
+        <div id="fileSummary" style="margin-top:20px; font-weight:bold; color:var(--primary);"></div>
+        <button class="btn btn-pink" id="btnNext" style="display:none;" onclick="goToTab(2)">Generate Metadata ➡️</button>
+    </div>
+
+    <div id="c2" class="content">
+        <h2>⚡ Frame Extraction & AI Processing</h2>
+        <p class="note">Sistem akan mengambil screenshot otomatis dari video untuk dibaca AI.</p>
+        <button class="btn btn-pink" id="btnStart" onclick="startProcessing()">🚀 Mulai Proses</button>
+        
+        <div style="max-height: 400px; overflow-y: auto; margin-top:20px; border:1px solid #eee;">
+            <table>
+                <thead style="position:sticky; top:0; background:white;"><tr><th>Snapshot</th><th>Filename</th><th>Status</th></tr></thead>
+                <tbody id="queueList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="c3" class="content">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+            <button class="btn btn-green" onclick="exportCSV()">📥 Download CSV (Final)</button>
+            <button class="btn" style="background:#64748b; color:white;" onclick="location.reload()">🔄 Reset Semua</button>
+        </div>
+        <p class="note" style="text-align:center; margin-bottom:15px;">Simpan file CSV ini di dalam folder: <strong id="displayPath">-</strong></p>
+        <div id="resultContainer"></div>
+    </div>
+
+</div>
+
+<video id="videoProcessor" style="display:none;" muted></video>
+<canvas id="canvasProcessor" style="display:none;"></canvas>
+
 <script>
     let queue = [];
     let results = [];
@@ -176,3 +296,6 @@
         link.click();
     }
 </script>
+
+</body>
+</html>
