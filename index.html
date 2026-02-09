@@ -3,299 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALES MIKIR V11 - TRIPLE FRAME & CLEAN CSV</title>
+    <title>VIDEO METADATA GENERATOR - 3 FRAME ANALYSIS</title>
     <style>
-        :root { --primary: #db2777; --success: #10b981; --dark: #0f172a; --bg: #f8fafc; }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
-        .container { max-width: 1000px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e2e8f0; }
-        
-        .tabs { display: flex; background: #f1f5f9; padding: 8px; gap: 8px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #64748b; cursor: pointer; font-weight: 600; border-radius: 12px; transition: 0.2s; font-size: 14px; }
-        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        :root { 
+            --primary: #d946ef; /* Fuchsia */
+            --primary-dark: #c026d3;
+            --secondary: #6366f1; /* Indigo */
+            --bg: #f8fafc; 
+            --text: #334155;
+            --card-bg: #ffffff;
+        }
 
-        .content { padding: 35px; display: none; }
+        body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        
+        .container { max-width: 1100px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; min-height: 80vh; display: flex; flex-direction: column; }
+
+        /* Header & Tabs */
+        .header { background: #1e293b; color: white; padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .header h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+        
+        .tabs { display: flex; background: #0f172a; }
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: #94a3b8; cursor: pointer; font-weight: 600; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .tab-btn:hover { background: #1e293b; color: white; }
+        .tab-btn.active { color: white; border-bottom-color: var(--primary); background: #1e293b; }
+
+        /* Content Areas */
+        .content { padding: 30px; display: none; animation: fadeIn 0.3s ease; }
         .content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .drop-zone { border: 2px dashed #cbd5e1; padding: 60px 20px; text-align: center; border-radius: 16px; cursor: pointer; background: #fff; transition: 0.3s; }
-        .drop-zone:hover { border-color: var(--primary); background: #fff1f2; }
+        /* Inputs */
+        .form-group { margin-bottom: 20px; }
+        .label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #64748b; text-transform: uppercase; }
+        .input-field { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: 0.2s; }
+        .input-field:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.2); }
 
-        .input-group { margin-bottom: 25px; }
-        .input-label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
-        .text-input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; box-sizing: border-box; transition: 0.2s; }
-        .text-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1); }
+        /* Drop Zone */
+        .drop-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 50px; text-align: center; cursor: pointer; transition: 0.3s; background: #f1f5f9; }
+        .drop-zone:hover { border-color: var(--primary); background: #fae8ff; }
+        .drop-icon { font-size: 40px; margin-bottom: 10px; display: block; }
 
-        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 20px; display: flex; gap: 25px; border-left: 6px solid var(--primary); }
-        .preview-box { width: 220px; flex-shrink: 0; }
-        .main-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; background: #eee; border: 1px solid #f1f5f9; }
-        .mini-imgs { display: flex; gap: 4px; margin-top: 6px; }
-        .mini-img { width: 32%; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
-
-        .btn { padding: 16px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; width: 100%; transition: 0.2s; }
-        .btn-pink { background: var(--primary); color: white; }
-        .btn-green { background: var(--success); color: white; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-        th { color: #64748b; font-weight: 600; }
+        /* Queue Table */
+        .queue-container { max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f8fafc; text-align: left; padding: 12px; position: sticky; top: 0; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: #64748b; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; }
-        .s-wait { background: #f1f5f9; color: #64748b; }
-        .s-run { background: #dbeafe; color: #2563eb; animation: pulse 1.5s infinite; }
-        .s-done { background: #d1fae5; color: #065f46; }
-        @keyframes pulse { 50% { opacity: 0.6; } }
+        /* Status Badges */
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .b-wait { background: #f1f5f9; color: #94a3b8; }
+        .b-proc { background: #e0e7ff; color: #4338ca; }
+        .b-done { background: #dcfce7; color: #15803d; }
+        .b-fail { background: #fee2e2; color: #b91c1c; }
+
+        /* Result Cards */
+        .result-card { display: flex; gap: 20px; background: white; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; position: relative; }
+        .filmstrip-box { width: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 5px; }
+        .filmstrip-img { width: 100%; height: auto; border-radius: 6px; border: 1px solid #cbd5e1; display: block; }
+        .filmstrip-caption { font-size: 10px; color: #64748b; text-align: center; margin-top: 4px; }
+        
+        .meta-content { flex-grow: 1; }
+        .meta-row { margin-bottom: 15px; }
+        .meta-label { font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
+        .meta-val { font-size: 14px; line-height: 1.5; color: #334155; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #f1f5f9; }
+
+        /* Buttons */
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="header">
+        <h1>🎞️ STOCK FOOTAGE METADATA (3-FRAME AI)</h1>
+    </div>
+
     <div class="tabs">
-        <button class="tab-btn active" onclick="goToTab(0)">1. API KEY</button>
-        <button class="tab-btn" onclick="goToTab(1)">2. FOLDER</button>
-        <button class="tab-btn" onclick="goToTab(2)">3. PROCESSING</button>
-        <button class="tab-btn" onclick="goToTab(3)">4. RESULT & CSV</button>
+        <button class="tab-btn active" onclick="switchTab(0)">1. API & FOLDER</button>
+        <button class="tab-btn" onclick="switchTab(1)">2. PROSES AI</button>
+        <button class="tab-btn" onclick="switchTab(2)">3. HASIL & EXPORT</button>
     </div>
 
-    <div id="c0" class="content active">
-        <h2 style="margin-top:0">🔑 Groq API Setup</h2>
-        <div class="input-group">
-            <label class="input-label">Groq API Key</label>
-            <input type="password" id="apiKey" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxx">
+    <div id="tab0" class="content active">
+        <div class="form-group">
+            <label class="label">Groq API Key (Model Llama Vision)</label>
+            <input type="password" id="apiKey" class="input-field" placeholder="gsk_xxxxxxxx...">
         </div>
-        <button class="btn btn-pink" onclick="saveKey()">Lanjut ke Folder Setup ➡️</button>
+
+        <div class="form-group">
+            <label class="label">📂 Pilih Folder Video</label>
+            <div class="drop-zone" onclick="document.getElementById('folderInput').click()">
+                <span class="drop-icon">🎥</span>
+                <strong>Klik disini untuk memilih folder</strong>
+                <p style="font-size: 12px; color: #94a3b8; margin: 5px 0 0 0;">Support: MP4, MOV, AVI, WEBM</p>
+                <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none" onchange="loadFiles(this.files)">
+            </div>
+        </div>
+
+        <div id="fileStatus" style="margin-top: 15px; font-weight: bold; color: var(--primary); display: none;">
+            </div>
+
+        <button id="btnNext1" class="btn btn-primary" style="margin-top: 20px; display: none;" onclick="switchTab(1)">Lanjut ke Proses ➡️</button>
     </div>
 
-    <div id="c1" class="content">
-        <h2>📁 Pilih Folder Video</h2>
-        <div class="input-group">
-            <label class="input-label">Path Folder (Hanya untuk Referensi)</label>
-            <input type="text" id="basePath" class="text-input" placeholder="Contoh: C:\Users\DESAINER\Downloads\footage">
+    <div id="tab1" class="content">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="margin: 0 0 10px 0;">Analisis Frame & Metadata</h2>
+            <p style="font-size: 13px; color: #64748b;">Sistem mengambil 3 screenshot (Awal, Tengah, Akhir) untuk dianalisis.</p>
+            <button id="btnStart" class="btn btn-primary" style="width: 200px;" onclick="startProcessing()">🚀 Mulai Proses</button>
         </div>
-        
-        <div class="drop-zone" id="dropZone">
-            <span style="font-size: 48px;">🎥</span><br>
-            <strong style="display:block; margin-top:10px;">Klik untuk Memilih Folder</strong>
-            <p style="font-size: 13px; color: #94a3b8;">Sistem akan mengambil nama file secara otomatis</p>
-            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none">
-        </div>
-        
-        <div id="fileSummary" style="margin-top:20px; font-weight:bold; color:var(--primary); text-align:center;"></div>
-        <button class="btn btn-pink" id="btnNext" style="display:none; margin-top:20px;" onclick="goToTab(2)">Lanjut ke Pemrosesan AI ⚡</button>
-    </div>
 
-    <div id="c2" class="content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="margin:0;">⚡ AI Video Analysis</h2>
-            <button class="btn btn-pink" id="btnStart" style="width:auto; padding:12px 35px;" onclick="startProcessing()">🚀 Mulai Analisis</button>
-        </div>
-        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+        <div class="queue-container">
             <table>
-                <thead><tr><th>Snapshot</th><th>Filename</th><th>Status</th></tr></thead>
-                <tbody id="queueList"></tbody>
+                <thead>
+                    <tr>
+                        <th style="width: 150px;">Filmstrip Preview</th>
+                        <th>Filename</th>
+                        <th style="width: 100px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="queueTable"></tbody>
             </table>
         </div>
     </div>
 
-    <div id="c3" class="content">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
-            <button class="btn btn-green" onclick="exportCSV()">📥 Download CSV (Final Metadata)</button>
-            <button class="btn" style="background:#64748b; color:white;" onclick="location.reload()">🔄 Reset Sesi</button>
+    <div id="tab2" class="content">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
+            <div>
+                <h2 style="margin:0;">Hasil Metadata</h2>
+                <p style="font-size:12px; color:#64748b; margin:5px 0 0 0;">Pastikan cek ulang sebelum upload.</p>
+            </div>
+            <button class="btn btn-success" onclick="exportCSV()">📥 Download CSV Final</button>
         </div>
-        <div id="resultContainer"></div>
+
+        <div id="resultsContainer"></div>
     </div>
 </div>
 
-<video id="videoProc" style="display:none;" muted></video>
-<canvas id="canvasProc" style="display:none;"></canvas>
+<video id="procVideo" style="display:none;" muted playsinline></video>
+<canvas id="procCanvas" style="display:none;"></canvas>
 
 <script>
     let queue = [];
     let results = [];
-    const MODEL_ID = "llama-3.2-11b-vision-preview";
+    let isProcessing = false;
 
-    // --- NAVIGATION ---
-    function goToTab(idx) {
+    // --- SETUP & NAVIGATION ---
+    function switchTab(idx) {
         document.querySelectorAll('.content').forEach((c, i) => c.classList.toggle('active', i === idx));
         document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
     }
 
-    // --- API KEY ---
-    function saveKey() {
-        const k = document.getElementById('apiKey').value.trim();
-        if(k.startsWith('gsk_')) { 
-            localStorage.setItem('GROQ_V11_KEY', k); 
-            goToTab(1); 
-        } else alert("API Key tidak valid! Pastikan diawali dengan 'gsk_'");
-    }
-    if(localStorage.getItem('GROQ_V11_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_V11_KEY');
+    // Load API Key from storage
+    if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
 
-    // --- FOLDER SELECTION ---
-    const dropZone = document.getElementById('dropZone');
-    const folderInput = document.getElementById('folderInput');
-    
-    dropZone.onclick = () => folderInput.click();
-    folderInput.onchange = (e) => handleFolderSelect(e.target.files);
-
-    function handleFolderSelect(files) {
+    // --- FILE HANDLING ---
+    function loadFiles(files) {
         queue = [];
-        const list = document.getElementById('queueList');
-        list.innerHTML = "";
+        const videoExts = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
         let count = 0;
-        const validExt = ['mp4', 'mov', 'avi', 'm4v'];
+        const tbody = document.getElementById('queueTable');
+        tbody.innerHTML = '';
 
-        for (let f of files) {
-            const ext = f.name.split('.').pop().toLowerCase();
-            if (validExt.includes(ext)) {
-                queue.push({ id: count, file: f, name: f.name, processed: false });
+        Array.from(files).forEach(file => {
+            const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+            if (videoExts.includes(ext)) {
+                queue.push({
+                    id: count,
+                    file: file,
+                    filename: file.name,
+                    status: 'pending'
+                });
+
                 const tr = document.createElement('tr');
+                tr.id = `row-${count}`;
                 tr.innerHTML = `
-                    <td id="prev-${count}"><div style="width:50px; height:30px; background:#f1f5f9; border-radius:4px;"></div></td>
-                    <td><code style="font-size:12px;">${f.name}</code></td>
-                    <td id="st-${count}"><span class="status-badge s-wait">Ready</span></td>
+                    <td><div style="height:40px; background:#f1f5f9; border-radius:4px;"></div></td>
+                    <td style="font-weight:600; color:#334155;">${file.name}</td>
+                    <td><span class="badge b-wait">Pending</span></td>
                 `;
-                list.appendChild(tr);
+                tbody.appendChild(tr);
                 count++;
             }
-        }
-        if(count > 0) {
-            document.getElementById('fileSummary').innerText = count + " Video ditemukan.";
-            document.getElementById('btnNext').style.display = 'block';
+        });
+
+        if (count > 0) {
+            document.getElementById('fileStatus').innerText = `✅ ${count} Video ditemukan!`;
+            document.getElementById('fileStatus').style.display = 'block';
+            document.getElementById('btnNext1').style.display = 'block';
+        } else {
+            alert("Tidak ada file video di folder ini.");
         }
     }
 
-    // --- TRIPLE FRAME CAPTURE ---
-    async function captureTripleFrames(file) {
-        return new Promise((resolve) => {
-            const v = document.getElementById('videoProc');
-            const c = document.getElementById('canvasProc');
-            const ctx = c.getContext('2d');
+    // --- SNAPSHOT LOGIC (THE 3-FRAME FILMSTRIP) ---
+    async function createFilmstrip(file) {
+        return new Promise((resolve, reject) => {
+            const video = document.getElementById('procVideo');
+            const canvas = document.getElementById('procCanvas');
+            const ctx = canvas.getContext('2d');
             const url = URL.createObjectURL(file);
-            v.src = url;
-            v.onloadedmetadata = async () => {
-                // Ambil 15% (awal), 50% (tengah), 85% (akhir)
-                const timestamps = [v.duration * 0.15, v.duration * 0.5, v.duration * 0.85];
-                let frames = [];
-                for(let t of timestamps) {
-                    v.currentTime = t;
-                    await new Promise(r => v.onseeked = r);
-                    // Resize ke 350px agar payload ringan
-                    const scale = 350 / Math.max(v.videoWidth, v.videoHeight);
-                    c.width = v.videoWidth * scale;
-                    c.height = v.videoHeight * scale;
-                    ctx.drawImage(v, 0, 0, c.width, c.height);
-                    frames.push(c.toDataURL('image/jpeg', 0.5));
+
+            video.src = url;
+            video.muted = true;
+
+            // Kita akan ambil 3 frame, jadi canvas lebar 3x
+            // Resolusi per frame (dikecilkan biar ringan buat API): 320x180
+            const fW = 320; 
+            const fH = 180;
+            canvas.width = fW * 3; 
+            canvas.height = fH;
+
+            // Helper untuk seek & draw
+            const capture = (timeRatio, posX) => {
+                return new Promise((res) => {
+                    video.currentTime = video.duration * timeRatio;
+                    video.onseeked = () => {
+                        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, posX, 0, fW, fH);
+                        res();
+                    };
+                });
+            };
+
+            video.onloadedmetadata = async () => {
+                try {
+                    // Ambil frame di 10%, 50%, 90%
+                    await capture(0.1, 0);       // Kiri
+                    await capture(0.5, fW);      // Tengah
+                    await capture(0.9, fW * 2);  // Kanan
+                    
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Quality 0.7
+                    URL.revokeObjectURL(url);
+                    resolve(dataUrl);
+                } catch (e) {
+                    URL.revokeObjectURL(url);
+                    reject(e);
                 }
+            };
+
+            video.onerror = () => {
                 URL.revokeObjectURL(url);
-                resolve(frames);
+                reject("Video error");
             };
         });
     }
 
     // --- AI PROCESSING ---
     async function startProcessing() {
-        const k = localStorage.getItem('GROQ_V11_KEY');
+        const apiKey = document.getElementById('apiKey').value.trim();
+        if (!apiKey) return alert("Masukkan API Key Groq dulu!");
+        localStorage.setItem('GROQ_KEY', apiKey);
+
         const btn = document.getElementById('btnStart');
-        if(!k) return alert("API Key belum diset!");
-        
-        btn.disabled = true; btn.innerText = "Processing...";
+        if (isProcessing) return;
+        isProcessing = true;
+        btn.disabled = true;
+        btn.innerText = "Sedang Memproses...";
 
         for (let item of queue) {
-            if (item.processed) continue;
-            const statusEl = document.getElementById(`st-${item.id}`);
-            statusEl.innerHTML = `<span class="status-badge s-run">Capturing...</span>`;
+            const row = document.getElementById(`row-${item.id}`);
+            const statusCell = row.cells[2];
+            const imgCell = row.cells[0];
+
+            statusCell.innerHTML = `<span class="badge b-proc">Snapshot...</span>`;
 
             try {
-                // 1. Ambil 3 Frame
-                const frames = await captureTripleFrames(item.file);
-                document.getElementById(`prev-${item.id}`).innerHTML = `<img src="${frames[1]}" style="width:50px; height:30px; object-fit:cover; border-radius:4px;">`;
+                // 1. Generate Filmstrip
+                const filmstripBase64 = await createFilmstrip(item.file);
+                
+                // Update UI Preview Table
+                imgCell.innerHTML = `<img src="${filmstripBase64}" style="width:100%; border-radius:4px; border:1px solid #ccc;">`;
+                statusCell.innerHTML = `<span class="badge b-proc">AI Thinking...</span>`;
 
-                statusEl.innerHTML = `<span class="status-badge s-run">AI Analysing...</span>`;
+                // 2. Call Groq
+                const metadata = await callGroqAI(apiKey, filmstripBase64.split(',')[1]);
 
-                // 2. Kirim ke Groq Vision
-                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST", headers: { "Authorization": `Bearer ${k}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: MODEL_ID,
-                        messages: [{
-                            role: "user",
-                            content: [
-                                { type: "text", text: "Task: Generate Adobe Stock Metadata from 3 frames (Start, Mid, End). Detect if it's 3D/Animation, people, or nature. Return ONLY JSON: {\"title\": \"Sentence max 70 chars, no commas\", \"description\": \"Detailed max 160 chars, no commas\", \"keywords\": \"Exactly 45 single words, comma separated\"}" },
-                                { type: "image_url", image_url: { url: frames[0] } },
-                                { type: "image_url", image_url: { url: frames[1] } },
-                                { type: "image_url", image_url: { url: frames[2] } }
-                            ]
-                        }],
-                        temperature: 0.1, response_format: { type: "json_object" }
-                    })
+                // 3. Save & Render
+                results.push({
+                    filename: item.filename,
+                    ...metadata,
+                    preview: filmstripBase64
                 });
 
-                const json = await res.json();
-                if (json.error) throw new Error(json.error.message);
-                
-                const meta = JSON.parse(json.choices[0].message.content);
-                const cleaned = {
-                    filename: item.name,
-                    title: meta.title.replace(/,/g, ''),
-                    description: meta.description.replace(/,/g, ''),
-                    keywords: meta.keywords.toLowerCase()
-                };
+                renderResultCard({ filename: item.filename, ...metadata, preview: filmstripBase64 });
+                statusCell.innerHTML = `<span class="badge b-done">DONE</span>`;
 
-                results.push(cleaned);
-                renderCard(cleaned, frames);
-                statusEl.innerHTML = `<span class="status-badge s-done">Finished</span>`;
-                item.processed = true;
-            } catch (e) {
-                console.error("Error pada file: " + item.name, e);
-                statusEl.innerHTML = `<span style="color:red; font-size:10px; font-weight:bold;">Error (Console)</span>`;
+            } catch (error) {
+                console.error(error);
+                statusCell.innerHTML = `<span class="badge b-fail">ERROR</span>`;
             }
-            // Delay 1.2 detik agar tidak kena Rate Limit
-            await new Promise(r => setTimeout(r, 1200));
+
+            // Delay sedikit untuk rate limit
+            await new Promise(r => setTimeout(r, 1000));
         }
-        btn.disabled = false; btn.innerText = "Semua Selesai!";
-        goToTab(3);
+
+        isProcessing = false;
+        btn.innerText = "Selesai";
+        btn.disabled = false;
+        switchTab(2);
     }
 
-    function renderCard(data, imgs) {
+    async function callGroqAI(key, base64Image) {
+        const systemPrompt = `
+        You are an expert Stock Footage Metadata Specialist.
+        I will provide a "filmstrip" image composed of 3 frames from a single video (Start, Middle, End).
+        Analyze the sequence to understand the context, action, lighting, and color.
+
+        OUTPUT REQUIREMENTS (Strict JSON format):
+        1. "title": A professional, descriptive title (max 70 chars). Focus on Subject + Action + Setting.
+        2. "description": A detailed sentence describing the action, lighting, and mood (approx 150-200 chars). Mention if it's slow motion, timelapse, or static if clearly visible.
+        3. "keywords": A string of 45-50 comma-separated keywords.
+           - MUST include: colors, objects, emotions, demographics (if people), technical terms (e.g., shallow depth of field, bokeh, if visible).
+           - STRICTLY NO: "4k", "hd", "video", "clip", "footage".
+           - Separate compound words (e.g., "blue sky" -> "blue, sky").
+
+        Example JSON:
+        {"title": "Young woman jogging in park during sunset", "description": "A side view of an athletic young woman jogging along a park path, illuminated by warm golden hour sunlight with trees in the background.", "keywords": "woman, female, jogging, running, exercise, fitness, park, nature, sunset, golden hour, sunlight, warm, athletic, healthy, lifestyle, outdoor, summer, happy, active, trees, green, path, road, sport, cardio, training, workout, determination, energy, motion, speed, dynamic, casual, sportswear, side view, profile, morning, evening, leisure, recreation, wellness, vitality, person, adult, caucasian, beautiful, scene"}
+        `;
+
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${key}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "llama-3.2-90b-vision-preview", // Model vision terbaik Groq saat ini
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: [
+                            { type: "text", text: "Generate metadata from this video filmstrip." },
+                            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+                        ]}
+                    ],
+                    temperature: 0.1,
+                    max_tokens: 1024,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            const data = await resp.json();
+            if(data.error) throw new Error(data.error.message);
+            
+            let content = data.choices[0].message.content;
+            return JSON.parse(content);
+        } catch (e) {
+            console.error("AI Error:", e);
+            // Fallback jika JSON rusak
+            return { title: "Error Generating Title", description: "Error generating description", keywords: "error" };
+        }
+    }
+
+    // --- RENDERING RESULTS ---
+    function renderResultCard(data) {
         const div = document.createElement('div');
         div.className = 'result-card';
         div.innerHTML = `
-            <div class="preview-box">
-                <img src="${imgs[1]}" class="main-img">
-                <div class="mini-imgs">
-                    <img src="${imgs[0]}" class="mini-img"><img src="${imgs[1]}" class="mini-img"><img src="${imgs[2]}" class="mini-img">
-                </div>
-                <div style="font-size:11px; font-weight:bold; margin-top:10px; text-align:center; color:#64748b;">${data.filename}</div>
+            <div class="filmstrip-box">
+                <img src="${data.preview}" class="filmstrip-img">
+                <div class="filmstrip-caption">Preview: Awal - Tengah - Akhir</div>
+                <div style="margin-top:10px; font-weight:bold; font-size:12px; word-break:break-all;">${data.filename}</div>
             </div>
-            <div style="flex:1;">
-                <div style="font-size:10px; color:var(--primary); font-weight:800; letter-spacing:1px;">TITLE</div>
-                <div style="font-size:14px; margin-bottom:12px; font-weight:600; color:var(--dark);">${data.title}</div>
-                <div style="font-size:10px; color:var(--primary); font-weight:800; letter-spacing:1px;">DESCRIPTION</div>
-                <div style="font-size:13px; margin-bottom:12px; line-height:1.5; color:#475569;">${data.description}</div>
-                <div style="font-size:10px; color:var(--primary); font-weight:800; letter-spacing:1px;">KEYWORDS (${data.keywords.split(',').length})</div>
-                <div style="font-size:11px; color:#64748b; font-style:italic;">${data.keywords}</div>
+            <div class="meta-content">
+                <div class="meta-row">
+                    <span class="meta-label">TITLE</span>
+                    <div class="meta-val" contenteditable="true">${data.title}</div>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">DESCRIPTION</span>
+                    <div class="meta-val" contenteditable="true">${data.description}</div>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">KEYWORDS (${data.keywords.split(',').length})</span>
+                    <div class="meta-val" contenteditable="true">${data.keywords}</div>
+                </div>
             </div>
         `;
-        document.getElementById('resultContainer').prepend(div);
+        document.getElementById('resultsContainer').appendChild(div);
     }
 
-    // --- CSV EXPORT (CLEAN FILENAME) ---
+    // --- CSV EXPORT ---
     function exportCSV() {
-        if(results.length === 0) return alert("Belum ada data hasil pemrosesan.");
-        
-        // Header kolom terpisah
-        let csv = "Filename,Title,Description,Keywords\n";
-        
-        results.forEach(r => {
-            // Memasukkan data ke kolom masing-masing dengan kutipan untuk keamanan
-            csv += `"${r.filename}","${r.title}","${r.description}","${r.keywords}"\n`;
+        if(results.length === 0) return alert("Belum ada data yang diproses!");
+
+        // Header CSV
+        let csvContent = "Filename,Title,Description,Keywords\n";
+
+        results.forEach(row => {
+            // Bersihkan data untuk format CSV (double quotes escape)
+            const cleanFile = row.filename.replace(/"/g, '""'); // Hanya nama file
+            const cleanTitle = row.title.replace(/"/g, '""');
+            const cleanDesc = row.description.replace(/"/g, '""');
+            const cleanKw = row.keywords.replace(/"/g, '""');
+
+            // Format CSV: "Filename","Title","Desc","Keywords"
+            csvContent += `"${cleanFile}","${cleanTitle}","${cleanDesc}","${cleanKw}"\n`;
         });
 
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `AdobeStock_Metadata_${Date.now()}.csv`;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `metadata_video_${Date.now()}.csv`);
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     }
 </script>
+
 </body>
 </html>
