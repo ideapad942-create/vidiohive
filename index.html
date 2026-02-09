@@ -3,48 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALES MIKIR - VIDEO EDITION</title>
+    <title>MALES MIKIR - VIDEO PRO EDITION</title>
     <style>
-        :root { --primary: #db2777; /* Pink for Video */ --success: #10b981; --dark: #0f172a; --bg: #fdf2f8; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #334155; }
-        .container { max-width: 950px; margin: auto; background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        :root { --primary: #db2777; --success: #10b981; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .container { max-width: 1000px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; border: 1px solid #e2e8f0; }
         
-        .tabs { display: flex; background: var(--dark); }
-        .tab-btn { flex: 1; padding: 18px; border: none; background: none; color: #94a3b8; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px; }
-        .tab-btn:hover { background: #1e293b; color: white; }
-        .tab-btn.active { color: white; background: var(--primary); cursor: default; border-bottom: 4px solid #f472b6; }
+        /* Navigation */
+        .tabs { display: flex; background: #f1f5f9; padding: 8px; gap: 8px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #64748b; cursor: pointer; font-weight: 600; border-radius: 12px; transition: 0.2s; font-size: 14px; }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
-        .content { padding: 30px; display: none; }
+        .content { padding: 40px; display: none; }
         .content.active { display: block; }
 
-        .drop-zone { border: 2px dashed #fbcfe8; padding: 40px 20px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.2s; background: #fff1f2; }
-        .drop-zone:hover { border-color: var(--primary); background: #fff; }
+        /* Upload Area */
+        .drop-zone { border: 2px dashed #cbd5e1; padding: 60px 20px; text-align: center; border-radius: 16px; cursor: pointer; transition: 0.3s; background: #f8fafc; }
+        .drop-zone:hover { border-color: var(--primary); background: #fff1f2; }
 
-        .input-group { margin-bottom: 20px; }
-        .input-label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: var(--dark); }
-        .text-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        .note { font-size: 11px; color: #64748b; margin-top: 5px; }
+        /* Inputs */
+        .input-group { margin-bottom: 24px; }
+        .input-label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
+        .text-input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: 0.2s; }
+        .text-input:focus { outline: none; border-color: var(--primary); ring: 2px rgba(219, 39, 119, 0.1); }
 
-        .result-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); display: flex; gap: 15px; }
-        .thumb-box { width: 120px; flex-shrink: 0; }
-        .thumb-img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; }
-        .meta-box { flex-grow: 1; }
+        /* Results Card */
+        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 20px; display: grid; grid-template-columns: 200px 1fr; gap: 24px; transition: 0.2s; }
+        .result-card:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .frame-grid { display: grid; grid-template-columns: 1fr; gap: 4px; }
+        .main-frame { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; background: #eee; }
+        .sub-frames { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px; }
+        .sub-frame { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; }
 
-        .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 10px; display: block; }
-        .field-val { font-size: 12px; color: #1e293b; background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px solid #f1f5f9; margin-top: 4px; }
+        .meta-content { display: flex; flex-direction: column; gap: 12px; }
+        .tag-box { font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        .val-text { font-size: 14px; line-height: 1.6; color: #334155; background: #f1f5f9; padding: 10px; border-radius: 8px; }
 
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        /* Buttons */
+        .btn { padding: 16px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 15px; width: 100%; }
         .btn-pink { background: var(--primary); color: white; }
+        .btn-pink:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-green { background: var(--success); color: white; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 12px; }
-        
-        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+        /* Progress Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th { text-align: left; padding: 12px; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .s-wait { background: #f1f5f9; color: #64748b; }
-        .s-run { background: #e0e7ff; color: #4338ca; animation: blink 1s infinite; }
-        .s-done { background: #d1fae5; color: #065f46; }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        .s-run { background: #dbeafe; color: #2563eb; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 50% { opacity: 0.6; } }
     </style>
 </head>
 <body>
@@ -52,67 +61,56 @@
 <div class="container">
     <div class="tabs">
         <button class="tab-btn active" onclick="goToTab(0)">1. API KEY</button>
-        <button class="tab-btn" onclick="goToTab(1)">2. PILIH FOLDER</button>
-        <button class="tab-btn" onclick="goToTab(2)">3. PROSES VIDEO</button>
-        <button class="tab-btn" onclick="goToTab(3)">4. HASIL & CSV</button>
+        <button class="tab-btn" onclick="goToTab(1)">2. FOLDER SETUP</button>
+        <button class="tab-btn" onclick="goToTab(2)">3. PROCESSING</button>
+        <button class="tab-btn" onclick="goToTab(3)">4. DOWNLOAD CSV</button>
     </div>
 
     <div id="c0" class="content active">
-        <h2>🔑 API Setup</h2>
+        <h2 style="margin-top:0">🔑 Groq Configuration</h2>
         <div class="input-group">
             <label class="input-label">Groq API Key</label>
             <input type="password" id="apiKey" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxx">
-            <p class="note">Key tersimpan di browser anda (Local Storage).</p>
         </div>
-        <button class="btn btn-pink" onclick="saveKey()">Simpan & Lanjut</button>
+        <button class="btn btn-pink" onclick="saveKey()">Connect & Continue</button>
     </div>
 
     <div id="c1" class="content">
-        <h2>📁 Pilih Folder Video</h2>
-        
-        <div class="input-group" style="background: #fffbeeb0; padding:15px; border:1px solid #fcd34d; border-radius:8px;">
-            <label class="input-label">📍 Base Absolute Path (Wajib untuk CSV)</label>
-            <input type="text" id="basePath" class="text-input" placeholder="Contoh: C:\Users\Budi\Stock\Footage_Bali">
-            <p class="note">
-                <strong>PENTING:</strong> Browser tidak bisa membaca full path otomatis. <br>
-                Silakan buka folder video anda di file explorer, copy address bar-nya, dan paste disini. <br>
-                Ini agar di CSV nanti tertulis: <em>C:\Users\...\Video.mp4</em> (siap upload).
-            </p>
+        <h2>📁 Source Folder</h2>
+        <div class="input-group">
+            <label class="input-label">Absolute Folder Path (Untuk CSV)</label>
+            <input type="text" id="basePath" class="text-input" placeholder="D:\Footage\Bali_Collection">
         </div>
-
         <div id="dropArea" class="drop-zone">
-            <span style="font-size:40px;">🎥</span><br>
-            <strong>Klik untuk Pilih Folder</strong>
-            <p style="font-size:12px; color:#94a3b8;">Mendukung .mp4, .mov, .avi</p>
+            <div style="font-size:48px; margin-bottom:10px;">🎥</div>
+            <strong>Select Video Folder</strong>
+            <p style="color:#64748b; font-size:13px;">Klik untuk memilih seluruh isi folder video Anda</p>
             <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(this.files)">
         </div>
-
-        <div id="fileSummary" style="margin-top:20px; font-weight:bold; color:var(--primary);"></div>
-        <button class="btn btn-pink" id="btnNext" style="display:none;" onclick="goToTab(2)">Generate Metadata ➡️</button>
+        <div id="fileSummary" style="margin-top:20px; text-align:center; font-weight:bold;"></div>
+        <button class="btn btn-pink" id="btnNext" style="display:none; margin-top:20px;" onclick="goToTab(2)">Go to Processing ➡️</button>
     </div>
 
     <div id="c2" class="content">
-        <h2>⚡ Frame Extraction & AI Processing</h2>
-        <p class="note">Sistem akan mengambil screenshot otomatis dari video untuk dibaca AI.</p>
-        <button class="btn btn-pink" id="btnStart" onclick="startProcessing()">🚀 Mulai Proses</button>
-        
-        <div style="max-height: 400px; overflow-y: auto; margin-top:20px; border:1px solid #eee;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0">⚡ AI Analysis</h2>
+            <button class="btn btn-pink" id="btnStart" style="width:auto; padding:12px 30px;" onclick="startProcessing()">🚀 Start Engine</button>
+        </div>
+        <div style="max-height: 450px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: white;">
             <table>
-                <thead style="position:sticky; top:0; background:white;"><tr><th>Snapshot</th><th>Filename</th><th>Status</th></tr></thead>
+                <thead><tr><th>Preview</th><th>Filename</th><th>Status</th></tr></thead>
                 <tbody id="queueList"></tbody>
             </table>
         </div>
     </div>
 
     <div id="c3" class="content">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-            <button class="btn btn-green" onclick="exportCSV()">📥 Download CSV (Final)</button>
-            <button class="btn" style="background:#64748b; color:white;" onclick="location.reload()">🔄 Reset Semua</button>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:30px;">
+            <button class="btn btn-green" onclick="exportCSV()">📥 Download CSV (Filenames, Title, Desc, Keywords)</button>
+            <button class="btn" style="background:#e2e8f0; color:#475569;" onclick="location.reload()">🔄 Start New Session</button>
         </div>
-        <p class="note" style="text-align:center; margin-bottom:15px;">Simpan file CSV ini di dalam folder: <strong id="displayPath">-</strong></p>
         <div id="resultContainer"></div>
     </div>
-
 </div>
 
 <video id="videoProcessor" style="display:none;" muted></video>
@@ -121,16 +119,17 @@
 <script>
     let queue = [];
     let results = [];
+    
     const SYSTEM_PROMPT = `
-    Role: Adobe Stock Metadata Specialist.
-    Task: Analyze 3 frames from a video (start, middle, end) and return metadata in JSON format.
+    Role: Expert Stock Footage Cataloger.
+    Analyze 3 frames from a video (start, mid, end) to determine subject, color, motion, and style.
     
-    STRICT GUIDELINES:
-    1. TITLE: Natural sentence, max 70 characters.
-    2. DESCRIPTION: Storytelling, 150-160 characters.
-    3. KEYWORDS: Exactly 45-47 single words, comma separated. Include: colors, lighting, movement, style, and mood.
+    OUTPUT REQUIREMENTS:
+    1. TITLE: Descriptive sentence, max 70 chars. No commas.
+    2. DESCRIPTION: High-quality storytelling, exactly 150-160 chars. No commas.
+    3. KEYWORDS: 45-47 single words, comma-separated. Include mood, colors, movement (loop, 3d, slow motion), and object details.
     
-    Return ONLY JSON: {"title": "...", "description": "...", "keywords": "..."}
+    FORMAT: Strictly JSON {"title": "...", "description": "...", "keywords": "..."}
     `;
 
     function goToTab(idx) {
@@ -140,15 +139,16 @@
 
     function saveKey() {
         const k = document.getElementById('apiKey').value.trim();
-        if(k.startsWith('gsk_')) { localStorage.setItem('GROQ_V8_KEY', k); goToTab(1); } else alert("API Key Salah!");
+        if(k.startsWith('gsk_')) { localStorage.setItem('GROQ_KEY_V9', k); goToTab(1); } else alert("Invalid Key");
     }
-    if(localStorage.getItem('GROQ_V8_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_V8_KEY');
+    if(localStorage.getItem('GROQ_KEY_V9')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY_V9');
 
     document.getElementById('dropArea').addEventListener('click', () => document.getElementById('folderInput').click());
 
     function handleFolderSelect(files) {
         queue = [];
-        document.getElementById('queueList').innerHTML = "";
+        const list = document.getElementById('queueList');
+        list.innerHTML = "";
         const videoExts = ['.mp4', '.mov', '.avi', '.m4v'];
         let count = 0;
 
@@ -158,21 +158,21 @@
                 queue.push({ id: count, file: file, name: file.name, processed: false });
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td id="thumb-container-${count}"><div style="width:60px; height:35px; background:#ddd; border-radius:4px;"></div></td>
+                    <td id="prev-${count}"><div style="width:50px; height:30px; background:#f1f5f9; border-radius:4px;"></div></td>
                     <td><strong>${file.name}</strong></td>
-                    <td id="status-${count}"><span class="status-badge s-wait">Ready</span></td>
+                    <td id="status-${count}"><span class="status-badge s-wait">Pending</span></td>
                 `;
-                document.getElementById('queueList').appendChild(tr);
+                list.appendChild(tr);
                 count++;
             }
         }
         if(count > 0) {
-            document.getElementById('fileSummary').innerText = `${count} Video siap.`;
+            document.getElementById('fileSummary').innerText = `${count} videos ready.`;
             document.getElementById('btnNext').style.display = 'block';
         }
     }
 
-    async function captureMultiFrames(file) {
+    async function captureFrames(file) {
         return new Promise((resolve) => {
             const video = document.getElementById('videoProcessor');
             const canvas = document.getElementById('canvasProcessor');
@@ -181,19 +181,16 @@
             video.src = url;
 
             video.onloadedmetadata = async () => {
-                const duration = video.duration;
-                const timestamps = [duration * 0.2, duration * 0.5, duration * 0.8];
+                const times = [video.duration * 0.2, video.duration * 0.5, video.duration * 0.8];
                 let frames = [];
-
-                for (let ts of timestamps) {
-                    video.currentTime = ts;
+                for(let t of times) {
+                    video.currentTime = t;
                     await new Promise(r => video.onseeked = r);
-                    // Resize lebih kecil (350px) agar payload tidak error
-                    const scale = 350 / Math.max(video.videoWidth, video.videoHeight);
+                    const scale = 400 / Math.max(video.videoWidth, video.videoHeight);
                     canvas.width = video.videoWidth * scale;
                     canvas.height = video.videoHeight * scale;
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    frames.push(canvas.toDataURL('image/jpeg', 0.5)); // Quality 0.5
+                    frames.push(canvas.toDataURL('image/jpeg', 0.5));
                 }
                 URL.revokeObjectURL(url);
                 resolve(frames);
@@ -202,110 +199,105 @@
     }
 
     async function startProcessing() {
-        const k = localStorage.getItem('GROQ_V8_KEY');
-        if(!k) { alert("Isi API Key dulu!"); return; }
+        const k = localStorage.getItem('GROQ_KEY_V9');
         const btn = document.getElementById('btnStart');
-        btn.disabled = true; btn.innerText = "Processing...";
+        btn.disabled = true;
 
         for (let item of queue) {
             if (item.processed) continue;
             const statusEl = document.getElementById(`status-${item.id}`);
-            statusEl.innerHTML = `<span class="status-badge s-run">Capturing...</span>`;
+            statusEl.innerHTML = `<span class="status-badge s-run">Analyzing...</span>`;
 
             try {
-                const frames = await captureMultiFrames(item.file);
-                document.getElementById(`thumb-container-${item.id}`).innerHTML = `<img src="${frames[1]}" style="width:60px; height:35px; object-fit:cover; border-radius:4px;">`;
-                
-                statusEl.innerHTML = `<span class="status-badge s-run">AI Working...</span>`;
+                const frames = await captureFrames(item.file);
+                document.getElementById(`prev-${item.id}`).innerHTML = `<img src="${frames[1]}" style="width:50px; height:30px; object-fit:cover; border-radius:4px;">`;
 
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST", headers: { "Authorization": `Bearer ${k}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "llama-3.2-11b-vision-preview",
-                        messages: [
-                            { role: "user", content: [
+                        messages: [{
+                            role: "user",
+                            content: [
                                 { type: "text", text: SYSTEM_PROMPT },
                                 { type: "image_url", image_url: { url: frames[0] } },
                                 { type: "image_url", image_url: { url: frames[1] } },
                                 { type: "image_url", image_url: { url: frames[2] } }
-                            ]}
-                        ], temperature: 0.1, response_format: { type: "json_object" }
+                            ]
+                        }],
+                        temperature: 0.1, response_format: { type: "json_object" }
                     })
                 });
 
                 const json = await res.json();
-                if (json.error) throw new Error(json.error.message);
-
-                const content = JSON.parse(json.choices[0].message.content);
-                const finalData = cleanSEO(content);
-
-                results.push({ filename: item.name, ...finalData });
-                renderResult(item, finalData, frames[1]);
-                statusEl.innerHTML = `<span class="status-badge s-done">Success</span>`;
+                if(json.error) throw new Error(json.error.message);
+                
+                const data = JSON.parse(json.choices[0].message.content);
+                const cleaned = sanitize(data);
+                
+                results.push({ filename: item.name, ...cleaned });
+                addResultCard(item.name, cleaned, frames);
+                
+                statusEl.innerHTML = `<span class="status-badge" style="background:#d1fae5; color:#065f46;">Success</span>`;
                 item.processed = true;
             } catch (e) {
-                console.error("Detail Error:", e);
-                statusEl.innerHTML = `<span style="color:red; font-size:10px;">Error (Cek Console)</span>`;
+                console.error(e);
+                statusEl.innerHTML = `<span style="color:red; font-size:10px;">Error (Console)</span>`;
             }
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1000));
         }
-        btn.disabled = false; btn.innerText = "🚀 Mulai Generate"; goToTab(3);
+        btn.disabled = false;
+        btn.innerText = "Done!";
+        goToTab(3);
     }
 
-    function cleanSEO(data) {
-        let kw = Array.isArray(data.keywords) ? data.keywords.join(', ') : String(data.keywords || "");
-        let clean = [...new Set(kw.toLowerCase().split(/[\s,]+/).filter(w => w.length > 2))];
-        
-        // Buang kata sampah
-        const junk = ["video", "footage", "clip", "mp4", "mov"];
-        clean = clean.filter(w => !junk.includes(w)).slice(0, 47);
-
-        // Paksa range 45-47
-        const fillers = ["visual", "background", "nature", "outdoor", "daylight", "cinematic", "style"];
-        let fIdx = 0;
-        while (clean.length < 45) {
-            if(!clean.includes(fillers[fIdx])) clean.push(fillers[fIdx]);
-            fIdx = (fIdx + 1) % fillers.length;
-        }
-        
-        return { 
-            title: (data.title || "").substring(0, 70).replace(/"/g, ''), 
-            description: (data.description || "").substring(0, 160).replace(/"/g, ''), 
-            keywords: clean.join(', ') 
+    function sanitize(data) {
+        // Hapus koma dalam title dan description agar CSV tidak pecah
+        return {
+            title: (data.title || "").replace(/,/g, '').substring(0, 70),
+            description: (data.description || "").replace(/,/g, '').substring(0, 160),
+            keywords: (data.keywords || "").replace(/[^a-zA-Z, ]/g, '').toLowerCase()
         };
     }
 
-    function renderResult(item, data, thumb) {
+    function addResultCard(name, data, frames) {
         const div = document.createElement('div');
         div.className = 'result-card';
-        div.style.border = "1px solid #eee";
-        div.style.padding = "15px";
-        div.style.marginBottom = "10px";
-        div.style.borderRadius = "8px";
         div.innerHTML = `
-            <div style="display:flex; gap:15px;">
-                <img src="${thumb}" style="width:120px; height:70px; object-fit:cover; border-radius:8px;">
-                <div style="flex:1;">
-                    <strong style="color:#db2777;">${item.name}</strong>
-                    <div style="font-size:11px; margin-top:5px;"><strong>Title:</strong> ${data.title}</div>
-                    <div style="font-size:11px;"><strong>Desc:</strong> ${data.description}</div>
-                    <div style="font-size:11px;"><strong>Keywords:</strong> ${data.keywords}</div>
+            <div class="frame-grid">
+                <img src="${frames[1]}" class="main-frame">
+                <div class="sub-frames">
+                    <img src="${frames[0]}" class="sub-frame">
+                    <img src="${frames[2]}" class="sub-frame">
                 </div>
             </div>
+            <div class="meta-content">
+                <div style="font-weight:bold; color:var(--dark); font-size:16px;">${name}</div>
+                <div><span class="tag-box">Title</span><div class="val-text">${data.title}</div></div>
+                <div><span class="tag-box">Description</span><div class="val-text">${data.description}</div></div>
+                <div><span class="tag-box">Keywords</span><div class="val-text" style="font-size:12px;">${data.keywords}</div></div>
+            </div>
         `;
-        document.getElementById('resultContainer').appendChild(div);
+        document.getElementById('resultContainer').prepend(div);
     }
 
     function exportCSV() {
-        if (results.length === 0) return;
-        let csvContent = "Filename,Title,Description,Keywords\n";
+        if(results.length === 0) return;
+        const base = document.getElementById('basePath').value.trim().replace(/\\$/, '');
+        
+        // Buat Header: Filename,Title,Description,Keywords
+        let csv = "Filename,Title,Description,Keywords\n";
+        
         results.forEach(r => {
-            csvContent += `"${r.filename}","${r.title}","${r.description}","${r.keywords}"\n`;
+            // Gunakan nama file saja untuk kolom Filename
+            // Jika butuh path lengkap, ganti ${r.filename} jadi ${base}\\${r.filename}
+            csv += `"${r.filename}","${r.title}","${r.description}","${r.keywords}"\n`;
         });
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Metadata_Video_${Date.now()}.csv`;
+        link.download = `Stock_Metadata_${Date.now()}.csv`;
         link.click();
     }
 </script>
