@@ -3,41 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALES MIKIR - VIDEO AUTO METADATA</title>
+    <title>MALES MIKIR V10 - FINAL FIX</title>
     <style>
-        :root { --primary: #db2777; --bg: #f8fafc; --dark: #1e293b; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 1100px; margin: auto; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; }
+        :root { --primary: #db2777; --success: #10b981; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .container { max-width: 1000px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
         
-        .tabs { display: flex; background: #f1f5f9; padding: 10px; gap: 10px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: none; color: #64748b; cursor: pointer; font-weight: 600; border-radius: 8px; transition: 0.3s; }
-        .tab-btn.active { background: var(--primary); color: white; }
+        .tabs { display: flex; background: #f1f5f9; padding: 8px; gap: 8px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #64748b; cursor: pointer; font-weight: 600; border-radius: 12px; transition: 0.2s; }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
         .content { padding: 30px; display: none; }
         .content.active { display: block; }
 
-        .drop-zone { border: 2px dashed #cbd5e1; padding: 50px; text-align: center; border-radius: 12px; cursor: pointer; background: #fff; transition: 0.3s; }
+        .drop-zone { border: 2px dashed #cbd5e1; padding: 50px 20px; text-align: center; border-radius: 16px; cursor: pointer; background: #fff; transition: 0.3s; }
         .drop-zone:hover { border-color: var(--primary); background: #fff1f2; }
 
-        .text-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; }
-        
-        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; gap: 20px; border-left: 6px solid var(--primary); }
-        .frame-preview { width: 220px; flex-shrink: 0; }
+        .input-group { margin-bottom: 20px; }
+        .input-label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #475569; }
+        .text-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; box-sizing: border-box; }
+
+        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 15px; margin-bottom: 15px; display: flex; gap: 20px; border-left: 5px solid var(--primary); }
+        .preview-box { width: 180px; flex-shrink: 0; }
         .main-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; background: #eee; }
-        .mini-frames { display: flex; gap: 4px; margin-top: 6px; }
-        .mini-img { width: 32%; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+        .mini-imgs { display: flex; gap: 4px; margin-top: 5px; }
+        .mini-img { width: 32%; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; }
 
-        .meta-info { flex-grow: 1; }
-        .label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; display: block; margin-top: 10px; }
-        .value { font-size: 13px; color: #334155; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #f1f5f9; margin-top: 4px; }
-
-        .btn { padding: 14px 24px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; width: 100%; transition: 0.2s; }
+        .btn { padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 14px; width: 100%; transition: 0.2s; }
         .btn-pink { background: var(--primary); color: white; }
-        .btn-green { background: #10b981; color: white; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .btn-green { background: var(--success); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+        .status-badge { padding: 4px 8px; border-radius: 10px; font-weight: bold; font-size: 10px; }
         .s-wait { background: #f1f5f9; color: #64748b; }
         .s-run { background: #dbeafe; color: #2563eb; }
         .s-done { background: #d1fae5; color: #065f46; }
@@ -47,44 +45,57 @@
 
 <div class="container">
     <div class="tabs">
-        <button class="tab-btn active" onclick="goToTab(0)">1. API SETUP</button>
-        <button class="tab-btn" onclick="goToTab(1)">2. PILIH FOLDER</button>
-        <button class="tab-btn" onclick="goToTab(2)">3. PROSES AI</button>
-        <button class="tab-btn" onclick="goToTab(3)">4. DOWNLOAD CSV</button>
+        <button class="tab-btn active" id="t0" onclick="goToTab(0)">1. API SETUP</button>
+        <button class="tab-btn" id="t1" onclick="goToTab(1)">2. PILIH FOLDER</button>
+        <button class="tab-btn" id="t2" onclick="goToTab(2)">3. PROSES VIDEO</button>
+        <button class="tab-btn" id="t3" onclick="goToTab(3)">4. HASIL & CSV</button>
     </div>
 
     <div id="c0" class="content active">
-        <h2>🔑 API Key Groq</h2>
-        <input type="password" id="apiKey" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxx">
-        <button class="btn btn-pink" onclick="saveKey()">Simpan & Lanjut</button>
+        <h2>🔑 API Key Setup</h2>
+        <div class="input-group">
+            <label class="input-label">Groq API Key</label>
+            <input type="password" id="apiKey" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxx">
+        </div>
+        <button class="btn btn-pink" onclick="saveKey()">Lanjut ke Folder ➡️</button>
     </div>
 
     <div id="c1" class="content">
-        <h2>📁 Pilih Folder Video</h2>
-        <div id="dropArea" class="drop-zone">
-            <span style="font-size:40px;">🎬</span><br>
-            <strong>Klik untuk Pilih Folder</strong>
-            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none" onchange="handleFiles(this.files)">
+        <h2>📁 Pemilihan Folder</h2>
+        <div class="input-group">
+            <label class="input-label">📍 Lokasi Folder Video (Paste dari File Explorer)</label>
+            <input type="text" id="basePath" class="text-input" placeholder="Contoh: C:\Users\DESAINER\Downloads\footage">
+            <p style="font-size: 11px; color: #64748b; margin-top: 5px;">* Ini membantu kami melacak file Anda, meskipun di CSV nanti kami hanya mengambil nama filenya saja.</p>
         </div>
-        <div id="fileSummary" style="margin: 20px 0; text-align:center; font-weight:bold;"></div>
-        <button class="btn btn-pink" id="btnNext" style="display:none" onclick="goToTab(2)">Lanjut ke Analisis ➡️</button>
+        
+        <div class="drop-zone" onclick="document.getElementById('folderInput').click()">
+            <span style="font-size: 40px;">📂</span><br>
+            <strong>Klik untuk Memilih Folder Video</strong>
+            <p style="font-size: 12px; color: #94a3b8;">Mendukung .mp4, .mov, .avi</p>
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(this.files)">
+        </div>
+        
+        <div id="fileSummary" style="margin-top:20px; font-weight:bold; color:var(--primary); text-align:center;"></div>
+        <button class="btn btn-pink" id="btnNext" style="display:none; margin-top:15px;" onclick="goToTab(2)">Lanjut ke Proses ⚡</button>
     </div>
 
     <div id="c2" class="content">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2>⚡ AI Processing</h2>
-            <button class="btn btn-pink" id="btnStart" style="width:auto; padding:10px 30px;" onclick="startAI()">Mulai Analisis</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0;">⚡ AI Processing</h2>
+            <button class="btn btn-pink" id="btnStart" style="width:auto; padding:10px 30px;" onclick="startProcessing()">Mulai Proses</button>
         </div>
-        <table>
-            <thead><tr><th>Preview</th><th>Nama File</th><th>Status</th></tr></thead>
-            <tbody id="queueList"></tbody>
-        </table>
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 10px;">
+            <table>
+                <thead><tr><th>Preview</th><th>Filename</th><th>Status</th></tr></thead>
+                <tbody id="queueList"></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="c3" class="content">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
-            <button class="btn btn-green" onclick="exportCSV()">📥 Download CSV (Rapi)</button>
-            <button class="btn" style="background:#64748b; color:white;" onclick="location.reload()">🔄 Reset Semua</button>
+            <button class="btn btn-green" onclick="exportCSV()">📥 Download CSV (Filenames, Title, Desc, Keywords)</button>
+            <button class="btn" style="background:#64748b; color:white;" onclick="location.reload()">🔄 Reset</button>
         </div>
         <div id="resultContainer"></div>
     </div>
@@ -96,41 +107,41 @@
 <script>
     let queue = [];
     let results = [];
-    const MODEL = "llama-3.2-11b-vision-preview";
+    const MODEL_NAME = "llama-3.2-11b-vision-preview";
 
-    const SYSTEM_PROMPT = `Role: Adobe Stock Specialist.
-Analyze 3 frames (Start, Mid, End) of a video. 
-Detect: Subject, Color, Style (3D/Animation/Real), Motion (Loop/Smooth).
-Rules:
-1. TITLE: Sentence, max 70 chars. No commas.
-2. DESCRIPTION: Detailed story, max 160 chars. No commas.
-3. KEYWORDS: Exactly 45-50 single words, comma separated.
-Return JSON ONLY: {"title": "...", "description": "...", "keywords": "..."}`;
-
-    function goToTab(i) {
-        document.querySelectorAll('.content').forEach((c, idx) => c.classList.toggle('active', idx === i));
-        document.querySelectorAll('.tab-btn').forEach((b, idx) => b.classList.toggle('active', idx === i));
+    function goToTab(idx) {
+        document.querySelectorAll('.content').forEach((c, i) => c.classList.toggle('active', i === idx));
+        document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
     }
 
     function saveKey() {
         const k = document.getElementById('apiKey').value.trim();
-        if(k.startsWith('gsk_')) { localStorage.setItem('GROQ_KEY', k); goToTab(1); } else alert("Key salah!");
+        if(k.startsWith('gsk_')) { 
+            localStorage.setItem('GROQ_V10_KEY', k); 
+            goToTab(1); 
+        } else {
+            alert("API Key tidak valid!");
+        }
     }
-    if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
+    if(localStorage.getItem('GROQ_V10_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_V10_KEY');
 
-    function handleFiles(files) {
+    function handleFolderSelect(files) {
         queue = [];
-        const list = document.getElementById('queueList');
-        list.innerHTML = "";
+        document.getElementById('queueList').innerHTML = "";
         let count = 0;
+        const validExt = ['mp4', 'mov', 'avi', 'm4v'];
+
         for (let f of files) {
-            if (['mp4','mov','avi'].includes(f.name.split('.').pop().toLowerCase())) {
-                queue.push({ id: count, file: f, name: f.name, done: false });
-                list.innerHTML += `<tr id="tr-${count}">
-                    <td id="prev-${count}"><div style="width:50px; height:30px; background:#eee;"></div></td>
+            const ext = f.name.split('.').pop().toLowerCase();
+            if (validExt.includes(ext)) {
+                queue.push({ id: count, file: f, name: f.name, processed: false });
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td id="prev-${count}"><div style="width:50px; height:30px; background:#eee; border-radius:4px;"></div></td>
                     <td><strong>${f.name}</strong></td>
                     <td id="st-${count}"><span class="status-badge s-wait">Ready</span></td>
-                </tr>`;
+                `;
+                document.getElementById('queueList').appendChild(tr);
                 count++;
             }
         }
@@ -148,32 +159,32 @@ Return JSON ONLY: {"title": "...", "description": "...", "keywords": "..."}`;
             const url = URL.createObjectURL(file);
             v.src = url;
             v.onloadedmetadata = async () => {
-                const times = [v.duration * 0.1, v.duration * 0.5, v.duration * 0.9];
-                let imgs = [];
-                for (let t of times) {
+                const times = [v.duration * 0.15, v.duration * 0.5, v.duration * 0.85];
+                let frames = [];
+                for(let t of times) {
                     v.currentTime = t;
                     await new Promise(r => v.onseeked = r);
-                    const scale = 320 / Math.max(v.videoWidth, v.videoHeight);
+                    const scale = 350 / Math.max(v.videoWidth, v.videoHeight);
                     c.width = v.videoWidth * scale;
                     c.height = v.videoHeight * scale;
                     ctx.drawImage(v, 0, 0, c.width, c.height);
-                    imgs.push(c.toDataURL('image/jpeg', 0.6));
+                    frames.push(c.toDataURL('image/jpeg', 0.5));
                 }
                 URL.revokeObjectURL(url);
-                resolve(imgs);
+                resolve(frames);
             };
         });
     }
 
-    async function startAI() {
-        const k = localStorage.getItem('GROQ_KEY');
-        if(!k) return alert("API Key kosong!");
-        document.getElementById('btnStart').disabled = true;
+    async function startProcessing() {
+        const k = localStorage.getItem('GROQ_V10_KEY');
+        const btn = document.getElementById('btnStart');
+        btn.disabled = true; btn.innerText = "Processing...";
 
         for (let item of queue) {
-            if (item.done) continue;
-            const st = document.getElementById(`st-${item.id}`);
-            st.innerHTML = `<span class="status-badge s-run">Menganalisis...</span>`;
+            if (item.processed) continue;
+            const statusEl = document.getElementById(`st-${item.id}`);
+            statusEl.innerHTML = `<span class="status-badge s-run">AI Working...</span>`;
 
             try {
                 const frames = await captureFrames(item.file);
@@ -182,11 +193,11 @@ Return JSON ONLY: {"title": "...", "description": "...", "keywords": "..."}`;
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST", headers: { "Authorization": `Bearer ${k}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        model: MODEL,
+                        model: MODEL_NAME,
                         messages: [{
                             role: "user",
                             content: [
-                                { type: "text", text: SYSTEM_PROMPT },
+                                { type: "text", text: "Role: Adobe Stock Expert. Analyze these 3 frames. Return JSON: {\"title\": \"Max 70 chars, no commas\", \"description\": \"Detailed story, 155 chars, no commas\", \"keywords\": \"45 single words, comma separated\"}" },
                                 { type: "image_url", image_url: { url: frames[0] } },
                                 { type: "image_url", image_url: { url: frames[1] } },
                                 { type: "image_url", image_url: { url: frames[2] } }
@@ -200,55 +211,63 @@ Return JSON ONLY: {"title": "...", "description": "...", "keywords": "..."}`;
                 if (json.error) throw new Error(json.error.message);
                 
                 const meta = JSON.parse(json.choices[0].message.content);
-                results.push({ filename: item.name, ...meta, frames: frames });
-                renderCard(item.name, meta, frames);
-                
-                st.innerHTML = `<span class="status-badge s-done">Selesai</span>`;
-                item.done = true;
+                const cleaned = {
+                    filename: item.name,
+                    title: meta.title.replace(/,/g, ''),
+                    description: meta.description.replace(/,/g, ''),
+                    keywords: meta.keywords.toLowerCase()
+                };
+
+                results.push(cleaned);
+                renderCard(cleaned, frames);
+                statusEl.innerHTML = `<span class="status-badge s-done">Success</span>`;
+                item.processed = true;
             } catch (e) {
                 console.error(e);
-                st.innerHTML = `<span style="color:red; font-size:10px;">Error (Cek Console)</span>`;
+                statusEl.innerHTML = `<span style="color:red; font-size:10px;">Error (Console)</span>`;
             }
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 1200));
         }
-        document.getElementById('btnStart').innerText = "Semua Selesai!";
+        btn.disabled = false; btn.innerText = "Selesai!";
         goToTab(3);
     }
 
-    function renderCard(name, data, imgs) {
+    function renderCard(data, imgs) {
         const div = document.createElement('div');
         div.className = 'result-card';
         div.innerHTML = `
-            <div class="frame-preview">
+            <div class="preview-box">
                 <img src="${imgs[1]}" class="main-img">
-                <div class="mini-frames">
-                    <img src="${imgs[0]}" class="mini-img">
-                    <img src="${imgs[1]}" class="mini-img">
-                    <img src="${imgs[2]}" class="mini-img">
+                <div class="mini-imgs">
+                    <img src="${imgs[0]}" class="mini-img"><img src="${imgs[1]}" class="mini-img"><img src="${imgs[2]}" class="mini-img">
                 </div>
-                <div style="font-size:11px; margin-top:8px; font-weight:bold; color:var(--primary);">${name}</div>
+                <div style="font-size:11px; font-weight:bold; margin-top:8px; text-align:center;">${data.filename}</div>
             </div>
-            <div class="meta-info">
-                <span class="label">Title</span><div class="value">${data.title}</div>
-                <span class="label">Description</span><div class="value">${data.description}</div>
-                <span class="label">Keywords</span><div class="value" style="font-size:11px;">${data.keywords}</div>
-            </div>`;
+            <div style="flex:1;">
+                <div style="font-size:10px; color:#94a3b8; font-weight:bold;">TITLE</div>
+                <div style="font-size:13px; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:5px;">${data.title}</div>
+                <div style="font-size:10px; color:#94a3b8; font-weight:bold;">DESCRIPTION</div>
+                <div style="font-size:13px; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:5px;">${data.description}</div>
+                <div style="font-size:10px; color:#94a3b8; font-weight:bold;">KEYWORDS</div>
+                <div style="font-size:11px; color:#475569;">${data.keywords}</div>
+            </div>
+        `;
         document.getElementById('resultContainer').prepend(div);
     }
 
     function exportCSV() {
-        if(results.length === 0) return alert("Tidak ada data!");
+        if(results.length === 0) return alert("Data kosong!");
+        // Header sesuai permintaan
         let csv = "Filename,Title,Description,Keywords\n";
         results.forEach(r => {
-            // Hilangkan koma di title & desc agar kolom tidak berantakan
-            const t = r.title.replace(/,/g, '');
-            const d = r.description.replace(/,/g, '');
-            csv += `"${r.filename}","${t}","${d}","${r.keywords}"\n`;
+            // "Filename","Title","Description","Keywords"
+            csv += `"${r.filename}","${r.title}","${r.description}","${r.keywords}"\n`;
         });
-        const blob = new Blob([csv], { type: 'text/csv' });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `Metadata_Video_${Date.now()}.csv`;
+        link.download = `Metadata_Stock_${Date.now()}.csv`;
         link.click();
     }
 </script>
