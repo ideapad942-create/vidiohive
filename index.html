@@ -123,16 +123,13 @@
     let results = [];
     const SYSTEM_PROMPT = `
     Role: Adobe Stock Metadata Specialist.
-    Task: Analyze 3 frames from a video footage (start, middle, end) to provide accurate metadata.
-
+    Task: Analyze 3 frames from a video (start, middle, end) and return metadata in JSON format.
+    
     STRICT GUIDELINES:
-    1. TITLE: Natural sentence. Max 70 characters. Structure: [Subject] [Action] [Context].
-    2. DESCRIPTION: Detailed story, around 150-160 characters.
-    3. KEYWORDS: 
-       - Exactly 45-47 SINGLE WORDS.
-       - Include colors, lighting, mood, demographics, and technical style (e.g., loop, animation, 3d, realistic).
-       - EXCLUDE: "video", "footage", "clip".
-
+    1. TITLE: Natural sentence, max 70 characters.
+    2. DESCRIPTION: Storytelling, 150-160 characters.
+    3. KEYWORDS: Exactly 45-47 single words, comma separated. Include: colors, lighting, movement, style, and mood.
+    
     Return ONLY JSON: {"title": "...", "description": "...", "keywords": "..."}
     `;
 
@@ -170,7 +167,7 @@
             }
         }
         if(count > 0) {
-            document.getElementById('fileSummary').innerText = `${count} Video siap diproses.`;
+            document.getElementById('fileSummary').innerText = `${count} Video siap.`;
             document.getElementById('btnNext').style.display = 'block';
         }
     }
@@ -191,11 +188,12 @@
                 for (let ts of timestamps) {
                     video.currentTime = ts;
                     await new Promise(r => video.onseeked = r);
-                    const scale = 400 / Math.max(video.videoWidth, video.videoHeight);
+                    // Resize lebih kecil (350px) agar payload tidak error
+                    const scale = 350 / Math.max(video.videoWidth, video.videoHeight);
                     canvas.width = video.videoWidth * scale;
                     canvas.height = video.videoHeight * scale;
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    frames.push(canvas.toDataURL('image/jpeg', 0.6));
+                    frames.push(canvas.toDataURL('image/jpeg', 0.5)); // Quality 0.5
                 }
                 URL.revokeObjectURL(url);
                 resolve(frames);
@@ -205,28 +203,28 @@
 
     async function startProcessing() {
         const k = localStorage.getItem('GROQ_V8_KEY');
+        if(!k) { alert("Isi API Key dulu!"); return; }
         const btn = document.getElementById('btnStart');
         btn.disabled = true; btn.innerText = "Processing...";
 
         for (let item of queue) {
             if (item.processed) continue;
             const statusEl = document.getElementById(`status-${item.id}`);
-            statusEl.innerHTML = `<span class="status-badge s-run">Capturing Frames...</span>`;
+            statusEl.innerHTML = `<span class="status-badge s-run">Capturing...</span>`;
 
             try {
                 const frames = await captureMultiFrames(item.file);
                 document.getElementById(`thumb-container-${item.id}`).innerHTML = `<img src="${frames[1]}" style="width:60px; height:35px; object-fit:cover; border-radius:4px;">`;
                 
-                statusEl.innerHTML = `<span class="status-badge s-run">AI Analyzing...</span>`;
+                statusEl.innerHTML = `<span class="status-badge s-run">AI Working...</span>`;
 
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST", headers: { "Authorization": `Bearer ${k}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        model: "meta-llama/llama-3.2-11b-vision-preview",
+                        model: "llama-3.2-11b-vision-preview",
                         messages: [
-                            { role: "system", content: SYSTEM_PROMPT },
                             { role: "user", content: [
-                                { type: "text", text: "Analyze these 3 frames from the same video (Start, Middle, End):" },
+                                { type: "text", text: SYSTEM_PROMPT },
                                 { type: "image_url", image_url: { url: frames[0] } },
                                 { type: "image_url", image_url: { url: frames[1] } },
                                 { type: "image_url", image_url: { url: frames[2] } }
@@ -236,6 +234,8 @@
                 });
 
                 const json = await res.json();
+                if (json.error) throw new Error(json.error.message);
+
                 const content = JSON.parse(json.choices[0].message.content);
                 const finalData = cleanSEO(content);
 
@@ -244,21 +244,33 @@
                 statusEl.innerHTML = `<span class="status-badge s-done">Success</span>`;
                 item.processed = true;
             } catch (e) {
-                statusEl.innerHTML = `<span style="color:red; font-size:10px;">Error</span>`;
+                console.error("Detail Error:", e);
+                statusEl.innerHTML = `<span style="color:red; font-size:10px;">Error (Cek Console)</span>`;
             }
-            await new Promise(r => setTimeout(r, 1500));
+            await new Promise(r => setTimeout(r, 2000));
         }
         btn.disabled = false; btn.innerText = "🚀 Mulai Generate"; goToTab(3);
     }
 
     function cleanSEO(data) {
         let kw = Array.isArray(data.keywords) ? data.keywords.join(', ') : String(data.keywords || "");
-        let clean = [...new Set(kw.toLowerCase().split(/[\s,]+/).filter(w => w.length > 2))].slice(0, 47);
-        while (clean.length < 45) clean.push("stock", "footage", "cinematic", "visual", "concept", "art")[clean.length % 6];
+        let clean = [...new Set(kw.toLowerCase().split(/[\s,]+/).filter(w => w.length > 2))];
+        
+        // Buang kata sampah
+        const junk = ["video", "footage", "clip", "mp4", "mov"];
+        clean = clean.filter(w => !junk.includes(w)).slice(0, 47);
+
+        // Paksa range 45-47
+        const fillers = ["visual", "background", "nature", "outdoor", "daylight", "cinematic", "style"];
+        let fIdx = 0;
+        while (clean.length < 45) {
+            if(!clean.includes(fillers[fIdx])) clean.push(fillers[fIdx]);
+            fIdx = (fIdx + 1) % fillers.length;
+        }
         
         return { 
-            title: (data.title || "").substring(0, 70).replace(/,/g, ''), 
-            description: (data.description || "").substring(0, 160).replace(/,/g, ''), 
+            title: (data.title || "").substring(0, 70).replace(/"/g, ''), 
+            description: (data.description || "").substring(0, 160).replace(/"/g, ''), 
             keywords: clean.join(', ') 
         };
     }
@@ -266,14 +278,18 @@
     function renderResult(item, data, thumb) {
         const div = document.createElement('div');
         div.className = 'result-card';
+        div.style.border = "1px solid #eee";
+        div.style.padding = "15px";
+        div.style.marginBottom = "10px";
+        div.style.borderRadius = "8px";
         div.innerHTML = `
             <div style="display:flex; gap:15px;">
-                <img src="${thumb}" style="width:120px; height:70px; object-fit:cover; border-radius:8px; border:1px solid #eee;">
+                <img src="${thumb}" style="width:120px; height:70px; object-fit:cover; border-radius:8px;">
                 <div style="flex:1;">
-                    <div style="font-size:14px; font-weight:bold; color:var(--primary); margin-bottom:5px;">${item.name}</div>
-                    <span class="field-label">Title</span><div class="field-val">${data.title}</div>
-                    <span class="field-label">Description</span><div class="field-val">${data.description}</div>
-                    <span class="field-label">Keywords (${data.keywords.split(',').length})</span><div class="field-val">${data.keywords}</div>
+                    <strong style="color:#db2777;">${item.name}</strong>
+                    <div style="font-size:11px; margin-top:5px;"><strong>Title:</strong> ${data.title}</div>
+                    <div style="font-size:11px;"><strong>Desc:</strong> ${data.description}</div>
+                    <div style="font-size:11px;"><strong>Keywords:</strong> ${data.keywords}</div>
                 </div>
             </div>
         `;
@@ -282,17 +298,14 @@
 
     function exportCSV() {
         if (results.length === 0) return;
-        // Header CSV: Pisahkan Filename, Title, Description, Keywords
         let csvContent = "Filename,Title,Description,Keywords\n";
         results.forEach(r => {
-            // Gunakan quotes "" untuk menjaga agar koma di dalam teks tidak merusak kolom
             csvContent += `"${r.filename}","${r.title}","${r.description}","${r.keywords}"\n`;
         });
-
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Metadata_Export_${Date.now()}.csv`;
+        link.download = `Metadata_Video_${Date.now()}.csv`;
         link.click();
     }
 </script>
