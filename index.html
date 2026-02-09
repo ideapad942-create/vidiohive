@@ -2,21 +2,23 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>VIDEO METADATA AI – GROQ</title>
+<title>AI Video Metadata Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Segoe UI,sans-serif;background:#fdf2f8;padding:20px}
-.container{max-width:1000px;margin:auto;background:#fff;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.05)}
+body{font-family:Segoe UI,sans-serif;background:#fdf2f8;margin:0;padding:20px}
+.container{max-width:1000px;margin:auto;background:#fff;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
 .tabs{display:flex;background:#0f172a}
 .tab-btn{flex:1;padding:16px;border:none;background:none;color:#94a3b8;font-weight:700;cursor:pointer}
 .tab-btn.active{background:#db2777;color:#fff}
 .content{display:none;padding:30px}
 .content.active{display:block}
-input,button{padding:12px;border-radius:8px;border:1px solid #cbd5e1;width:100%}
+input,button{width:100%;padding:12px;border-radius:8px;border:1px solid #cbd5e1}
 button{background:#db2777;color:#fff;font-weight:700;border:none;cursor:pointer}
-table{width:100%;border-collapse:collapse}
+button:disabled{opacity:.6}
+table{width:100%;border-collapse:collapse;margin-top:15px}
 th,td{padding:10px;border-bottom:1px solid #eee;font-size:12px}
-.thumb{width:90px;height:60px;object-fit:cover;border-radius:6px}
-.result{border-left:5px solid #db2777;padding:15px;margin-bottom:15px;display:flex;gap:15px}
+.thumb{width:80px;height:50px;object-fit:cover;border-radius:6px}
+.result{border-left:5px solid #db2777;padding:15px;margin-bottom:12px}
 small{color:#64748b}
 </style>
 </head>
@@ -24,48 +26,50 @@ small{color:#64748b}
 
 <div class="container">
 <div class="tabs">
-<button class="tab-btn active" onclick="tab(0)">API KEY</button>
-<button class="tab-btn" onclick="tab(1)">FOLDER</button>
-<button class="tab-btn" onclick="tab(2)">PROSES</button>
-<button class="tab-btn" onclick="tab(3)">HASIL</button>
+<button class="tab-btn active" onclick="goTab(0)">1. API</button>
+<button class="tab-btn" onclick="goTab(1)">2. Folder</button>
+<button class="tab-btn" onclick="goTab(2)">3. Proses</button>
+<button class="tab-btn" onclick="goTab(3)">4. Hasil</button>
 </div>
 
-<div id="c0" class="content active">
+<div id="tab0" class="content active">
 <h3>🔑 Groq API Key</h3>
-<input id="apiKey" placeholder="gsk_xxxxxx">
+<input id="apiKey" placeholder="gsk_xxxxx">
 <br><br>
-<button onclick="saveKey()">Simpan</button>
+<button onclick="saveKey()">Simpan & Lanjut</button>
 </div>
 
-<div id="c1" class="content">
+<div id="tab1" class="content">
 <h3>📁 Pilih Folder Video</h3>
-<input type="file" webkitdirectory multiple id="folder">
+<input type="file" id="folder" webkitdirectory multiple>
 <br><br>
-<button onclick="prepare()">Lanjut</button>
-<div id="info"></div>
+<button onclick="prepareFiles()">Lanjut</button>
+<p id="info"></p>
 </div>
 
-<div id="c2" class="content">
-<h3>⚙️ Processing</h3>
-<button onclick="processAll()">Mulai</button>
+<div id="tab2" class="content">
+<h3>⚙️ Proses Video</h3>
+<button id="startBtn" onclick="processAll()">Mulai Proses</button>
 <table>
-<thead><tr><th>Preview</th><th>File</th><th>Status</th></tr></thead>
-<tbody id="list"></tbody>
+<thead><tr><th>Preview</th><th>Filename</th><th>Status</th></tr></thead>
+<tbody id="queue"></tbody>
 </table>
 </div>
 
-<div id="c3" class="content">
+<div id="tab3" class="content">
 <button onclick="downloadCSV()">⬇ Download CSV</button>
 <div id="results"></div>
 </div>
 </div>
 
-<video id="vid" muted style="display:none"></video>
-<canvas id="cv" style="display:none"></canvas>
+<video id="video" muted playsinline style="display:none"></video>
+<canvas id="canvas" style="display:none"></canvas>
 
 <script>
-let files=[],results=[];
-const PROMPT=`You are a professional MICROSTOCK VIDEO metadata expert.
+let files=[], results=[];
+
+const PROMPT = `
+You are a PROFESSIONAL MICROSTOCK VIDEO METADATA EXPERT.
 
 RULES:
 TITLE:
@@ -83,61 +87,78 @@ KEYWORDS:
 - SEO microstock friendly
 - No video, footage, clip, hd, 4k
 
-Analyze ALL images as one video.
+Analyze ALL images as ONE video.
 Return ONLY JSON:
 {"title":"","description":"","keywords":""}
 `;
 
-function tab(i){
+function goTab(i){
 document.querySelectorAll('.content').forEach((c,n)=>c.classList.toggle('active',n===i));
 document.querySelectorAll('.tab-btn').forEach((b,n)=>b.classList.toggle('active',n===i));
 }
 
 function saveKey(){
-localStorage.setItem('GROQ_KEY',apiKey.value);
-tab(1);
+localStorage.setItem("GROQ_KEY", apiKey.value.trim());
+goTab(1);
 }
 
-function prepare(){
-files=[...folder.files].filter(f=>/\.(mp4|mov|avi|m4v)$/i.test(f.name));
+function prepareFiles(){
+const input=document.getElementById("folder");
+files=[...input.files].filter(f=>/\.(mp4|mov|avi|m4v)$/i.test(f.name));
 info.innerText=files.length+" video ditemukan";
-tab(2);
+queue.innerHTML="";
 files.forEach((f,i)=>{
-list.innerHTML+=`<tr id="r${i}"><td>-</td><td>${f.name}</td><td>Pending</td></tr>`;
+queue.innerHTML+=`
+<tr id="row${i}">
+<td>-</td>
+<td>${f.name}</td>
+<td>Pending</td>
+</tr>`;
 });
+goTab(2);
 }
 
 async function grabFrames(file){
-const v=vid,c=cv,ctx=c.getContext('2d');
+return new Promise((resolve,reject)=>{
+const v=document.getElementById("video");
+const c=document.getElementById("canvas");
+const ctx=c.getContext("2d");
 const url=URL.createObjectURL(file);
+
 v.src=url;
-await v.play().catch(()=>{});
+v.load();
+
+v.onloadedmetadata=async()=>{
 const times=[0.05,0.5,0.95];
 let imgs=[];
 for(let t of times){
-v.currentTime=v.duration*t;
+v.currentTime=Math.max(0.1,v.duration*t);
 await new Promise(r=>v.onseeked=r);
 c.width=640;c.height=360;
 ctx.drawImage(v,0,0,640,360);
-imgs.push(c.toDataURL('image/jpeg',0.7).split(',')[1]);
+imgs.push(c.toDataURL("image/jpeg",0.7).split(",")[1]);
 }
 URL.revokeObjectURL(url);
-return imgs;
+resolve(imgs);
+};
+v.onerror=()=>reject("Video error");
+});
 }
 
 async function processAll(){
+document.getElementById("startBtn").disabled=true;
 for(let i=0;i<files.length;i++){
-document.querySelector(`#r${i} td:nth-child(3)`).innerText="Snapshot...";
+const row=document.getElementById(`row${i}`);
+row.cells[2].innerText="Snapshot...";
 const imgs=await grabFrames(files[i]);
 
-document.querySelector(`#r${i} td:nth-child(1)`).innerHTML=
-`<img class="thumb" src="data:image/jpeg;base64,${imgs[1]}">`;
+row.cells[0].innerHTML=`<img class="thumb" src="data:image/jpeg;base64,${imgs[1]}">`;
+row.cells[2].innerText="AI...";
 
-document.querySelector(`#r${i} td:nth-child(3)`).innerText="AI...";
 const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
 method:"POST",
 headers:{
-"Authorization":"Bearer "+localStorage.getItem('GROQ_KEY'),
+"Authorization":"Bearer "+localStorage.getItem("GROQ_KEY"),
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
@@ -149,28 +170,34 @@ messages:[
 temperature:0.2,
 response_format:{type:"json_object"}
 })
+});
+
 const j=await res.json();
 const d=JSON.parse(j.choices[0].message.content);
+
 results.push({
 filename:files[i].name,
 title:d.title.slice(0,70),
 description:d.description.slice(0,160),
-keywords:d.keywords.split(',').slice(0,45).join(',')
+keywords:d.keywords.split(",").slice(0,45).join(",")
 });
-document.querySelector(`#r${i} td:nth-child(3)`).innerText="Done";
+
+row.cells[2].innerText="Done";
 }
-tab(3);
-render();
+renderResults();
+goTab(3);
 }
 
-function render(){
+function renderResults(){
+const box=document.getElementById("results");
+box.innerHTML="";
 results.forEach(r=>{
-resultsDiv.innerHTML+=`
+box.innerHTML+=`
 <div class="result">
-<div>
 <b>${r.filename}</b><br>
-<small>${r.title}</small>
-</div>
+<strong>${r.title}</strong><br>
+<small>${r.description}</small><br>
+<small>${r.keywords}</small>
 </div>`;
 });
 }
@@ -180,12 +207,13 @@ let csv="filename,title,description,keywords\n";
 results.forEach(r=>{
 csv+=`"${r.filename}","${r.title}","${r.description}","${r.keywords}"\n`;
 });
-const b=new Blob([csv],{type:"text/csv"});
+const blob=new Blob([csv],{type:"text/csv"});
 const a=document.createElement("a");
-a.href=URL.createObjectURL(b);
+a.href=URL.createObjectURL(blob);
 a.download="video_metadata.csv";
 a.click();
 }
 </script>
+
 </body>
 </html>
