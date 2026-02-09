@@ -213,7 +213,6 @@
             video.src = url;
             video.muted = true;
 
-            // Kita akan ambil 3 frame, jadi canvas lebar 3x
             // Resolusi per frame (dikecilkan biar ringan buat API): 320x180
             const fW = 320; 
             const fH = 180;
@@ -223,7 +222,13 @@
             // Helper untuk seek & draw
             const capture = (timeRatio, posX) => {
                 return new Promise((res) => {
-                    video.currentTime = video.duration * timeRatio;
+                    // Pastikan duration valid
+                    if (!isFinite(video.duration)) {
+                        video.currentTime = 1; // Fallback jika durasi error
+                    } else {
+                        video.currentTime = video.duration * timeRatio;
+                    }
+                    
                     video.onseeked = () => {
                         ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, posX, 0, fW, fH);
                         res();
@@ -238,7 +243,8 @@
                     await capture(0.5, fW);      // Tengah
                     await capture(0.9, fW * 2);  // Kanan
                     
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Quality 0.7
+                    // Turunkan kualitas ke 0.6 agar file ringan dikirim ke API
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
                     URL.revokeObjectURL(url);
                     resolve(dataUrl);
                 } catch (e) {
@@ -249,7 +255,7 @@
 
             video.onerror = () => {
                 URL.revokeObjectURL(url);
-                reject("Video error");
+                reject("Gagal memuat video");
             };
         });
     }
@@ -295,12 +301,14 @@
                 statusCell.innerHTML = `<span class="badge b-done">DONE</span>`;
 
             } catch (error) {
-                console.error(error);
+                console.error("Processing Error:", error);
                 statusCell.innerHTML = `<span class="badge b-fail">ERROR</span>`;
+                // Tampilkan error di console browser
+                alert(`Gagal memproses ${item.filename}. Cek Console (F12) untuk detail.`);
             }
 
             // Delay sedikit untuk rate limit
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 1500));
         }
 
         isProcessing = false;
@@ -310,54 +318,63 @@
     }
 
     async function callGroqAI(key, base64Image) {
+        // Prompt yang lebih ketat agar output bersih
         const systemPrompt = `
-        You are an expert Stock Footage Metadata Specialist.
-        I will provide a "filmstrip" image composed of 3 frames from a single video (Start, Middle, End).
-        Analyze the sequence to understand the context, action, lighting, and color.
-
-        OUTPUT REQUIREMENTS (Strict JSON format):
-        1. "title": A professional, descriptive title (max 70 chars). Focus on Subject + Action + Setting.
-        2. "description": A detailed sentence describing the action, lighting, and mood (approx 150-200 chars). Mention if it's slow motion, timelapse, or static if clearly visible.
-        3. "keywords": A string of 45-50 comma-separated keywords.
-           - MUST include: colors, objects, emotions, demographics (if people), technical terms (e.g., shallow depth of field, bokeh, if visible).
-           - STRICTLY NO: "4k", "hd", "video", "clip", "footage".
-           - Separate compound words (e.g., "blue sky" -> "blue, sky").
-
-        Example JSON:
-        {"title": "Young woman jogging in park during sunset", "description": "A side view of an athletic young woman jogging along a park path, illuminated by warm golden hour sunlight with trees in the background.", "keywords": "woman, female, jogging, running, exercise, fitness, park, nature, sunset, golden hour, sunlight, warm, athletic, healthy, lifestyle, outdoor, summer, happy, active, trees, green, path, road, sport, cardio, training, workout, determination, energy, motion, speed, dynamic, casual, sportswear, side view, profile, morning, evening, leisure, recreation, wellness, vitality, person, adult, caucasian, beautiful, scene"}
+        Role: Stock Footage Metadata Expert.
+        Task: Analyze the provided 3-frame filmstrip (Start, Middle, End).
+        
+        OUTPUT FORMAT: Return ONLY valid JSON. No Markdown. No Explanations.
+        {
+            "title": "Subject + Action + Context (Max 70 chars)",
+            "description": "Detailed description of action, lighting, and scene (150 chars)",
+            "keywords": "40-50 single words, comma separated, no phrases"
+        }
         `;
 
         try {
-            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const resp = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${key}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "llama-3.2-90b-vision-preview", // Model vision terbaik Groq saat ini
+                    // GANTI MODEL KE YANG LEBIH RINGAN & STABIL
+                    model: "llama-3.2-11b-vision-preview", 
                     messages: [
                         { role: "system", content: systemPrompt },
                         { role: "user", content: [
-                            { type: "text", text: "Generate metadata from this video filmstrip." },
+                            { type: "text", text: "Analyze this video frames." },
                             { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
                         ]}
                     ],
                     temperature: 0.1,
-                    max_tokens: 1024,
+                    max_tokens: 500,
                     response_format: { type: "json_object" }
                 })
             });
 
+            // Cek jika API error (bukan 200 OK)
+            if (!resp.ok) {
+                const errData = await resp.json();
+                throw new Error(`API Error: ${errData.error?.message || resp.statusText}`);
+            }
+
             const data = await resp.json();
-            if(data.error) throw new Error(data.error.message);
-            
             let content = data.choices[0].message.content;
+
+            // PEMBERSIH JSON: Menghapus markdown jika ada (```json ... ```)
+            content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+
             return JSON.parse(content);
         } catch (e) {
-            console.error("AI Error:", e);
-            // Fallback jika JSON rusak
-            return { title: "Error Generating Title", description: "Error generating description", keywords: "error" };
+            console.error("AI Error Detail:", e);
+            // Return dummy jika gagal, supaya proses tidak berhenti total
+            return { 
+                title: "Error Generating Title", 
+                description: "Check API Key or Rate Limit in Console", 
+                keywords: "error, fail, retry" 
+            };
         }
     }
 
@@ -393,17 +410,14 @@
     function exportCSV() {
         if(results.length === 0) return alert("Belum ada data yang diproses!");
 
-        // Header CSV
         let csvContent = "Filename,Title,Description,Keywords\n";
 
         results.forEach(row => {
-            // Bersihkan data untuk format CSV (double quotes escape)
-            const cleanFile = row.filename.replace(/"/g, '""'); // Hanya nama file
+            const cleanFile = row.filename.replace(/"/g, '""'); 
             const cleanTitle = row.title.replace(/"/g, '""');
             const cleanDesc = row.description.replace(/"/g, '""');
             const cleanKw = row.keywords.replace(/"/g, '""');
 
-            // Format CSV: "Filename","Title","Desc","Keywords"
             csvContent += `"${cleanFile}","${cleanTitle}","${cleanDesc}","${cleanKw}"\n`;
         });
 
