@@ -317,42 +317,57 @@
         switchTab(2);
     }
 
-    async function callGroqAI(key, base64Image) {
-        // Prompt yang lebih ketat agar output bersih
-        const systemPrompt = `
-        Role: Stock Footage Metadata Expert.
-        Task: Analyze the provided 3-frame filmstrip (Start, Middle, End).
-        
-        OUTPUT FORMAT: Return ONLY valid JSON. No Markdown. No Explanations.
-        {
-            "title": "Subject + Action + Context (Max 70 chars)",
-            "description": "Detailed description of action, lighting, and scene (150 chars)",
-            "keywords": "40-50 single words, comma separated, no phrases"
-        }
-        `;
+   async function callGroqAI(key, base64Image) {
+    const systemPrompt = `
+    Role: Stock Footage Metadata Expert.
+    Task: Analyze the provided 3-frame filmstrip.
+    OUTPUT FORMAT: Return ONLY valid JSON.
+    {
+        "title": "Subject + Action + Context (Max 70 chars)",
+        "description": "Detailed description (150 chars)",
+        "keywords": "45 single words, comma separated"
+    }`;
 
-        try {
-            const resp = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${key}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    // GANTI MODEL KE YANG LEBIH RINGAN & STABIL
-                    model: "llama-3.2-11b-vision-preview", 
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: [
-                            { type: "text", text: "Analyze this video frames." },
-                            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
-                        ]}
-                    ],
-                    temperature: 0.1,
-                    max_tokens: 500,
-                    response_format: { type: "json_object" }
-                })
-            });
+    try {
+        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${key}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "llama-3.2-11b-vision-preview", 
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: [
+                        { type: "text", text: "Analyze these video frames for stock metadata." },
+                        { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+                    ]}
+                ],
+                temperature: 0.1,
+                response_format: { type: "json_object" }
+            })
+        });
+
+        if (!resp.ok) {
+            const errorData = await resp.json();
+            console.error("Detail Error dari Groq:", errorData);
+            throw new Error(errorData.error?.message || "Koneksi Terputus");
+        }
+
+        const data = await resp.json();
+        return JSON.parse(data.choices[0].message.content);
+
+    } catch (e) {
+        console.error("Gagal Memanggil AI:", e);
+        // Jika error 429 (Rate Limit), kita beri info ke user di kartu hasil
+        return { 
+            title: "API Limit Reached / Error", 
+            description: "Pesan: " + e.message, 
+            keywords: "limit, error, retry, wait" 
+        };
+    }
+}
 
             // Cek jika API error (bukan 200 OK)
             if (!resp.ok) {
