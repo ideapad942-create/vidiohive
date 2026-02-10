@@ -40,7 +40,7 @@
     <div class="container">
         <div class="header">
             <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-            <div style="font-size: 12px; opacity: 0.8;">SPOK Titles (70-90 Chars) & Single Keywords</div>
+            <div style="font-size: 12px; opacity: 0.8;">Smart Text Recognition & SPOK Titles</div>
         </div>
 
         <div class="controls">
@@ -88,6 +88,7 @@
             "backgrounds/miscellaneous", "bugs", "elements", "interface-effects", "lower-thirds", "overlays", "particles", "revealer", "transitions", "water-and-fluid", "miscellaneous", "infographics"
         ];
 
+        // Backup keywords standar (hanya dipakai jika hasil AI < 45)
         const BACKUP_KEYWORDS = ["video", "clip", "footage", "animation", "motion", "graphic", "render", "digital", "art", "design", "background", "loop", "seamless", "abstract", "creative", "concept", "modern", "futuristic", "style", "effect", "visual", "display", "presentation", "backdrop", "wallpaper", "texture", "pattern", "shape", "color", "light", "bright", "dark", "glow", "shine", "energy", "power", "tech", "technology", "cyber", "space", "business", "corporate", "event", "show", "broadcast"];
 
         const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
@@ -131,7 +132,7 @@
                             <textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea>
                         </div>
                         <div class="meta-wrapper">
-                            <div class="meta-label"><span>KEYWORDS (Min 45 Words)</span><span id="cnt-kw-${index}">0 words</span></div>
+                            <div class="meta-label"><span>KEYWORDS (First 10 Priority)</span><span id="cnt-kw-${index}">0 words</span></div>
                             <textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea>
                         </div>
                     </td>`;
@@ -146,7 +147,6 @@
             const k = kVal ? kVal.split(',').filter(x => x.trim()).length : 0;
             
             document.getElementById(`cnt-title-${idx}`).innerText = `${t} chars`;
-            // Validasi ketat range 70 - 90
             document.getElementById(`cnt-title-${idx}`).className = (t < 70 || t > 90) ? 'count-err' : 'count-ok';
             
             document.getElementById(`cnt-desc-${idx}`).innerText = `${d}/150`;
@@ -182,7 +182,9 @@
                     document.getElementById(`cat-${idx}`).value = finalCat;
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
-                    // 2. KEYWORDS LOGIC (TETAP SAMA SEPERTI YANG DIMINTA)
+                    // =========================================================
+                    // 2. KEYWORDS LOGIC (PRIORITIZED)
+                    // =========================================================
                     let rawKw = data.keywords;
                     let kws = [];
                     if (Array.isArray(rawKw)) {
@@ -190,64 +192,66 @@
                     } else if (typeof rawKw === 'string') {
                         kws = rawKw.split(',').map(w => w.trim().toLowerCase());
                     }
-                    let splitKws = [];
+                    
+                    // Bersihkan keyword dari simbol aneh
+                    let cleanKws = [];
                     kws.forEach(word => {
-                        let parts = word.split(/\s+/);
-                        parts.forEach(p => splitKws.push(p.replace(/[^a-zA-Z0-9]/g, '')));
+                         let clean = word.replace(/[^a-z0-9]/g, ''); // Hapus simbol
+                         if (clean.length > 2) cleanKws.push(clean);
                     });
-                    const stopWords = ["a", "an", "the", "and", "or", "of", "in", "on", "at", "to", "for", "with", "is", "it", "this", "that", "image", "photo", "picture"];
-                    splitKws = splitKws.filter(w => w.length > 2 && !/\d/.test(w) && !stopWords.includes(w));
-                    splitKws = [...new Set(splitKws)];
+                    
+                    const stopWords = ["the", "and", "video", "clip", "footage", "image"];
+                    cleanKws = cleanKws.filter(w => !stopWords.includes(w));
+                    cleanKws = [...new Set(cleanKws)]; // Unique
+
+                    // Tambahkan backup jika kurang dari 45
                     let bIdx = 0;
-                    while (splitKws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
-                        if (!splitKws.includes(BACKUP_KEYWORDS[bIdx])) splitKws.push(BACKUP_KEYWORDS[bIdx]);
+                    while (cleanKws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
+                        if (!cleanKws.includes(BACKUP_KEYWORDS[bIdx])) cleanKws.push(BACKUP_KEYWORDS[bIdx]);
                         bIdx++;
                     }
-                    document.getElementById(`kw-${idx}`).value = splitKws.join(', ');
+                    document.getElementById(`kw-${idx}`).value = cleanKws.join(', ');
 
                     // =========================================================
-                    // 3. TITLE LOGIC (SPOK + STRICT 70-90 CHARS)
+                    // 3. TITLE LOGIC (SPOK + READING TEXT + CLEANING)
                     // =========================================================
-                    let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+                    let title = (data.title || "").trim();
 
-                    // Cleaning standar
-                    title = title.replace(/^(the|this|a|an)\s+(video|clip|animation|footage|background)\s+(shows|features|depicts|is)?\s*/i, "");
-                    title = title.replace(/^shows\s+/i, "");
-                    title = title.replace(/^with\s+/i, "");
+                    // Hapus Simbol Terlarang (' " - :)
+                    title = title.replace(/['":;,.!?-]/g, '');
 
+                    // Standard Cleaning
+                    title = title.replace(/\s+/g, ' '); // Hapus spasi ganda
+                    title = title.replace(/^(the|this|a|an)\s+(video|clip|animation)\s+/i, "");
+                    
                     // Sentence Case
                     title = title.toLowerCase();
                     title = title.charAt(0).toUpperCase() + title.slice(1);
 
-                    // LOGIKA PERPANJANGAN (Jika < 70)
-                    // Strategi: Tambah Suffix Teknis yang relevan untuk mencapai 70
+                    // Logic Perpanjangan (Padding) jika kurang 70 chars
                     if (title.length < 70) {
-                        if (finalCat.includes("background") || finalCat.includes("abstract")) {
+                        if (title.toLowerCase().includes("thanks")) {
+                            title += " animation for youtube end screen";
+                        } else if (finalCat.includes("background")) {
                             title += " in seamless loop style";
-                        } else if (finalCat.includes("text") || title.includes("text")) {
-                            title += " animation for broadcast display";
                         } else if (finalCat.includes("overlay")) {
                             title += " with alpha channel transparency";
                         } else {
-                            title += " for professional video editing";
+                            title += " for professional video projects";
                         }
                     }
 
-                    // Jika masih kurang 70, tambah padding aman
+                    // Logic Tambahan lagi jika masih kurang
                     if (title.length < 70) {
-                       title += " and digital projects";
+                        title += " and digital display";
                     }
 
-                    // LOGIKA PEMOTONGAN (Jika > 90) - WAJIB
-                    // Kita potong pintar (tidak memotong kata)
+                    // Logic Pemotongan (Hard Limit 90)
                     if (title.length > 90) {
-                        // Potong hard di 90
                         let trimmed = title.substring(0, 90);
-                        // Mundur ke spasi terakhir agar rapi
-                        title = trimmed.substring(0, trimmed.lastIndexOf(" "));
+                        title = trimmed.substring(0, trimmed.lastIndexOf(" ")); // Potong di spasi terakhir
                     }
 
-                    // Final Clean
                     title = cleanTrailing(title);
                     document.getElementById(`title-${idx}`).value = title;
 
@@ -256,9 +260,11 @@
                     desc = desc.replace(/^(The|This)\s+image\s+/i, "This video ");
                     desc = cleanTrailing(desc);
                     if (!desc.endsWith('.')) desc += ".";
+                    
                     if (desc.length < 100) {
                         desc += " Ideally created for cinematic sequences, event displays, and multimedia projects requiring high quality visuals.";
                     }
+                    
                     let finalDesc = desc.substring(0, 150);
                     if (finalDesc.length < desc.length) finalDesc = finalDesc.replace(/\s\w*$/, ""); 
                     finalDesc = cleanTrailing(finalDesc);
@@ -278,17 +284,18 @@
 
         async function makeRequest(key, base64) {
             const categoriesStr = ALL_CATEGORIES.join(", ");
-            // PROMPT DIUBAH MENJADI FORMAT SPOK
+            // PROMPT BARU: STRICT TEXT READING & KEYWORD PRIORITY
             const prompt = `You are a Stock Video Metadata Expert. 
             Input: A filmstrip of a VIDEO clip.
             
-            STRICT RULES:
-            1. Title: Write a SUBJECT-VERB-OBJECT (SPOK) sentence. Focus on Action/Movement. 
-               Example: "Bright yellow text rotates on brown background with glowing dots". 
-               Length target: 80 characters.
-            2. Keywords: Return 20+ specific tags.
-            3. Category: Pick ONE from: [${categoriesStr}].
-            4. Description: Use "This video features...".
+            CRITICAL RULES:
+            1. READ THE TEXT: If there is text in the video (e.g., "Thanks For Watching", "Sale", "Subscribe"), YOU MUST INCLUDE IT in the Title and first Keywords.
+            2. Title: Create a SUBJECT-VERB-OBJECT sentence. 
+               Structure: [Adjective Subject] + [Action/Verb] + [Specific Text/Object] + [Context].
+               Example: "Golden 3d text saying thanks for watching rotates on dark brown background".
+            3. Keywords: The FIRST 10 keywords MUST be the most important ones (The text content, the main object, the animation style). Return 45+ single words.
+            4. Category: Pick ONE from: [${categoriesStr}].
+            5. Description: Use "This video features...".
             
             Return STRICT JSON: {category, title, description, keywords}`;
             
@@ -300,7 +307,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze visuals. JSON only." },
+                            { type: "text", text: "Analyze visuals. If text exists, include it in title! JSON only." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
