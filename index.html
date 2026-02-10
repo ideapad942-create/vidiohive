@@ -3,132 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock AI - Ultimate Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Microstock AI - Ultimate Metadata Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --bg-body: #f1f5f9;
-            --surface: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
             --success: #10b981;
-            --warning: #f59e0b;
             --error: #ef4444;
+            --warn: #f59e0b;
         }
-
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; overflow: hidden; }
+        
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
         /* SIDEBAR */
-        .sidebar { width: 320px; background: #0f172a; color: white; padding: 25px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
-        .brand { font-size: 20px; font-weight: 700; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; color: #818cf8; }
-        .brand span { color: white; }
+        aside { width: 300px; background: #111827; color: white; padding: 20px; display: flex; flex-direction: column; z-index: 10; }
+        .logo { font-size: 18px; font-weight: 700; color: #818cf8; margin-bottom: 30px; display: flex; align-items: center; gap: 8px; }
+        .logo span { color: white; }
 
-        .control-group { margin-bottom: 20px; }
-        .control-label { display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .input-dark { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; font-size: 13px; outline: none; transition: 0.2s; box-sizing: border-box; }
-        .input-dark:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+        .form-group { margin-bottom: 20px; }
+        .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 8px; display: block; font-weight: 600; }
+        .input-dark { width: 100%; padding: 10px; background: #1f2937; border: 1px solid #374151; color: white; border-radius: 6px; font-size: 13px; outline: none; box-sizing: border-box; }
+        .input-dark:focus { border-color: #818cf8; }
 
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; margin-top: 10px; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-        .btn-success { background: var(--success); color: white; margin-top: 15px; }
-        .btn-success:hover { background: #059669; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-success { background: var(--success); color: white; margin-top: 10px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .stats-box { background: #1e293b; border-radius: 8px; padding: 15px; margin-top: auto; font-size: 12px; color: #94a3b8; border: 1px solid #334155; line-height: 1.6; }
-        .stats-highlight { color: #818cf8; font-weight: bold; }
+        .status-box { margin-top: auto; padding: 15px; background: #1f2937; border-radius: 8px; font-size: 12px; line-height: 1.5; color: #d1d5db; border: 1px solid #374151; }
+        .hl { color: #818cf8; font-weight: bold; }
 
         /* MAIN CONTENT */
-        .main-area { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
-        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); }
+        main { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
         
-        /* GRID LAYOUT */
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(850px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; display: flex; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: 0.2s; min-height: 250px; }
+        .card:hover { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-color: #c7d2fe; }
 
-        /* CARD DESIGN */
-        .card { background: var(--surface); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; display: flex; transition: transform 0.2s; }
-        .card:hover { border-color: #cbd5e1; }
+        .card-visual { width: 280px; background: #f9fafb; border-right: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .filmstrip { width: 100%; border-radius: 4px; border: 1px solid var(--border); display: block; aspect-ratio: 3/1; object-fit: cover; background: #e5e7eb; }
+        .filename { font-size: 12px; font-weight: 700; word-break: break-all; color: var(--text); }
+        .cat-tag { background: #e0e7ff; color: var(--primary); font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; text-align: center; }
 
-        .card-media { width: 240px; background: #f8fafc; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .preview-thumb { width: 100%; aspect-ratio: 16/9; background: #e2e8f0; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
-        .file-name { margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--text-main); text-align: center; word-break: break-all; }
-        .cat-badge { margin-top: 5px; background: #e0e7ff; color: var(--primary); font-size: 10px; padding: 3px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; }
-
-        .card-form { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-
-        /* INPUT GROUPS */
-        .form-row { position: relative; }
-        .form-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
-        .form-label-sm { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
-        .char-count { font-size: 11px; font-weight: 600; }
+        .card-form { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .input-row { display: flex; flex-direction: column; gap: 4px; }
+        .input-header { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; }
         
-        .txt-input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13px; color: var(--text-main); transition: 0.2s; background: #fff; box-sizing: border-box; }
-        .txt-input:focus { border-color: var(--primary); outline: none; }
-        textarea.txt-input { min-height: 70px; resize: vertical; }
+        .field { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 13px; box-sizing: border-box; color: #1f2937; background: #fff; }
+        .field:focus { outline: none; border-color: var(--primary); }
+        textarea.field { resize: vertical; min-height: 60px; }
 
-        /* VALIDATION COLORS */
-        .status-ok { color: var(--success); }
-        .status-err { color: var(--error); }
-        .border-err { border-color: var(--error) !important; background: #fef2f2; }
+        /* STATUS COLORS */
+        .status-good { color: var(--success); }
+        .status-bad { color: var(--error); }
+        .border-good { border-color: var(--success); }
+        .border-bad { border-color: var(--error); background: #fef2f2; }
 
-        /* EMPTY STATE */
-        .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-sub); border: 2px dashed var(--border); border-radius: 12px; margin-top: 20px; min-height: 300px; }
-        .empty-icon { font-size: 48px; margin-bottom: 10px; opacity: 0.5; }
-
-        /* LOADING */
-        .spinner { width: 16px; height: 16px; border: 2px solid #ffffff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        .spinner { width: 14px; height: 14px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* HINTS */
+        .hint-text { font-size: 10px; color: #9ca3af; margin-top: 2px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
-<aside class="sidebar">
-    <div class="brand">⚡ Microstock<span>AI</span></div>
-
-    <div class="control-group">
-        <label class="control-label">1. Groq API Key</label>
-        <input type="password" id="apiKey" class="input-dark" placeholder="gsk_xxxxxxxx...">
+<aside>
+    <div class="logo">⚡ Microstock<span>Pro</span></div>
+    
+    <div class="form-group">
+        <label class="label">1. Groq API Key</label>
+        <input type="password" id="apiKey" class="input-dark" placeholder="gsk_...">
     </div>
 
-    <div class="control-group">
-        <label class="control-label">2. Video Source</label>
+    <div class="form-group">
+        <label class="label">2. Video Folder</label>
         <input type="file" id="fileInput" class="input-dark" webkitdirectory directory multiple>
     </div>
 
-    <div id="statusBox" style="font-size: 13px; font-weight:600; color: #818cf8; margin: 10px 0; min-height: 20px;"></div>
-
-    <button id="btnProcess" class="btn btn-primary" onclick="startProcessing()">
-        <span class="spinner" id="mainSpinner"></span>
-        <span>Start Processing</span>
+    <button id="btnProcess" class="btn btn-primary" onclick="startQueue()">
+        <span class="spinner" id="loadingSpin"></span>
+        <span>Start AI Analysis</span>
     </button>
 
     <button id="btnExport" class="btn btn-success" onclick="exportCSV()" style="display:none;">
         <span>Download CSV</span>
     </button>
 
-    <div class="stats-box">
-        <div>Target Constraints:</div>
-        • Title: <span class="stats-highlight">50-70</span> chars<br>
-        • Desc: <span class="stats-highlight">100-150</span> chars<br>
-        • Keywords: <span class="stats-highlight">45-48</span> words (Locked)
+    <div class="status-box">
+        <strong>Auto-Fix Active:</strong><br>
+        • Title: Pad to <span class="hl">50-70</span><br>
+        • Desc: Pad to <span class="hl">100-150</span><br>
+        • Keyword: Lock <span class="hl">45-48</span><br>
+        • 3-Frame Analysis On
     </div>
 </aside>
 
-<main class="main-area">
-    <div class="header-area">
-        <div class="page-title">Dashboard</div>
-    </div>
-
-    <div id="cardsContainer" class="cards-grid">
-        <div class="empty-state">
-            <div class="empty-icon">📂</div>
-            <div>Select a folder containing videos to begin.</div>
-        </div>
+<main id="mainContainer">
+    <div style="text-align:center; margin-top:100px; color:#9ca3af;">
+        <h3>📁 Waiting for files...</h3>
+        <p>Select a folder to begin analysis.</p>
     </div>
 </main>
 
@@ -136,143 +114,142 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- CONFIGURATION ---
-    const CONFIG = {
-        minTitle: 50, maxTitle: 70,
-        minDesc: 100, maxDesc: 150,
-        minKw: 45, maxKw: 48,
-        model: "meta-llama/llama-4-scout-17b-16e-instruct"
-    };
-
-    const CATEGORIES = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
-
-    // --- CADANGAN KEYWORD (GARANSI TIDAK KOSONG) ---
-    const BACKUP_KEYWORDS = [
-        "video", "footage", "clip", "background", "motion", "abstract", "digital", 
-        "hd", "4k", "stock", "creative", "art", "graphic", "design", "element", 
-        "texture", "pattern", "backdrop", "visual", "effect", "animation", "dynamic", 
-        "modern", "presentation", "cinematic", "film", "production", "media", 
-        "concept", "style", "technology", "futuristic", "light", "color", "bright", 
-        "dark", "seamless", "loop", "wallpaper", "screen", "display", "monitor", 
-        "broadcast", "overlay", "template", "project", "business", "corporate"
+    // --- DATABASE ---
+    const CATEGORIES = [
+        "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
+        "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
+        "distortions",
+        "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
+        "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", "interface-effects/miscellaneous",
+        "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
+        "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
+        "particles",
+        "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
+        "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", "transitions/miscellaneous",
+        "water-and-fluid",
+        "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous",
+        "infographics"
     ];
 
-    let fileQueue = [];
-    let isProcessing = false;
+    // GENERIC FILLER KEYWORDS (Anti-Kosong)
+    const FILLER_KW = [
+        "video", "footage", "clip", "stock", "background", "motion", "graphic", "abstract", "digital", 
+        "hd", "4k", "high quality", "creative", "art", "visual", "effect", "animation", "dynamic", 
+        "modern", "presentation", "cinematic", "film", "media", "concept", "style", "technology", 
+        "futuristic", "light", "color", "bright", "loop", "seamless", "wallpaper", "screen", "display", 
+        "monitor", "overlay", "template", "project", "business", "corporate", "element", "design"
+    ];
 
+    const CFG = { minT: 50, maxT: 70, minD: 100, maxD: 150, minK: 45, maxK: 48 };
+    let queue = [];
+    let isRunning = false;
+
+    // Load API Key
     if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
 
-    // --- FILE HANDLER ---
+    // --- FILE LOADER ---
     document.getElementById('fileInput').addEventListener('change', (e) => {
         const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
-        const container = document.getElementById('cardsContainer');
-        container.innerHTML = '';
-        fileQueue = [];
+        const main = document.getElementById('mainContainer');
+        main.innerHTML = '';
+        queue = [];
 
-        if(files.length === 0) {
-            container.innerHTML = `<div class="empty-state">No valid videos found.</div>`;
-            return;
-        }
+        if(files.length === 0) { main.innerHTML = '<div style="text-align:center; margin-top:50px;">No video files found.</div>'; return; }
 
         files.forEach((file, idx) => {
-            fileQueue.push({ file, id: idx });
-            createCard(idx, file.name);
+            queue.push({ file, id: idx });
+            const html = `
+            <div class="card" id="card-${idx}">
+                <div class="card-visual">
+                    <div class="filename">${file.name}</div>
+                    <div id="thumb-${idx}" style="width:100%; height:80px; background:#e5e7eb; display:flex; align-items:center; justify-content:center; border-radius:4px; font-size:11px;">Waiting...</div>
+                    <div class="cat-tag" id="cat-badge-${idx}">Analyzing...</div>
+                    <input type="hidden" id="cat-${idx}">
+                </div>
+                <div class="card-form">
+                    <div class="input-row">
+                        <div class="input-header">
+                            <span>Title (${CFG.minT}-${CFG.maxT})</span>
+                            <span id="cnt-t-${idx}" class="status-bad">0</span>
+                        </div>
+                        <input type="text" class="field" id="title-${idx}" oninput="val(${idx})">
+                    </div>
+                    <div class="input-row">
+                        <div class="input-header">
+                            <span>Description (${CFG.minD}-${CFG.maxD})</span>
+                            <span id="cnt-d-${idx}" class="status-bad">0</span>
+                        </div>
+                        <textarea class="field" id="desc-${idx}" oninput="val(${idx})"></textarea>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-header">
+                            <span>Keywords (${CFG.minK}-${CFG.maxK})</span>
+                            <span id="cnt-k-${idx}" class="status-bad">0</span>
+                        </div>
+                        <textarea class="field" id="kw-${idx}" style="min-height:80px;" oninput="val(${idx})"></textarea>
+                        <div class="hint-text"><span>Comma separated</span><span>Auto-filled if low</span></div>
+                    </div>
+                </div>
+            </div>`;
+            main.insertAdjacentHTML('beforeend', html);
         });
-
-        document.getElementById('statusBox').innerText = `Ready: ${files.length} videos loaded`;
     });
 
-    function createCard(id, filename) {
-        const html = `
-        <div class="card" id="card-${id}">
-            <div class="card-media">
-                <div class="preview-thumb" id="thumb-${id}" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">Waiting...</div>
-                <div class="file-name">${filename}</div>
-                <div class="cat-badge" id="badge-cat-${id}">-</div>
-                <input type="hidden" id="cat-${id}">
-            </div>
-            <div class="card-form">
-                <div class="form-row">
-                    <div class="form-header">
-                        <span class="form-label-sm">Title (${CONFIG.minTitle}-${CONFIG.maxTitle})</span>
-                        <span class="char-count" id="cnt-title-${id}">0</span>
-                    </div>
-                    <input type="text" class="txt-input" id="title-${id}" oninput="validate(${id})">
-                </div>
-                <div class="form-row">
-                    <div class="form-header">
-                        <span class="form-label-sm">Description (${CONFIG.minDesc}-${CONFIG.maxDesc})</span>
-                        <span class="char-count" id="cnt-desc-${id}">0</span>
-                    </div>
-                    <textarea class="txt-input" id="desc-${id}" oninput="validate(${id})"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-header">
-                        <span class="form-label-sm">Keywords (${CONFIG.minKw}-${CONFIG.maxKw})</span>
-                        <span class="char-count" id="cnt-kw-${id}">0</span>
-                    </div>
-                    <textarea class="txt-input" id="kw-${id}" style="min-height:90px;" oninput="validate(${id})"></textarea>
-                </div>
-            </div>
-        </div>
-        `;
-        document.getElementById('cardsContainer').insertAdjacentHTML('beforeend', html);
-    }
+    // --- MAIN ENGINE ---
+    async function startQueue() {
+        const key = document.getElementById('apiKey').value.trim();
+        if(!key) return alert("API Key Missing");
+        localStorage.setItem('GROQ_KEY', key);
 
-    // --- MAIN LOGIC ---
-    async function startProcessing() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        if(!apiKey) return alert("Please enter API Key!");
-        localStorage.setItem('GROQ_KEY', apiKey);
-
-        isProcessing = true;
+        isRunning = true;
         document.getElementById('btnProcess').disabled = true;
-        document.getElementById('mainSpinner').style.display = 'block';
+        document.getElementById('loadingSpin').style.display = 'block';
 
-        for(const item of fileQueue) {
+        for(const item of queue) {
             const id = item.id;
-            document.getElementById('statusBox').innerText = `Processing: ${item.file.name}`;
-            
-            // Highlight active card
-            document.getElementById(`card-${id}`).style.borderColor = "#6366f1";
+            const card = document.getElementById(`card-${id}`);
+            card.style.borderColor = '#6366f1'; // Active Color
 
             try {
-                // 1. Snapshot
-                const base64 = await getSnapshot(item.file);
-                document.getElementById(`thumb-${id}`).innerHTML = `<img src="${base64}" class="preview-thumb">`;
+                // 1. 3-Frame Capture
+                const base64 = await capture3Frames(item.file);
+                document.getElementById(`thumb-${id}`).innerHTML = `<img src="${base64}" class="filmstrip">`;
 
                 // 2. AI Call
-                const data = await callAI(apiKey, base64);
+                const data = await callAI(key, base64);
 
-                // 3. AUTO-FIX DATA
+                // 3. AUTO-FIX & POPULATE
                 
-                // Category
-                document.getElementById(`cat-${id}`).value = data.category || "backgrounds";
-                document.getElementById(`badge-cat-${id}`).innerText = data.category || "backgrounds";
+                // CATEGORY MATCHING
+                let rawCat = (data.category || "backgrounds").toLowerCase();
+                // Find best match in list
+                let bestCat = CATEGORIES.find(c => rawCat.includes(c)) || "backgrounds/miscellaneous";
+                document.getElementById(`cat-${id}`).value = bestCat;
+                document.getElementById(`cat-badge-${id}`).innerText = bestCat;
 
-                // Title (Smart Truncate)
+                // TITLE LOGIC (Pad or Cut)
                 let t = data.title || "";
-                if(t.length > CONFIG.maxTitle) {
-                    let cut = t.substring(0, CONFIG.maxTitle);
-                    let s = cut.lastIndexOf(" ");
-                    t = (s > 50) ? cut.substring(0, s) : cut;
+                if(t.length < CFG.minT) t += " - High Quality 4K Stock Video Footage"; // Pad
+                if(t.length > CFG.maxT) { // Smart Cut
+                    let sub = t.substring(0, CFG.maxT);
+                    t = sub.substring(0, sub.lastIndexOf(" ")) || sub;
                 }
                 document.getElementById(`title-${id}`).value = t;
 
-                // Desc (Smart Truncate)
+                // DESC LOGIC (Pad or Cut)
                 let d = data.description || "";
-                if(d.length > CONFIG.maxDesc) {
-                    let cut = d.substring(0, CONFIG.maxDesc);
-                    let s = cut.lastIndexOf(" ");
-                    d = (s > 100) ? cut.substring(0, s) : cut;
+                if(d.length < CFG.minD) d += " This high resolution clip is perfect for professional projects, presentations, and creative media.";
+                if(d.length > CFG.maxD) {
+                    let sub = d.substring(0, CFG.maxD);
+                    d = sub.substring(0, sub.lastIndexOf(" ")) + "." || sub;
                 }
                 document.getElementById(`desc-${id}`).value = d;
 
-                // KEYWORD MAGIC (ANTI-KOSONG)
+                // KEYWORD ENGINE (THE ULTIMATE FIX)
                 let kRaw = (data.keywords || "").replace(/\./g, '');
                 let kList = kRaw.split(',').map(k => k.trim().toLowerCase()).filter(k => k.length > 2);
                 
-                // Split phrases if AI failed (e.g., "blue sky" -> "blue", "sky")
+                // Split phrases
                 let kFinal = [];
                 kList.forEach(k => {
                     if(k.includes(' ')) kFinal.push(...k.split(' '));
@@ -280,142 +257,156 @@
                 });
                 kFinal = [...new Set(kFinal)]; // Unique
 
-                // FILLING MECHANISM (Jika < 45)
-                if(kFinal.length < CONFIG.minKw) {
-                    let need = CONFIG.minKw - kFinal.length;
+                // FILLER INJECTION
+                if(kFinal.length < CFG.minK) {
+                    let need = CFG.minK - kFinal.length;
                     let added = 0;
-                    for(let safe of BACKUP_KEYWORDS) {
-                        if(!kFinal.includes(safe) && added < need) {
-                            kFinal.push(safe);
+                    for(let w of FILLER_KW) {
+                        if(!kFinal.includes(w) && added < need + 2) { // Add extra buffer
+                            kFinal.push(w);
                             added++;
                         }
                     }
                 }
-
-                // TRIMMING MECHANISM (Jika > 48)
-                if(kFinal.length > CONFIG.maxKw) {
-                    kFinal = kFinal.slice(0, CONFIG.maxKw);
-                }
+                // SLICER
+                if(kFinal.length > CFG.maxK) kFinal = kFinal.slice(0, CFG.maxK);
 
                 document.getElementById(`kw-${id}`).value = kFinal.join(', ');
 
-                // Final Validate
-                validate(id);
-                document.getElementById(`card-${id}`).style.borderColor = "#10b981"; // Green Border
+                // Final UI Update
+                val(id);
+                card.style.borderColor = '#10b981'; // Success Green
 
-            } catch (e) {
+            } catch(e) {
                 console.error(e);
-                document.getElementById(`card-${id}`).style.borderColor = "#ef4444";
-                document.getElementById(`thumb-${id}`).innerHTML = `<span style="color:red">Error</span>`;
+                card.style.borderColor = '#ef4444';
+                document.getElementById(`thumb-${id}`).innerText = "Error";
             }
 
-            await new Promise(r => setTimeout(r, 1500));
+            await new Promise(r => setTimeout(r, 1000)); // Cool down
         }
 
-        isProcessing = false;
+        isRunning = false;
         document.getElementById('btnProcess').disabled = false;
-        document.getElementById('mainSpinner').style.display = 'none';
+        document.getElementById('loadingSpin').style.display = 'none';
         document.getElementById('btnExport').style.display = 'flex';
-        document.getElementById('statusBox').innerText = "All Complete! Ready to Export.";
-        alert("Processing Finished!");
+        alert("Processing Complete!");
     }
 
-    // --- VALIDATION ---
-    function validate(id) {
+    // --- VALIDATOR ---
+    function val(id) {
         // Title
-        const t = document.getElementById(`title-${id}`).value.length;
-        const tEl = document.getElementById(`cnt-title-${id}`);
-        tEl.innerText = t;
-        tEl.className = (t >= CONFIG.minTitle && t <= CONFIG.maxTitle) ? "char-count status-ok" : "char-count status-err";
+        const tVal = document.getElementById(`title-${id}`).value;
+        const tC = document.getElementById(`cnt-t-${id}`);
+        tC.innerText = tVal.length;
+        if(tVal.length >= CFG.minT && tVal.length <= CFG.maxT) { tC.className = 'status-good'; document.getElementById(`title-${id}`).classList.remove('border-bad'); }
+        else { tC.className = 'status-bad'; document.getElementById(`title-${id}`).classList.add('border-bad'); }
 
         // Desc
-        const d = document.getElementById(`desc-${id}`).value.length;
-        const dEl = document.getElementById(`cnt-desc-${id}`);
-        dEl.innerText = d;
-        dEl.className = (d >= CONFIG.minDesc && d <= CONFIG.maxDesc) ? "char-count status-ok" : "char-count status-err";
+        const dVal = document.getElementById(`desc-${id}`).value;
+        const dC = document.getElementById(`cnt-d-${id}`);
+        dC.innerText = dVal.length;
+        if(dVal.length >= CFG.minD && dVal.length <= CFG.maxD) { dC.className = 'status-good'; document.getElementById(`desc-${id}`).classList.remove('border-bad'); }
+        else { dC.className = 'status-bad'; document.getElementById(`desc-${id}`).classList.add('border-bad'); }
 
         // KW
-        const kwTxt = document.getElementById(`kw-${id}`).value;
-        const kwArr = kwTxt.split(',').filter(x => x.trim().length > 0);
-        const kEl = document.getElementById(`cnt-kw-${id}`);
-        kEl.innerText = kwArr.length;
-        kEl.className = (kwArr.length >= CONFIG.minKw && kwArr.length <= CONFIG.maxKw) ? "char-count status-ok" : "char-count status-err";
+        const kVal = document.getElementById(`kw-${id}`).value;
+        const arr = kVal.split(',').filter(x => x.trim().length > 0);
+        const kC = document.getElementById(`cnt-k-${id}`);
+        kC.innerText = arr.length;
+        if(arr.length >= CFG.minK && arr.length <= CFG.maxK) { kC.className = 'status-good'; document.getElementById(`kw-${id}`).classList.remove('border-bad'); }
+        else { kC.className = 'status-bad'; document.getElementById(`kw-${id}`).classList.add('border-bad'); }
     }
 
-    // --- SNAPSHOT ---
-    function getSnapshot(file) {
+    // --- 3-FRAME SNAPSHOT (Start-Mid-End) ---
+    function capture3Frames(file) {
         return new Promise((resolve, reject) => {
             const vid = document.getElementById('hiddenVideo');
             const cvs = document.getElementById('hiddenCanvas');
             const ctx = cvs.getContext('2d');
             const url = URL.createObjectURL(file);
+            
             vid.src = url; vid.muted = true;
-            
-            vid.onloadedmetadata = () => {
-                vid.currentTime = vid.duration * 0.5; // Middle frame
-            };
-            
-            vid.onseeked = () => {
-                cvs.width = 320; cvs.height = 180;
-                ctx.drawImage(vid, 0, 0, 320, 180);
-                resolve(cvs.toDataURL('image/jpeg', 0.8));
-                URL.revokeObjectURL(url);
+            const w=320, h=180;
+            cvs.width = w*3; cvs.height = h; // Space for 3 frames
+
+            const seek = (t) => new Promise(r => { 
+                vid.currentTime = t; 
+                vid.onseeked = () => { setTimeout(r, 100); }; // Slight delay for rendering
+            });
+
+            vid.onloadedmetadata = async () => {
+                try {
+                    // Frame 1: 10%
+                    await seek(vid.duration * 0.1);
+                    ctx.drawImage(vid, 0, 0, vid.videoWidth, vid.videoHeight, 0, 0, w, h);
+                    // Frame 2: 50%
+                    await seek(vid.duration * 0.5);
+                    ctx.drawImage(vid, 0, 0, vid.videoWidth, vid.videoHeight, w, 0, w, h);
+                    // Frame 3: 90%
+                    await seek(vid.duration * 0.9);
+                    ctx.drawImage(vid, 0, 0, vid.videoWidth, vid.videoHeight, w*2, 0, w, h);
+                    
+                    resolve(cvs.toDataURL('image/jpeg', 0.8));
+                    URL.revokeObjectURL(url);
+                } catch(e) { reject(e); }
             };
             vid.onerror = () => reject("Video Error");
         });
     }
 
-    // --- AI PROMPT ---
+    // --- AI CALL ---
     async function callAI(key, base64) {
         const prompt = `
-        Role: Microstock Metadata Expert.
-        Task: Analyze image. Output JSON.
+        Role: Microstock Metadata Pro.
+        Task: Analyze 3 video frames (Start, Mid, End) to detect motion/context.
         
-        CONSTRAINTS:
-        1. CATEGORY: Pick ONE from: [${CATEGORIES}]
-        2. TITLE: 55-65 chars. Descriptive.
-        3. DESCRIPTION: 110-140 chars. Detailed.
-        4. KEYWORDS: Generate 70 (SEVENTY) single words. Comma separated. 
-           - Must cover: Visuals, Colors, Concepts, Style.
-           - DO NOT STOP until you have 70 words. I will filter them.
-
+        STRICT RULES:
+        1. CATEGORY: Pick ONE from: [${CATEGORIES.join(', ')}]
+        2. TITLE: Descriptive sentence (55-65 chars).
+        3. DESCRIPTION: Detailed visual description (110-140 chars).
+        4. KEYWORDS: Generate 70 SINGLE words. I will filter them. 
+           - Include: visual elements, colors, style, concepts.
+        
         OUTPUT JSON: {"category": "...", "title": "...", "description": "...", "keywords": "..."}
         `;
 
-        try {
-            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: CONFIG.model,
-                    messages: [
-                        { role: "system", content: prompt },
-                        { role: "user", content: [
-                            { type: "text", text: "Analyze." },
-                            { type: "image_url", image_url: { url: base64 } }
-                        ]}
-                    ],
-                    temperature: 0.3, // Slightly higher creative to get more keywords
-                    response_format: { type: "json_object" }
-                })
-            });
-            const json = await resp.json();
-            return JSON.parse(json.choices[0].message.content);
-        } catch(e) { throw e; }
+        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "meta-llama/llama-4-scout-17b-16e-instruct",
+                messages: [
+                    { role: "system", content: prompt },
+                    { role: "user", content: [
+                        { type: "text", text: "Analyze." },
+                        { type: "image_url", image_url: { url: base64 } }
+                    ]}
+                ],
+                temperature: 0.2,
+                response_format: { type: "json_object" }
+            })
+        });
+        const json = await resp.json();
+        const txt = json.choices[0].message.content;
+        return JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}')+1));
     }
 
-    // --- EXPORT ---
+    // --- EXPORT CSV ---
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
-        fileQueue.forEach(item => {
+        queue.forEach(item => {
             const id = item.id;
             const get = (id) => document.getElementById(id).value.replace(/"/g, '""');
-            csv += `"${item.file.name.replace(/"/g, '""')}","${get('title-'+id)}","${get('desc-'+id)}","${get('kw-'+id)}","${get('cat-'+id)}"\n`;
+            // Only export processed ones
+            if(document.getElementById(`title-${id}`).value) {
+                csv += `"${item.file.name.replace(/"/g, '""')}","${get('title-'+id)}","${get('desc-'+id)}","${get('kw-'+id)}","${get('cat-'+id)}"\n`;
+            }
         });
-        const blob = new Blob([csv], {type:'text/csv'});
+        const blob = new Blob([csv], {type: 'text/csv'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = `microstock_${Date.now()}.csv`;
+        a.href = url; a.download = `microstock_final_${Date.now()}.csv`;
         a.click();
     }
 </script>
