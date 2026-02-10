@@ -3,67 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
+    <title>Microstock Metadata Pro - Motion Pro V6</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #0ea5e9;
-            --bg: #f1f5f9;
-            --surface: #ffffff;
-            --border: #e2e8f0;
-            --text: #0f172a;
-            --success: #10b981;
-            --error: #ef4444;
-        }
-        
+        :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
         .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid var(--border); overflow: hidden; }
-        
-        .header { 
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); 
-            color: white; padding: 25px 30px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 4px solid var(--secondary);
-        }
-        .header h1 { margin: 0; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .header { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--secondary); }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 700; }
         .badge-pro { background: var(--secondary); font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; font-weight: 800; }
-
         .controls { padding: 25px; border-bottom: 1px solid var(--border); background: #f8fafc; }
-        .api-box {
-            display: grid; grid-template-columns: 1fr 1fr auto; gap: 20px; margin-bottom: 20px; align-items: end;
-            background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);
-        }
-
+        .api-box { display: grid; grid-template-columns: 1fr 1fr auto; gap: 20px; margin-bottom: 20px; align-items: end; background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
         .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #64748b; text-transform: uppercase; }
         .input-field { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; }
-        
         .action-area { display: flex; gap: 15px; align-items: center; margin-top: 15px; }
         .btn { padding: 0 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.2s; height: 48px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--primary); }
         .btn-success { background: var(--success); }
         .btn-save { background: #334155; height: 45px; }
-
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #f1f5f9; padding: 15px 20px; text-align: left; font-weight: 700; color: #475569; border-bottom: 2px solid var(--border); text-transform: uppercase; font-size: 11px; }
         td { padding: 25px 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
-
         .meta-wrapper { position: relative; margin-bottom: 20px; }
         .meta-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 700; color: #475569; }
         .meta-input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: #fff; line-height: 1.6; }
         textarea.meta-input { min-height: 80px; resize: vertical; }
-
         .count-ok { color: #15803d; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
         .count-err { color: #b91c1c; background: #fee2e2; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        
         .preview-box { width: 280px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #000; }
         .preview-box img { width: 100%; display: block; }
-        .cat-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: center; }
-
+        .cat-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: center; border: 1px solid #bae6fd;}
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; }
         .status-pill.processing { background: #e0e7ff; color: #4338ca; }
         .status-pill.success { background: #dcfce7; color: #15803d; }
+        .status-pill.error { background: #fee2e2; color: #b91c1c; }
         .spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
@@ -72,8 +45,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-        <div style="font-size: 12px; opacity: 0.8;">Strict Visual Description Mode</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Edition</span></h1>
+        <div style="font-size: 12px; opacity: 0.8;">Smart S-P-O Logic Active</div>
     </div>
 
     <div class="controls">
@@ -102,7 +75,7 @@
         <thead>
             <tr>
                 <th style="width: 300px;">Media Asset</th>
-                <th>Metadata (Sentence Case & Strict Keywords)</th>
+                <th>Metadata (Optimized Subject-Object Logic)</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -113,11 +86,10 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    const CATEGORIES_LIST = `backgrounds, backgrounds/abstract, backgrounds/nature, elements, overlays, transitions, infographics`;
-    const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "render", "digital", "design", "creative", "concept", "modern", "effect", "futuristic", "pattern", "glow", "texture", "dynamic", "element", "colorful", "artistic", "display", "presentation", "backdrop", "overlay", "energy", "flow", "clean", "soft", "sharp", "gradient", "composition", "style", "cinematic", "technology", "shapes", "geometry", "bright", "vibrant", "elegant", "smooth", "ambient", "high tech", "decoration", "wallpaper", "studio", "pro", "visuals"];
+    // --- DAFTAR KATAGORI WAJIB ---
+    const FULL_CATEGORIES = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
 
-    const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48; 
-    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+    const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "animation", "render", "digital", "design", "creative", "modern", "effect", "pattern", "dynamic", "vibrant", "futuristic", "overlay", "backdrop", "cinematic", "presentation", "texture", "smooth", "high quality", "clean", "shapes", "geometry", "gradient", "energy", "flow", "bright", "elegant", "technology", "display", "artwork", "video asset", "composition", "minimalist", "professional", "luxury", "soft", "dark", "glow", "particles", "3d animation", "rendering", "artistic"];
 
     let fileQueue = [];
     let apiKeys = [];
@@ -129,7 +101,7 @@
     function manualSaveKeys() {
         localStorage.setItem('API_KEY_1', document.getElementById('apiKey1').value.trim());
         localStorage.setItem('API_KEY_2', document.getElementById('apiKey2').value.trim());
-        alert("Simpan Berhasil!");
+        alert("API Key tersimpan!");
     }
 
     document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -185,28 +157,55 @@
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- TITLE LOGIC: NO DASH, SENTENCE CASE, UNIQUE ---
+                // --- KATEGORI ---
+                const selectedCat = data.category || "backgrounds";
+                document.getElementById(`cat-${idx}`).value = selectedCat;
+                document.getElementById(`cat-disp-${idx}`).innerText = selectedCat;
+
+                // --- LOGIKA TITLE (SENTENCE CASE & S-P-O) ---
                 let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
-                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template"];
-                trash.forEach(w => title = title.split(w).join('').trim());
                 
+                // Bersihkan potongan kata sisa
+                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template", "footage", "with", "and"];
+                trash.forEach(w => {
+                    const words = title.split(' ');
+                    if(words[words.length-1] === w) words.pop();
+                    title = words.join(' ').trim();
+                });
+
+                // Cek Kata Kunci Kategori
+                if(selectedCat.includes('3d') && !title.includes('3d')) title = "3d " + title;
+                if(selectedCat.includes('abstract') && !title.includes('abstract')) title = "abstract " + title;
+
+                // Bangun Kalimat Utuh (Subject + Predicate + Object)
                 if(title.length < 50) {
-                    title += " " + (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ').slice(0, 8).join(' ');
+                    const descWords = (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ');
+                    for(let word of descWords) {
+                        if(title.length >= 62) break;
+                        if(!title.includes(word) && word.length > 3) title += " " + word;
+                    }
                 }
+
+                // Final Touch Judul
                 title = title.replace(/\s+/g, ' ').trim();
                 title = title.charAt(0).toUpperCase() + title.slice(1);
+                
+                // Pastikan tidak diakhiri kata penghubung
+                if(title.endsWith(" with") || title.endsWith(" and")) title = title.substring(0, title.lastIndexOf(" "));
+                
                 if(title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
-                if(title.length < 50) title += " for creative professional projects";
+                if(title.length < 50) title += " cinematic visual animation asset";
                 document.getElementById(`title-${idx}`).value = title;
 
                 // --- DESC LOGIC ---
-                let desc = (data.description || "High quality visual.").trim();
-                if(desc.length < 100) desc += " This unique visual asset is designed for high-end video production and digital signage applications.";
+                let desc = (data.description || "").trim();
+                if(desc.length < 100) desc += " This high-quality motion graphic video features professional visual effects perfect for digital projects and presentations.";
                 document.getElementById(`desc-${idx}`).value = desc.substring(0, 150);
 
-                // --- KEYWORDS LOGIC: STRICT 45-48 ---
+                // --- KEYWORDS LOGIC (STRICT 45-48) ---
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
                 kws = [...new Set(kws)];
+
                 let bIdx = 0;
                 while(kws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
                     if(!kws.includes(BACKUP_KEYWORDS[bIdx])) kws.push(BACKUP_KEYWORDS[bIdx]);
@@ -214,25 +213,31 @@
                 }
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
 
-                document.getElementById(`cat-${idx}`).value = data.category || "backgrounds";
-                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "backgrounds";
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
-            } catch(e) { updateStatus(idx, 'error', 'Fail'); }
+            } catch(e) { updateStatus(idx, 'error', 'Fail'); console.error(e); }
         }
         document.getElementById('btnProcess').disabled = false;
         document.getElementById('btnExport').style.display = 'inline-flex';
     }
 
     async function makeRequest(key, base64) {
-        const prompt = `Senior Microstock Expert. Analyze frames. Return JSON: {category, title, description, keywords}. Focus on visual details.`;
+        const prompt = `Role: Senior Microstock Video Metadata Specialist. 
+        Analyze the video frames provided. 
+        1. Categorize using ONLY this list: [${FULL_CATEGORIES}].
+        2. Write a TITLE (50-70 chars): Must be a complete Subject-Predicate-Object sentence. If it's 3D, mention "3D". If it's Abstract, mention "Abstract". NO incomplete fragments.
+        3. Write a DESCRIPTION (100-150 chars): Identify this as a video/animation.
+        4. Generate KEYWORDS: 50 relevant words.
+        Return ONLY JSON format: {"category": "", "title": "", "description": "", "keywords": ""}`;
+
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Strict JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
-                response_format: { type: "json_object" }
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Process this video asset." }, { type: "image_url", image_url: { url: base64 } }] }],
+                response_format: { type: "json_object" },
+                temperature: 0.2
             })
         });
         const d = await resp.json();
@@ -272,7 +277,7 @@
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `microstock_v6.csv`;
+        a.download = `microstock_metadata_v6.csv`;
         a.click();
     }
 </script>
