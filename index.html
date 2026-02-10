@@ -3,66 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - V10 Object Detect</title>
+    <title>Microstock Metadata Pro - V11 SMART FALLBACK</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #4f46e5; --bg: #f8fafc; --surface: #ffffff; --border: #cbd5e1; --text: #1e293b; }
+        :root { --primary: #2563eb; --bg: #f1f5f9; --surface: #ffffff; --border: #cbd5e1; --text: #1e293b; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
-        .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
         /* HEADER */
-        .header { background: #111827; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header { background: #0f172a; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
         .header h1 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .badge { background: #3b82f6; font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge { background: #f59e0b; color: #000; font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 800; }
 
         /* CONTROLS */
-        .controls { padding: 25px; background: #f3f4f6; border-bottom: 1px solid var(--border); }
+        .controls { padding: 20px; background: #e2e8f0; border-bottom: 1px solid var(--border); }
         .api-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: #64748b; text-transform: uppercase; }
-        .input-field { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box; transition: 0.2s; }
-        .input-field:focus { border-color: var(--primary); outline: none; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: #475569; text-transform: uppercase; }
+        .input-field { width: 100%; padding: 10px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
         
-        .btn { padding: 0 24px; height: 44px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
-        .btn:hover { opacity: 0.9; }
+        .btn { padding: 0 24px; height: 42px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
         .btn-blue { background: var(--primary); }
-        .btn-green { background: #10b981; }
-        .btn-dark { background: #374151; }
+        .btn-green { background: #059669; }
+        .btn-dark { background: #334155; }
 
         /* TABLE */
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f9fafb; padding: 15px 20px; text-align: left; font-size: 11px; font-weight: 700; color: #6b7280; border-bottom: 2px solid var(--border); text-transform: uppercase; }
+        th { background: #f8fafc; padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 700; color: #64748b; border-bottom: 2px solid var(--border); text-transform: uppercase; }
         td { padding: 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
 
         /* FILMSTRIP (3 FRAMES) */
-        .filmstrip-container { width: 300px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #000; }
+        .filmstrip-container { width: 300px; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #000; position: relative; }
         .filmstrip { display: flex; height: 60px; }
-        .filmstrip img { width: 33.33%; height: 100%; object-fit: cover; border-right: 1px solid #333; opacity: 0.8; }
-        .filmstrip img:last-child { border: none; }
-        .filmstrip-label { font-size: 9px; color: #fff; background: #222; text-align: center; padding: 2px; }
+        .filmstrip img { width: 33.33%; height: 100%; object-fit: cover; opacity: 0.9; border-right: 1px solid #333; }
+        .fallback-badge { position: absolute; top: 2px; right: 2px; background: red; color: white; font-size: 9px; padding: 2px 4px; border-radius: 4px; display: none; }
 
         .status-pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin-top: 8px; }
-        .st-pending { background: #e5e7eb; color: #4b5563; }
-        .st-proc { background: #e0e7ff; color: #4338ca; }
-        .st-ok { background: #dcfce7; color: #166534; }
+        .st-pending { background: #e2e8f0; color: #64748b; }
+        .st-proc { background: #dbeafe; color: #1e40af; }
+        .st-ok { background: #d1fae5; color: #065f46; }
+        .st-warn { background: #fef3c7; color: #92400e; }
         .st-err { background: #fee2e2; color: #991b1b; }
 
-        /* METADATA INPUTS */
-        .meta-row { margin-bottom: 18px; position: relative; }
-        .meta-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 6px; }
-        .meta-input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box; font-family: inherit; line-height: 1.5; }
-        .meta-input:focus { border-color: var(--primary); outline: none; }
-        textarea.meta-input { min-height: 80px; resize: vertical; }
-        
-        .count-ok { color: #10b981; }
-        .count-bad { color: #ef4444; }
+        /* INPUTS */
+        .meta-row { margin-bottom: 15px; }
+        .meta-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 5px; }
+        .meta-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
+        textarea.meta-input { min-height: 70px; resize: vertical; }
+        .count-ok { color: #059669; }
+        .count-bad { color: #dc2626; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>Metadata Generator <span class="badge">V10 ULTRA LIGHT</span></h1>
-        <div style="font-size:11px; opacity:0.8; font-weight:500;">Object Detection • 3-Snapshots</div>
+        <h1>Metadata Generator <span class="badge">V11 SMART FALLBACK</span></h1>
+        <div style="font-size:11px; opacity:0.8;">Auto-Retry Logic • No Skip</div>
     </div>
 
     <div class="controls">
@@ -94,8 +90,8 @@
     <table>
         <thead>
             <tr>
-                <th width="320">Visual Context (3 Frames)</th>
-                <th>AI Generated Metadata</th>
+                <th width="320">Filmstrip (Context)</th>
+                <th>Metadata</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -112,10 +108,9 @@
         "elements", "overlays", "lower-thirds", "transitions", "infographics", 
         "interface-effects", "particles", "revealer", "water-and-fluid", 
         "backgrounds/3d-object", "backgrounds/cartoons", "backgrounds/light", "backgrounds/space"
-    ]; // (List disederhanakan agar tidak terlalu panjang di kode, AI akan memilih yang paling relevan)
+    ];
     
-    // Backup jika AI gagal memberi keywords
-    const BACKUP_KWS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "digital", "design", "creative", "modern", "technology", "futuristic", "background", "overlay", "dynamic", "glow", "clean", "cinematic", "presentation", "style", "artistic", "colorful", "bright", "soft", "sharp", "pattern", "texture"];
+    const BACKUP_KWS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "digital", "design", "creative", "modern", "technology", "futuristic", "background", "overlay", "dynamic", "glow", "clean", "cinematic", "style", "artistic", "colorful", "bright", "soft", "sharp", "pattern", "texture"];
 
     let fileQueue = [];
     let apiKeys = [];
@@ -145,11 +140,11 @@
                 <td>
                     <div class="filmstrip-container">
                         <div class="filmstrip" id="preview-${idx}"></div>
-                        <div class="filmstrip-label">START &bull; MIDDLE &bull; END</div>
+                        <div class="fallback-badge" id="badge-${idx}">RETRY MODE</div>
                     </div>
                     <div style="font-weight:600; font-size:12px; margin-top:8px;">${file.name}</div>
                     <div class="status-pill st-pending" id="status-${idx}">Pending</div>
-                    <div style="font-size:10px; margin-top:4px; color:#666;" id="cat-disp-${idx}">Category: -</div>
+                    <div style="font-size:10px; margin-top:4px;" id="cat-disp-${idx}">Category: -</div>
                     <input type="hidden" id="cat-${idx}">
                 </td>
                 <td>
@@ -189,7 +184,7 @@
         kEl.className = (k >= 45 && k <= 48) ? 'count-ok' : 'count-bad';
     }
 
-    // --- 3. CORE PROCESSING ---
+    // --- 3. PROCESSING LOGIC ---
     async function startProcessing() {
         const k1 = document.getElementById('apiKey1').value.trim();
         const k2 = document.getElementById('apiKey2').value.trim();
@@ -201,37 +196,53 @@
 
         for (let item of fileQueue) {
             const idx = item.id;
-            updateStatus(idx, 'st-proc', 'Reading Video Object...');
+            updateStatus(idx, 'st-proc', 'Capturing...');
             
             try {
-                // STEP A: GET 3 TINY SNAPSHOTS (240px Width)
-                // Ini kuncinya: Ukuran kecil agar payload muat
-                const snapshots = await getSnapshots(item.file);
+                // 1. AMBIL 3 SNAPSHOT (Resolusi Mikro 180px)
+                const snapshots = await getSnapshots(item.file, 180);
                 
-                // Show Filmstrip
+                // Tampilkan
                 let imgsHTML = '';
                 snapshots.forEach(s => imgsHTML += `<img src="${s}">`);
                 document.getElementById(`preview-${idx}`).innerHTML = imgsHTML;
 
-                updateStatus(idx, 'st-proc', 'AI Identifying...');
+                updateStatus(idx, 'st-proc', 'AI Analyzing (3 Frames)...');
 
-                // STEP B: SEND TO API
+                let rawData = null;
                 const currentKey = apiKeys[currentKeyIndex];
-                const rawData = await callGroqAPI(currentKey, snapshots);
-                
-                // STEP C: FORMATTING
-                applyRules(idx, rawData);
 
-                updateStatus(idx, 'st-ok', 'Done');
+                // 2. COBA KIRIM 3 GAMBAR (SMART TRY)
+                try {
+                    rawData = await callGroqAPI(currentKey, snapshots); // Kirim 3
+                } catch (e) {
+                    // JIKA ERROR 400 (TOO BIG), COBA LAGI DENGAN 1 GAMBAR
+                    if (e.message.includes("400") || e.message.includes("413") || e.message.includes("Size")) {
+                        console.warn("Payload too big. Switching to single frame fallback.");
+                        updateStatus(idx, 'st-warn', 'Retrying (1 Frame)...');
+                        document.getElementById(`badge-${idx}`).style.display = 'block'; // Tanda kuning
+                        
+                        // Ambil gambar tengah saja
+                        const singleSnap = [snapshots[1]]; 
+                        rawData = await callGroqAPI(currentKey, singleSnap); // Retry
+                    } else {
+                        throw e; // Error lain (network/key) lempar keluar
+                    }
+                }
+                
+                // 3. APPLY DATA
+                applyRules(idx, rawData);
+                if(document.getElementById(`badge-${idx}`).style.display === 'block') {
+                    updateStatus(idx, 'st-warn', 'Done (Fallback)');
+                } else {
+                    updateStatus(idx, 'st-ok', 'Done');
+                }
+                
                 currentKeyIndex = (currentKeyIndex + 1) % apiKeys.length;
 
             } catch (error) {
                 console.error(error);
-                let msg = "Error";
-                if (error.message.includes("400")) msg = "Video File too Heavy (Skip)";
-                else if (error.message.includes("413")) msg = "Payload Limit";
-                else msg = error.message;
-                updateStatus(idx, 'st-err', msg);
+                updateStatus(idx, 'st-err', 'Failed: ' + error.message);
             }
         }
 
@@ -241,14 +252,13 @@
 
     // --- 4. API CALL ---
     async function callGroqAPI(key, images) {
-        // PROMPT KHUSUS UNTUK MENGENALI OBJEK DARI 3 FRAME
-        const prompt = `Analyze these 3 sequential frames (Start, Middle, End) to identify the specific object, motion, and context.
+        const prompt = `Analyze these frames (Start/Middle/End) to identify object/motion.
         Return raw JSON:
         {
-            "category": "choose best matching category string",
-            "title": "A precise SPOK sentence describing the object and its action. 50-70 chars. No 'Thanks for watching'.",
-            "description": "A detailed SPOK description of the visual style and usage. 100-150 chars.",
-            "keywords": "48 comma-separated words describing the object and style"
+            "category": "string from list",
+            "title": "SPOK sentence. 50-70 chars. No 'Thanks for watching'.",
+            "description": "SPOK description. 100-150 chars.",
+            "keywords": "48 comma-separated words"
         }`;
 
         const content = [{ type: "text", text: prompt }];
@@ -261,41 +271,38 @@
                 model: "llama-3.2-11b-vision-preview",
                 messages: [{ role: "user", content: content }],
                 temperature: 0.1,
-                max_tokens: 400
+                max_tokens: 350
             })
         });
 
         if (!resp.ok) {
-            const err = await resp.text();
-            throw new Error(`API Error ${resp.status}`);
+            const txt = await resp.text();
+            throw new Error(`${resp.status} ${txt}`);
         }
         
         const data = await resp.json();
-        let txt = data.choices[0].message.content;
+        let jsonTxt = data.choices[0].message.content;
         
-        // Bersihkan JSON dari Markdown
-        txt = txt.replace(/```json/g, '').replace(/```/g, '').trim();
-        const start = txt.indexOf('{');
-        const end = txt.lastIndexOf('}');
-        if (start === -1 || end === -1) throw new Error("Invalid JSON");
-        
-        return JSON.parse(txt.substring(start, end + 1));
+        // Clean JSON
+        jsonTxt = jsonTxt.replace(/```json/g, '').replace(/```/g, '').trim();
+        const start = jsonTxt.indexOf('{');
+        const end = jsonTxt.lastIndexOf('}');
+        return JSON.parse(jsonTxt.substring(start, end + 1));
     }
 
     function applyRules(idx, data) {
-        // Logic Title
+        // Title
         let title = (data.title || "").replace(/thanks for watching|video background/gi, "").trim();
         title = title.charAt(0).toUpperCase() + title.slice(1);
-        // Pastikan panjang pas 50-70
         if (title.length > 70) title = title.substring(0, 70).split(' ').slice(0, -1).join(' ');
-        if (title.length < 50) title = (title + " features professional motion graphic elements for video").substring(0, 70);
+        if (title.length < 50) title = (title + " features motion elements for video production").substring(0, 70);
         
-        // Logic Desc
+        // Desc
         let desc = (data.description || "").trim();
         if (desc.length > 150) desc = desc.substring(0, 150).split(' ').slice(0, -1).join(' ');
         if (desc.length < 100) desc = (desc + " This high quality visual asset is designed for digital signage and broadcast production.").substring(0, 150);
 
-        // Logic Keywords
+        // Keywords
         let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w.length > 2);
         kws = [...new Set(kws)];
         let b = 0;
@@ -304,15 +311,12 @@
             b++;
         }
 
-        // Logic Category
-        // Simpelkan: Jika kategori dari AI ada di daftar kita, pakai. Jika tidak, "backgrounds".
+        // Category
         let cat = "backgrounds";
-        // Cek manual sederhana
         const aiCat = (data.category || "").toLowerCase();
         if(aiCat.includes("techno")) cat = "backgrounds/technology";
         else if(aiCat.includes("abstract")) cat = "backgrounds/abstract";
         else if(aiCat.includes("nature")) cat = "backgrounds/nature";
-        else if(aiCat.includes("particle")) cat = "particles";
         else if(aiCat.includes("overlay")) cat = "overlays";
         
         document.getElementById(`title-${idx}`).value = title;
@@ -324,8 +328,8 @@
         validate(idx);
     }
 
-    // --- 5. ULTRA LIGHT SNAPSHOT GENERATOR ---
-    function getSnapshots(file) {
+    // --- 5. SNAPSHOT GENERATOR (MICRO SIZE) ---
+    function getSnapshots(file, width) {
         return new Promise((resolve, reject) => {
             const v = document.getElementById('hiddenVideo');
             const c = document.getElementById('hiddenCanvas');
@@ -338,10 +342,8 @@
             let currentStep = 0;
 
             v.onloadedmetadata = () => {
-                // ULTRA COMPRESSION: 240px Width
-                // AI tetap bisa mengenali objek di ukuran ini
-                c.width = 240; 
-                c.height = 135; // Aspect Ratio 16:9 approx
+                c.width = width; // 180px
+                c.height = width * 9/16; 
                 seekNext();
             };
 
@@ -356,8 +358,7 @@
 
             v.onseeked = () => {
                 ctx.drawImage(v, 0, 0, c.width, c.height);
-                // QUALITY 0.35 -> Sangat Kecil tapi Object masih terlihat
-                shots.push(c.toDataURL('image/jpeg', 0.35)); 
+                shots.push(c.toDataURL('image/jpeg', 0.4)); // Low Quality JPEG
                 currentStep++;
                 seekNext();
             };
@@ -385,7 +386,7 @@
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "metadata_v10_final.csv";
+        a.download = "metadata_v11_smart.csv";
         a.click();
     }
 </script>
