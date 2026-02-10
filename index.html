@@ -104,7 +104,7 @@
         </table>
     </div>
 
-    <video id="hiddenVideo" style="display:none;" muted playsinline preload="auto" autoplay></video>
+    <video id="hiddenVideo" style="display:none;" muted playsinline preload="auto" width="960" height="540"></video>
     <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
     <script>
@@ -149,13 +149,11 @@
         }
 
         document.getElementById('fileInput').addEventListener('change', function (e) {
-            // FILTER KUAT: Izinkan semua format video umum
             const videoExts = ['.mp4', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.webm', '.m4v', '.3gp', '.mpeg', '.mpg'];
             const files = Array.from(e.target.files).filter(f => {
                 const ext = f.name.substring(f.name.lastIndexOf('.')).toLowerCase();
                 return f.type.startsWith('video/') || videoExts.includes(ext);
             });
-
             const tbody = document.getElementById('resultBody');
             tbody.innerHTML = '';
             fileQueue = [];
@@ -215,14 +213,21 @@
             return str.trim().replace(/[\s,]+(and|or|with|the|a|an|is|at|of|in|to|for)[\s,.]*$/i, "").replace(/[,\s]+$/, "");
         }
 
-        // FUNGSI UTAMA: MENANGKAP GAMBAR DARI VIDEO (TERMASUK .MOV BANDEL)
+        // FUNGSI SNAPSHOT SUPER AGRESIF UNTUK .MOV
         function getFilmstrip(file) {
             return new Promise((resolve) => {
                 const v = document.getElementById('hiddenVideo');
                 const c = document.getElementById('hiddenCanvas');
                 const ctx = c.getContext('2d');
                 
-                // Fallback Function: Bikin Kartu Teks jika Video Gagal Visual (Codec Error)
+                // Pastikan settings video element di-reset setiap kali
+                v.removeAttribute('src');
+                v.muted = true;
+                v.playsInline = true;
+                v.autoplay = true; // Coba autoplay
+                v.preload = "auto"; // Paksa load semua
+
+                // Fallback Function: Bikin Kartu Teks (Jalan Terakhir)
                 const useFallback = () => {
                     c.width = 960;
                     c.height = 180;
@@ -231,35 +236,50 @@
                     ctx.fillStyle = "#000000";
                     ctx.font = "bold 24px Inter";
                     ctx.textAlign = "center";
-                    ctx.fillText("FILENAME: " + file.name, 480, 90); // AI akan baca ini
+                    ctx.fillText("FILENAME: " + file.name, 480, 90); 
                     ctx.font = "16px Inter";
-                    ctx.fillStyle = "#666";
-                    ctx.fillText("(Preview Unavailable - Analyzing Name)", 480, 120);
-                    resolve(c.toDataURL('image/jpeg')); // Resolve Sukses (bukan error)
+                    ctx.fillStyle = "#555555";
+                    ctx.fillText("(Visual Not Supported - Analyze Filename)", 480, 120);
+                    resolve(c.toDataURL('image/jpeg')); 
                 };
 
-                // Timeout 5 detik: Jika browser gagal memutar .MOV dalam 5 detik, pakai Fallback
-                const timeout = setTimeout(useFallback, 5000);
+                // Timeout panjang (15 detik) untuk .mov berat
+                const timeout = setTimeout(useFallback, 15000);
 
-                v.onloadeddata = async () => {
-                    clearTimeout(timeout); // Batalkan timeout karena berhasil load
+                // Listener saat video siap
+                const capture = async () => {
+                    clearTimeout(timeout);
                     try {
                         c.width = 960;
                         c.height = 180;
-                        // Paksa putar sedikit untuk memancing frame
-                        v.currentTime = 0.1;
                         
-                        // Ambil 3 frame
+                        // Trick: Seek ke beberapa titik untuk "memaksa" buffer
+                        const points = [0.1, v.duration * 0.5, v.duration * 0.9];
+                        
                         for (let i = 0; i < 3; i++) {
-                            v.currentTime = v.duration * (0.1 + i * 0.4); 
-                            await new Promise(r => setTimeout(r, 200)); // Delay aman
+                            v.currentTime = points[i] || 0.1;
+                            // Tunggu seek selesai atau time update
+                            await new Promise(r => {
+                                const h = () => { v.removeEventListener('seeked', h); r(); };
+                                v.addEventListener('seeked', h);
+                                // Safety break jika seek macet
+                                setTimeout(r, 500); 
+                            });
                             ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
                         }
                         
-                        // Cek apakah gambar blank/hitam (ciri khas codec ProRes di browser)
+                        // Cek apakah canvas hitam total (tanda codec error)
                         const p = ctx.getImageData(0,0,10,10).data;
-                        if(p[0]===0 && p[1]===0 && p[2]===0 && p[3]===0) { 
-                            useFallback(); // Jika transparan total, pakai nama
+                        const isBlack = p[0]===0 && p[1]===0 && p[2]===0 && p[3]!==0; // Black but opaque
+                        const isTransparent = p[3] === 0; // Transparent
+                        
+                        if (isTransparent) {
+                            // Jika transparan (Alpha channel), mungkin browser merender transparan.
+                            // Kita kasih background putih biar AI bisa lihat
+                            ctx.globalCompositeOperation = 'destination-over';
+                            ctx.fillStyle = "white";
+                            ctx.fillRect(0, 0, 960, 180);
+                            resolve(c.toDataURL('image/jpeg'));
                         } else {
                             resolve(c.toDataURL('image/jpeg'));
                         }
@@ -268,14 +288,14 @@
                     }
                 };
 
-                // Jika error loading (misal format tidak didukung sama sekali)
-                v.onerror = () => {
-                    clearTimeout(timeout);
-                    useFallback();
-                };
+                v.onloadeddata = capture; // Coba tangkap saat data ada
+                v.onerror = () => { clearTimeout(timeout); useFallback(); };
 
+                // Mulai muat
                 v.src = URL.createObjectURL(file);
                 v.load();
+                // Pancing play sebentar (0.001 detik) lalu pause
+                v.play().then(() => { setTimeout(() => v.pause(), 10); }).catch(() => {});
             });
         }
 
@@ -389,6 +409,7 @@
             1. Title: Create an ORGANIC formula: [Adjective] + [Color] + [Subject] + [Action] + [Context].
                - NO "A video of". 
                - IF TEXT IS VISIBLE (e.g., "Sale"), WRITE IT.
+               - Example: "Elegant golden thanks for watching text rotates on dark brown background".
                - Target Length: 75-80 characters.
             2. Keywords: Return 50 relevant SINGLE words. NO STOP WORDS.
             3. Category: Select most relevant.
