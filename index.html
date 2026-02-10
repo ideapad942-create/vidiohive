@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microstock Metadata Pro - Motion Graphic Edition</title>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
@@ -64,6 +64,8 @@
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; }
         .status-pill.processing { background: #e0e7ff; color: #4338ca; }
         .status-pill.success { background: #dcfce7; color: #15803d; }
+        .status-pill.error { background: #fee2e2; color: #b91c1c; }
+        
         .spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
@@ -72,7 +74,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro (SPOK FIXED)</span></h1>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro (Robust Fix)</span></h1>
         <div style="font-size: 12px; opacity: 0.8;">Strict Visual Description Mode</div>
     </div>
 
@@ -113,7 +115,6 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- LIST KATEGORI LENGKAP ---
     const ALL_CATEGORIES = [
         "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
         "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
@@ -132,9 +133,8 @@
 
     const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "render", "digital", "design", "creative", "concept", "modern", "effect", "futuristic", "pattern", "glow", "texture", "dynamic", "element", "colorful", "artistic", "display", "presentation", "backdrop", "overlay", "energy", "flow", "clean", "soft", "sharp", "gradient", "composition", "style", "cinematic", "technology", "shapes", "geometry", "bright", "vibrant", "elegant", "smooth", "ambient", "high tech", "decoration", "wallpaper", "studio", "pro", "visuals"];
 
-    const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48; 
-    // Menggunakan model 8b-instant untuk kecepatan dan reliabilitas (mengurangi risiko 'Fail')
-    const GROQ_MODEL = "llama-3.1-8b-instant"; 
+    // GANTI KE MODEL LAMA YANG LEBIH STABIL ATAU GUNAKAN MODEL TERBARU
+    const GROQ_MODEL = "llama-3.3-70b-versatile"; 
 
     let fileQueue = [];
     let apiKeys = [];
@@ -200,55 +200,39 @@
             try {
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
+                
+                // Panggil API
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- LOGIKA JUDUL (SPOK & TIDAK KEPOTONG) ---
-                let title = (data.title || "").trim();
-                // Pastikan huruf besar di awal
+                // --- LOGIKA JUDUL (SPOK, Anti-Cut) ---
+                let title = (data.title || "").trim().replace(/['"]/g, '');
                 title = title.charAt(0).toUpperCase() + title.slice(1);
                 
-                // Jika lebih dari 70 karakter, potong di spasi terakhir sebelum 70
+                // Potong pintar (cari spasi)
                 if(title.length > 70) {
-                    let tempTitle = title.substring(0, 70);
-                    // Cari spasi terakhir untuk memotong agar kata tidak rusak
-                    let lastSpace = tempTitle.lastIndexOf(" ");
-                    if (lastSpace > 40) { 
-                        title = tempTitle.substring(0, lastSpace);
+                    let tmp = title.substring(0, 70);
+                    if(tmp.lastIndexOf(" ") > 40) {
+                        title = tmp.substring(0, tmp.lastIndexOf(" "));
                     } else {
-                        title = tempTitle; // Fallback jika tidak ada spasi yang aman
+                        title = tmp;
                     }
                 }
                 
-                // Jika terlalu pendek (di bawah 50), tambahkan konteks
-                if(title.length < 50) {
-                    title = title + " loop for video production";
-                }
-                
+                if(title.length < 50) title += " loop for video production";
                 document.getElementById(`title-${idx}`).value = title;
 
-
-                // --- LOGIKA DESKRIPSI (WAJIB ADA SUFFIX) ---
+                // --- LOGIKA DESKRIPSI (Suffix Wajib) ---
                 const SUFFIX = " This unique visual asset is designed for high-end video production and digital signage applications.";
-                // Ruang tersisa untuk deskripsi visual (150 total - panjang suffix)
-                const availableSpace = 150 - SUFFIX.length; 
+                const maxVisual = 150 - SUFFIX.length;
+                let desc = (data.description || "").trim().replace(/[.]+$/, "");
                 
-                let descVisual = (data.description || "").trim();
-                // Bersihkan tanda titik di akhir karena suffix dimulai dengan spasi
-                descVisual = descVisual.replace(/[.]+$/, "");
-                
-                // Potong deskripsi visual jika terlalu panjang agar suffix muat pas
-                if (descVisual.length > availableSpace) {
-                    let tempDesc = descVisual.substring(0, availableSpace);
-                    let lastSpaceDesc = tempDesc.lastIndexOf(" ");
-                    if (lastSpaceDesc > 10) {
-                        descVisual = tempDesc.substring(0, lastSpaceDesc);
-                    }
+                if(desc.length > maxVisual) {
+                    let tmp = desc.substring(0, maxVisual);
+                    desc = tmp.substring(0, tmp.lastIndexOf(" "));
                 }
-                
-                document.getElementById(`desc-${idx}`).value = descVisual + SUFFIX;
+                document.getElementById(`desc-${idx}`).value = desc + SUFFIX;
 
-
-                // --- LOGIKA KEYWORDS ---
+                // --- KEYWORDS ---
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
                 kws = [...new Set(kws)];
                 let bIdx = 0;
@@ -258,26 +242,23 @@
                 }
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
 
-                // --- LOGIKA KATEGORI (MATCHING) ---
-                let aiCat = data.category || "";
-                let finalCat = "backgrounds"; // Default
-                
-                // Cek apakah kategori AI ada di daftar kita
-                if (ALL_CATEGORIES.includes(aiCat)) {
-                    finalCat = aiCat;
-                } else {
-                    // Cari yang mirip
-                    let match = ALL_CATEGORIES.find(c => aiCat.includes(c) || c.includes(aiCat.split('/')[0]));
-                    if (match) finalCat = match;
+                // --- KATEGORI ---
+                let cat = data.category || "backgrounds";
+                if(!ALL_CATEGORIES.includes(cat)) {
+                    // Fallback search
+                    cat = ALL_CATEGORIES.find(c => cat.includes(c)) || "backgrounds";
                 }
+                document.getElementById(`cat-${idx}`).value = cat;
+                document.getElementById(`cat-disp-${idx}`).innerText = cat;
 
-                document.getElementById(`cat-${idx}`).value = finalCat;
-                document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
-            } catch(e) { 
-                console.error(e); // Lihat console untuk detail error
-                updateStatus(idx, 'error', 'Fail'); 
+
+            } catch(e) {
+                console.error("ERROR DETAIL:", e);
+                // Tampilkan alasan error di status
+                updateStatus(idx, 'error', 'Fail: ' + e.message.substring(0, 15));
+                alert(`Gagal pada file ${item.file.name}: \n${e.message}`);
             }
         }
         document.getElementById('btnProcess').disabled = false;
@@ -285,40 +266,53 @@
     }
 
     async function makeRequest(key, base64) {
-        // PROMPT SANGAT SPESIFIK AGAR FORMAT BENAR
+        // PERINTAH UTAMA
         const prompt = `
         You are a Metadata API. 
-        LIST OF VALID CATEGORIES: ${JSON.stringify(ALL_CATEGORIES)}
+        VALID CATEGORIES: ${JSON.stringify(ALL_CATEGORIES)}
         
-        Analyze the image. Return ONLY VALID JSON with these keys:
-        - "category": Choose exactly one from the list above.
-        - "title": A single SPOK sentence (Subject Predicate Object Keterangan) about the visual. MAX 65 chars. NO "Thanks", NO text quotes.
-        - "description": Extremely short visual description (max 5-7 words).
-        - "keywords": 50 comma separated keywords.
-        `;
-        
-        const resp = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "JSON ONLY." }, { type: "image_url", image_url: { url: base64 } }] }],
-                response_format: { type: "json_object" }
-            })
-        });
-        
-        const d = await resp.json();
-        let content = d.choices[0].message.content;
-        
-        // PEMBERSIH JSON (Fix Error Fail)
-        // Kadang AI memberi output ```json ... ``` yang bikin error
-        if (content.includes("```json")) {
-            content = content.split("```json")[1].split("```")[0];
-        } else if (content.includes("```")) {
-            content = content.split("```")[1].split("```")[0];
+        Analyze image. Return VALID JSON ONLY:
+        {
+            "category": "exact category string from list",
+            "title": "One SPOK sentence description. No 'Thanks', No quotes. Max 65 chars.",
+            "description": "Visual description only. Max 8 words.",
+            "keywords": "50 comma separated keywords"
         }
-        
-        return JSON.parse(content);
+        `;
+
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: GROQ_MODEL,
+                    messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "JSON ONLY." }, { type: "image_url", image_url: { url: base64 } }] }],
+                    response_format: { type: "json_object" } 
+                })
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json();
+                throw new Error("API Error: " + (errData.error?.message || resp.statusText));
+            }
+
+            const d = await resp.json();
+            let content = d.choices[0].message.content;
+            console.log("RAW AI RESPONSE:", content); // Cek Console (F12) jika error lagi
+
+            // --- PEMBERSIH JSON SUPER KUAT (REGEX) ---
+            // Cari kurung kurawal pembuka { pertama dan penutup } terakhir
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                content = jsonMatch[0];
+            } else {
+                throw new Error("AI tidak mengembalikan JSON valid.");
+            }
+
+            return JSON.parse(content);
+        } catch (error) {
+            throw error;
+        }
     }
 
     function updateStatus(idx, type, text) {
@@ -328,19 +322,26 @@
     }
 
     function getFilmstrip(file) {
-        return new Promise(res => {
+        return new Promise((res, rej) => {
             const v = document.getElementById('hiddenVideo');
             const c = document.getElementById('hiddenCanvas');
             const ctx = c.getContext('2d');
+            
+            v.onerror = () => rej(new Error("Video tidak bisa dimuat"));
+            
             v.src = URL.createObjectURL(file);
             v.onloadedmetadata = async () => {
                 c.width = 960; c.height = 180;
-                for(let i=0; i<3; i++) {
-                    v.currentTime = v.duration * (0.2 + i * 0.3);
-                    await new Promise(r => v.onseeked = r);
-                    ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
+                try {
+                    for(let i=0; i<3; i++) {
+                        v.currentTime = v.duration * (0.2 + i * 0.3);
+                        await new Promise(r => v.onseeked = r);
+                        ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
+                    }
+                    res(c.toDataURL('image/jpeg'));
+                } catch(err) {
+                    rej(err);
                 }
-                res(c.toDataURL('image/jpeg'));
             };
         });
     }
@@ -348,13 +349,25 @@
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
-            const row = [item.file.name, document.getElementById(`title-${idx}`).value, document.getElementById(`desc-${idx}`).value, document.getElementById(`kw-${idx}`).value, document.getElementById(`cat-${idx}`).value];
-            csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
+            // Ambil value dengan aman (cegah error jika element null)
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                return el ? el.value.replace(/"/g, '""') : "";
+            };
+            
+            const row = [
+                item.file.name, 
+                getVal(`title-${idx}`), 
+                getVal(`desc-${idx}`), 
+                getVal(`kw-${idx}`), 
+                getVal(`cat-${idx}`)
+            ];
+            csv += row.map(v => `"${v}"`).join(',') + "\n";
         });
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `microstock_v6.csv`;
+        a.download = `microstock_v6_final.csv`;
         a.click();
     }
 </script>
