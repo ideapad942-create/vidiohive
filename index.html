@@ -3,68 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MICROSTOCK AI GENERATOR - FIXED</title>
+    <title>MICROSTOCK AI GENERATOR - LLAMA 4 UPDATED</title>
     <style>
         :root { --primary: #2563eb; --bg: #f1f5f9; --text: #1e293b; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        h1 { margin-top: 0; color: var(--primary); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        h1 { margin-top: 0; color: var(--primary); font-size: 24px; display: flex; align-items: center; gap: 10px; }
+        .tag-new { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #bbf7d0; }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
         
-        .btn { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+        .btn:hover { background: #1d4ed8; }
         .btn:disabled { background: #94a3b8; cursor: not-allowed; }
         .btn-success { background: #16a34a; }
+        .btn-success:hover { background: #15803d; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; vertical-align: top; }
-        th { background: #f8fafc; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; font-size: 13px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; vertical-align: top; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 700; color: #475569; }
+        tr:last-child td { border-bottom: none; }
         
-        .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .st-pending { background: #e2e8f0; color: #64748b; }
+        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .st-pending { background: #f1f5f9; color: #64748b; }
         .st-proc { background: #dbeafe; color: #1e40af; }
         .st-done { background: #dcfce7; color: #166534; }
         .st-error { background: #fee2e2; color: #991b1b; }
 
-        .meta-input { width: 100%; box-sizing: border-box; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 12px; }
-        textarea.meta-input { height: 60px; resize: vertical; }
+        .meta-input { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-family: inherit; font-size: 13px; margin-bottom: 5px; transition: border 0.2s; }
+        .meta-input:focus { border-color: var(--primary); outline: none; }
+        textarea.meta-input { min-height: 70px; resize: vertical; }
         
-        .char-count { font-size: 10px; color: #64748b; text-align: right; margin-bottom: 2px; }
-        .preview-img { width: 150px; border-radius: 4px; border: 1px solid #ddd; }
-        .error-log { color: red; font-size: 11px; margin-top: 5px; display: none; }
+        .char-count { font-size: 11px; color: #64748b; text-align: right; margin-bottom: 4px; font-weight: 500; }
+        .preview-img { width: 100%; max-width: 200px; border-radius: 6px; border: 1px solid #e2e8f0; display: block; }
+        .error-log { color: #dc2626; font-size: 11px; margin-top: 5px; display: none; background: #fef2f2; padding: 5px; border-radius: 4px; }
+        
+        /* Helper class for category dropdown suggestion if needed, currently text input */
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🎞️ MICROSTOCK METADATA FIX</h1>
+    <h1>
+        🎞️ MICROSTOCK METADATA AI 
+        <span class="tag-new">Llama 4 Vision</span>
+    </h1>
     
     <div class="input-group">
-        <label>1. Masukkan API Key Groq (Llama Vision)</label>
+        <label>1. Masukkan API Key Groq</label>
         <input type="password" id="apiKey" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxx">
+        <small style="color: #64748b;">Menggunakan model baru: <b>meta-llama/llama-4-scout-17b-16e-instruct</b></small>
     </div>
 
     <div class="input-group">
         <label>2. Pilih Folder Video (Mp4/Mov)</label>
-        <input type="file" id="fileInput" webkitdirectory directory multiple>
+        <div style="display: flex; gap: 10px;">
+            <input type="file" id="fileInput" webkitdirectory directory multiple style="flex:1;">
+        </div>
     </div>
 
-    <div class="input-group">
+    <div class="input-group" style="display: flex; gap: 10px; align-items: center;">
         <button id="btnProcess" class="btn" onclick="startProcessing()">🚀 Mulai Proses AI</button>
-        <button id="btnExport" class="btn btn-success" onclick="exportCSV()" style="display:none; margin-left: 10px;">📥 Download CSV</button>
+        <button id="btnExport" class="btn btn-success" onclick="exportCSV()" style="display:none;">📥 Download CSV</button>
+        <div id="statusArea" style="font-weight:bold; color: var(--primary);"></div>
     </div>
-
-    <div id="statusArea" style="margin-bottom:10px; font-weight:bold;"></div>
 
     <table id="resultTable">
         <thead>
             <tr>
-                <th style="width: 160px;">Preview (3 Frame)</th>
-                <th style="width: 150px;">File & Category</th>
+                <th style="width: 200px;">Preview (3 Frame)</th>
+                <th style="width: 250px;">File & Category</th>
                 <th>Metadata (Title, Desc, Keywords)</th>
-                <th style="width: 80px;">Status</th>
+                <th style="width: 100px;">Status</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -92,6 +105,10 @@ miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/ca
 infographics
     `;
 
+    // --- MODEL BARU (UPDATED 2026) ---
+    // Menggunakan Llama 4 Scout karena 3.2-90b sudah decommissioned
+    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+
     let fileQueue = [];
     let isProcessing = false;
 
@@ -104,29 +121,39 @@ infographics
         tbody.innerHTML = '';
         fileQueue = [];
 
+        if(files.length === 0) return alert("Tidak ada file video ditemukan.");
+
         files.forEach((file, index) => {
             fileQueue.push({ file, id: index, status: 'pending' });
             
             const tr = document.createElement('tr');
             tr.id = `row-${index}`;
             tr.innerHTML = `
-                <td><div style="height:50px; background:#f1f5f9; text-align:center; padding-top:20px;">Waiting...</div></td>
                 <td>
-                    <b>${file.name}</b><br>
-                    <input type="text" class="meta-input cat-input" placeholder="Category..." readonly>
+                    <div class="preview-placeholder" style="height:100px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; border-radius:6px; border:1px solid #e2e8f0;">
+                        Waiting...
+                    </div>
                 </td>
                 <td>
-                    <div class="char-count">Title: 0/70</div>
-                    <input type="text" class="meta-input title-input" placeholder="Generating Title...">
+                    <div style="font-weight:bold; margin-bottom:5px; word-break:break-all;">${file.name}</div>
+                    <label style="font-size:11px; color:#64748b; margin-bottom:2px;">CATEGORY</label>
+                    <input type="text" class="meta-input cat-input" placeholder="Category..." readonly style="background:#f8fafc;">
+                </td>
+                <td>
+                    <div class="char-count" id="cnt-title-${index}">Title: 0/70</div>
+                    <input type="text" class="meta-input title-input" placeholder="Generating Title..." oninput="updateLen(${index}, 'title', 70)">
                     
-                    <div class="char-count">Desc: 0/150</div>
-                    <textarea class="meta-input desc-input" placeholder="Generating Description..."></textarea>
+                    <div class="char-count" id="cnt-desc-${index}">Desc: 0/150</div>
+                    <textarea class="meta-input desc-input" placeholder="Generating Description..." oninput="updateLen(${index}, 'desc', 150)"></textarea>
                     
-                    <div class="char-count">Keywords: 0 (Min 45)</div>
-                    <textarea class="meta-input kw-input" placeholder="Generating Keywords..."></textarea>
+                    <div class="char-count" id="cnt-kw-${index}">Keywords: 0 (Min 45)</div>
+                    <textarea class="meta-input kw-input" placeholder="Generating Keywords..." oninput="updateLen(${index}, 'kw', 0)"></textarea>
+                    
                     <div class="error-log"></div>
                 </td>
-                <td><span class="status-badge st-pending">PENDING</span></td>
+                <td style="vertical-align:middle;">
+                    <span class="status-badge st-pending">PENDING</span>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -134,14 +161,30 @@ infographics
         document.getElementById('statusArea').innerText = `✅ ${files.length} Video siap diproses.`;
     });
 
+    function updateLen(idx, type, max) {
+        const row = document.getElementById(`row-${idx}`);
+        const el = row.querySelector(`.${type}-input`);
+        const disp = document.getElementById(`cnt-${type}-${idx}`);
+        
+        if (type === 'kw') {
+            const count = el.value.split(',').filter(w => w.trim().length > 0).length;
+            disp.innerText = `Keywords: ${count} (Min 45)`;
+        } else {
+            disp.innerText = `${type === 'title' ? 'Title' : 'Desc'}: ${el.value.length}/${max}`;
+            if (el.value.length > max) disp.style.color = "red";
+            else disp.style.color = "#64748b";
+        }
+    }
+
     async function startProcessing() {
-        const apiKey = document.getElementById('apiKey').value;
-        if(!apiKey) return alert("Masukkan API Key dulu!");
+        const apiKey = document.getElementById('apiKey').value.trim();
+        if(!apiKey) return alert("Masukkan API Key Groq dulu!");
         localStorage.setItem('GROQ_KEY', apiKey);
 
         if(isProcessing) return;
         isProcessing = true;
         document.getElementById('btnProcess').disabled = true;
+        document.getElementById('statusArea').innerText = "⏳ Sedang Memproses...";
 
         for (const item of fileQueue) {
             const row = document.getElementById(`row-${item.id}`);
@@ -159,34 +202,39 @@ infographics
 
                 statusBadge.innerText = 'AI THINKING';
                 
-                // 2. Kirim ke Groq AI
+                // 2. Kirim ke Groq AI (Model Baru)
                 const metadata = await analyzeWithAI(apiKey, base64Img);
 
                 // 3. Isi Form dengan Validasi Character
                 row.querySelector('.cat-input').value = metadata.category;
                 
-                // Title trim
-                const finalTitle = metadata.title.length > 70 ? metadata.title.substring(0, 67) + "..." : metadata.title;
+                // Title trim (Max 70)
+                let finalTitle = metadata.title || "";
+                if(finalTitle.length > 70) finalTitle = finalTitle.substring(0, 67) + "...";
                 row.querySelector('.title-input').value = finalTitle;
+                updateLen(item.id, 'title', 70);
 
-                // Desc trim
-                const finalDesc = metadata.description.length > 150 ? metadata.description.substring(0, 147) + "..." : metadata.description;
+                // Desc trim (Max 150)
+                let finalDesc = metadata.description || "";
+                if(finalDesc.length > 150) finalDesc = finalDesc.substring(0, 147) + "...";
                 row.querySelector('.desc-input').value = finalDesc;
+                updateLen(item.id, 'desc', 150);
 
-                // Keywords Logic (Split single words)
-                let rawKw = metadata.keywords.replace(/,\s*/g, ',').split(',');
+                // Keywords Logic (Split single words & Deduplicate)
+                let rawKw = (metadata.keywords || "").replace(/,\s*/g, ',').split(',');
                 let cleanKw = [];
                 rawKw.forEach(k => {
-                    // Pecah jika ada spasi (film burn -> film, burn)
+                    k = k.trim().toLowerCase();
                     if(k.includes(' ')) {
-                        cleanKw.push(...k.split(' '));
+                        cleanKw.push(...k.split(' ')); // Pecah frase
                     } else {
                         cleanKw.push(k);
                     }
                 });
-                // Remove duplicates & empty
+                // Remove duplicates & empty strings & short words (optional)
                 cleanKw = [...new Set(cleanKw)].filter(k => k.length > 1);
                 row.querySelector('.kw-input').value = cleanKw.join(', ');
+                updateLen(item.id, 'kw', 0);
 
                 statusBadge.className = 'status-badge st-done';
                 statusBadge.innerText = 'SUCCESS';
@@ -199,14 +247,15 @@ infographics
                 errorLog.innerText = err.message;
             }
 
-            // Jeda 2 detik agar tidak kena limit rate API
+            // Jeda sedikit agar tidak kena limit rate API (penting untuk akun free)
             await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
         isProcessing = false;
         document.getElementById('btnProcess').disabled = false;
+        document.getElementById('statusArea').innerText = "✅ Proses Selesai!";
         document.getElementById('btnExport').style.display = 'inline-block';
-        alert("Proses Selesai!");
+        alert("Semua video selesai diproses!");
     }
 
     // --- FUNGSI SNAPSHOT (3 Frame) ---
@@ -248,7 +297,7 @@ infographics
                     resolve(data);
                 } catch(e) { reject(e); }
             };
-            video.onerror = () => reject(new Error("Gagal load video"));
+            video.onerror = () => reject(new Error("Gagal load video (File corrupt/Codec tidak support)"));
         });
     }
 
@@ -271,7 +320,7 @@ infographics
            - Include colors, objects, style (bokeh, macro), concepts.
 
         OUTPUT FORMAT:
-        Reply ONLY with valid JSON. No markdown, no "Here is the json".
+        Reply ONLY with valid JSON. Do NOT include markdown code blocks like \`\`\`json.
         {
             "category": "string",
             "title": "string",
@@ -280,43 +329,46 @@ infographics
         }
         `;
 
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "llama-3.2-90b-vision-preview",
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: [
-                        { type: "text", text: "Generate strict JSON metadata." },
-                        { type: "image_url", image_url: { url: base64 } }
-                    ]}
-                ],
-                temperature: 0.1,
-                max_tokens: 1024
-            })
-        });
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: GROQ_MODEL, // Menggunakan Llama 4 Scout
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: [
+                            { type: "text", text: "Generate strict JSON metadata." },
+                            { type: "image_url", image_url: { url: base64 } }
+                        ]}
+                    ],
+                    temperature: 0.1,
+                    max_tokens: 1024,
+                    response_format: { type: "json_object" } // Memaksa output JSON
+                })
+            });
 
-        const data = await resp.json();
-        if(data.error) throw new Error(data.error.message);
-
-        let text = data.choices[0].message.content;
-
-        // --- PEMBERSIH JSON (ANTI ERROR) ---
-        // Mencari kurung kurawal pertama { dan terakhir }
-        const firstBrace = text.indexOf('{');
-        const lastBrace = text.lastIndexOf('}');
-
-        if (firstBrace !== -1 && lastBrace !== -1) {
-            const cleanJson = text.substring(firstBrace, lastBrace + 1);
-            try {
-                return JSON.parse(cleanJson);
-            } catch (e) {
-                console.log("Raw Text AI:", text);
-                throw new Error("AI membalas tapi format JSON rusak.");
+            if (!resp.ok) {
+                const errData = await resp.json();
+                throw new Error(errData.error?.message || "API Error");
             }
-        } else {
-            throw new Error("AI tidak memberikan JSON valid.");
+
+            const data = await resp.json();
+            let text = data.choices[0].message.content;
+
+            // --- PEMBERSIH JSON (ANTI ERROR / HALLUCINATION) ---
+            const firstBrace = text.indexOf('{');
+            const lastBrace = text.lastIndexOf('}');
+
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                const cleanJson = text.substring(firstBrace, lastBrace + 1);
+                return JSON.parse(cleanJson);
+            } else {
+                throw new Error("AI tidak memberikan JSON valid.");
+            }
+        } catch (e) {
+            console.error("AI/Network Error:", e);
+            throw e;
         }
     }
 
@@ -324,9 +376,14 @@ infographics
         let csv = "Filename,Category,Title,Description,Keywords\n";
         
         const rows = document.querySelectorAll('#resultTable tbody tr');
+        let hasData = false;
+
         rows.forEach((tr, index) => {
             if(!fileQueue[index]) return;
-            
+            const status = tr.querySelector('.status-badge').innerText;
+            if(status !== 'SUCCESS') return; // Skip yang gagal/pending
+
+            hasData = true;
             const filename = `"${fileQueue[index].file.name.replace(/"/g, '""')}"`;
             const cat = `"${tr.querySelector('.cat-input').value.replace(/"/g, '""')}"`;
             const title = `"${tr.querySelector('.title-input').value.replace(/"/g, '""')}"`;
@@ -336,12 +393,16 @@ infographics
             csv += `${filename},${cat},${title},${desc},${kw}\n`;
         });
 
+        if (!hasData) return alert("Belum ada data sukses untuk diexport!");
+
         const blob = new Blob([csv], {type: 'text/csv'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `metadata_stock_${Date.now()}.csv`;
+        a.download = `metadata_microstock_${Date.now()}.csv`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
     }
 </script>
 
