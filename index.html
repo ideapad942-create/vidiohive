@@ -159,34 +159,17 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- DATABASE KATEGORI ---
-    const CATEGORIES_LIST = `
-backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous,
-bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous,
-distortions,
-elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous,
-interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous,
-lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous,
-overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous,
-particles,
-revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous,
-transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous,
-water-and-fluid,
-miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous,
-infographics
-    `;
+    const CATEGORIES_LIST = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, distortions, elements, interface-effects, lower-thirds, overlays, particles, revealer, transitions, water-and-fluid, infographics`;
 
-    // --- CADANGAN KEYWORD (MOTION GRAPHIC FOCUSED) ---
-    // Update: Dihilangkan kata-kata 'image', 'photo'
     const BACKUP_KEYWORDS = [
         "background", "motion", "graphic", "design", "abstract", "texture", "wallpaper", 
         "visual", "art", "creative", "concept", "digital", "modern", "style", "pattern", 
         "element", "loop", "seamless", "video", "clip", "animation", "render", "3d", 
         "generated", "dynamic", "effect", "technology", "futuristic", "grid", "glow",
-        "geometric", "composition", "colorful", "artistic"
+        "geometric", "composition", "colorful", "artistic", "overlay", "transition",
+        "particle", "energy", "flow", "bright", "dark", "soft", "sharp", "clean"
     ];
 
-    // --- CONFIG ---
     const MIN_TITLE = 50, MAX_TITLE = 70;
     const MIN_DESC = 100, MAX_DESC = 150;
     const MIN_KW = 45, MAX_KW = 48; 
@@ -201,10 +184,8 @@ infographics
     if(localStorage.getItem('API_KEY_2')) document.getElementById('apiKey2').value = localStorage.getItem('API_KEY_2');
 
     function manualSaveKeys() {
-        const key1 = document.getElementById('apiKey1').value.trim();
-        const key2 = document.getElementById('apiKey2').value.trim();
-        localStorage.setItem('API_KEY_1', key1);
-        localStorage.setItem('API_KEY_2', key2);
+        localStorage.setItem('API_KEY_1', document.getElementById('apiKey1').value.trim());
+        localStorage.setItem('API_KEY_2', document.getElementById('apiKey2').value.trim());
         alert("✅ API Keys berhasil disimpan!");
     }
 
@@ -213,12 +194,9 @@ infographics
         const tbody = document.querySelector('#resultTable tbody');
         tbody.innerHTML = '';
         fileQueue = [];
-
         if(files.length === 0) return;
-
         files.forEach((file, index) => {
             fileQueue.push({ file, id: index });
-            
             const tr = document.createElement('tr');
             tr.id = `row-${index}`;
             tr.innerHTML = `
@@ -236,86 +214,44 @@ infographics
                 </td>
                 <td>
                     <div class="meta-wrapper">
-                        <div class="meta-label">
-                            <span>TITLE (Wajib 50-70 Char)</span>
-                            <span id="cnt-title-${index}">0/70</span>
-                        </div>
+                        <div class="meta-label"><span>TITLE (50-70 Char)</span><span id="cnt-title-${index}">0/70</span></div>
                         <input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})">
                     </div>
-
                     <div class="meta-wrapper">
-                        <div class="meta-label">
-                            <span>DESCRIPTION (Wajib 100-150 Char)</span>
-                            <span id="cnt-desc-${index}">0/150</span>
-                        </div>
+                        <div class="meta-label"><span>DESCRIPTION (100-150 Char)</span><span id="cnt-desc-${index}">0/150</span></div>
                         <textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea>
                     </div>
-
                     <div class="meta-wrapper">
-                        <div class="meta-label">
-                            <span>KEYWORDS (Wajib 45-48 Kata)</span>
-                            <span id="cnt-kw-${index}">0 words</span>
-                        </div>
+                        <div class="meta-label"><span>KEYWORDS (Wajib 45-48 Kata)</span><span id="cnt-kw-${index}">0 words</span></div>
                         <textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea>
                     </div>
-                </td>
-            `;
+                </td>`;
             tbody.appendChild(tr);
         });
-        document.getElementById('statusMsg').innerText = `Siap memproses ${files.length} video.`;
     });
 
     function validate(idx) {
-        // Title Check
         const tEl = document.getElementById(`title-${idx}`);
-        const tCnt = document.getElementById(`cnt-title-${idx}`);
         const tLen = tEl.value.length;
-        tCnt.innerText = `${tLen}/70`;
-        if(tLen < MIN_TITLE || tLen > MAX_TITLE) {
-            tCnt.className = 'count-err'; tEl.classList.add('border-err');
-        } else {
-            tCnt.className = 'count-ok'; tEl.classList.remove('border-err');
-        }
-
-        // Desc Check
-        const dEl = document.getElementById(`desc-${idx}`);
-        const dCnt = document.getElementById(`cnt-desc-${idx}`);
-        const dLen = dEl.value.length;
-        dCnt.innerText = `${dLen}/150`;
-        if(dLen < MIN_DESC || dLen > MAX_DESC) {
-            dCnt.className = 'count-err'; dEl.classList.add('border-err');
-        } else {
-            dCnt.className = 'count-ok'; dEl.classList.remove('border-err');
-        }
-
-        // KW Check
-        const kEl = document.getElementById(`kw-${idx}`);
-        const kCnt = document.getElementById(`cnt-kw-${idx}`);
-        const kws = kEl.value.split(',').filter(x => x.trim().length > 0);
-        kCnt.innerText = `${kws.length} words`;
+        document.getElementById(`cnt-title-${idx}`).innerText = `${tLen}/70`;
+        document.getElementById(`cnt-title-${idx}`).className = (tLen < MIN_TITLE || tLen > MAX_TITLE) ? 'count-err' : 'count-ok';
         
-        if(kws.length < MIN_KW || kws.length > MAX_KW) {
-            kCnt.className = 'count-err'; kEl.classList.add('border-err');
-        } else {
-            kCnt.className = 'count-ok'; kEl.classList.remove('border-err');
-        }
+        const dEl = document.getElementById(`desc-${idx}`);
+        const dLen = dEl.value.length;
+        document.getElementById(`cnt-desc-${idx}`).innerText = `${dLen}/150`;
+        document.getElementById(`cnt-desc-${idx}`).className = (dLen < MIN_DESC || dLen > MAX_DESC) ? 'count-err' : 'count-ok';
+
+        const kEl = document.getElementById(`kw-${idx}`);
+        const kws = kEl.value.split(',').filter(x => x.trim().length > 0);
+        document.getElementById(`cnt-kw-${idx}`).innerText = `${kws.length} words`;
+        document.getElementById(`cnt-kw-${idx}`).className = (kws.length < MIN_KW || kws.length > MAX_KW) ? 'count-err' : 'count-ok';
     }
 
     async function startProcessing() {
         const key1 = document.getElementById('apiKey1').value.trim();
         const key2 = document.getElementById('apiKey2').value.trim();
-        
-        apiKeys = [];
-        if(key1) apiKeys.push(key1);
-        if(key2) apiKeys.push(key2);
-
+        apiKeys = [key1, key2].filter(k => k);
         if(apiKeys.length === 0) return alert("API Key wajib diisi!");
-        
-        localStorage.setItem('API_KEY_1', key1);
-        localStorage.setItem('API_KEY_2', key2);
-
-        currentKeyIndex = 0;
-        updateKeyUI();
 
         isProcessing = true;
         document.getElementById('btnProcess').disabled = true;
@@ -323,282 +259,131 @@ infographics
         for(let item of fileQueue) {
             const idx = item.id;
             updateStatus(idx, 'processing', 'AI Analyzing...');
-            
             try {
-                // 1. Snapshot
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 
-                // 2. AI Request with RETRY LOGIC
-                let data = null;
-                let attempts = 0;
-                while(attempts < 3 && data === null) {
-                    try {
-                        data = await callAIWithFailover(base64);
-                    } catch (err) {
-                        console.warn(`Attempt ${attempts + 1} failed:`, err);
-                        attempts++;
-                        await new Promise(r => setTimeout(r, 2000));
-                        if(attempts === 3) throw err;
-                    }
-                }
+                let data = await callAIWithFailover(base64);
                 
-                // 3. FORCE PROCESSING LOGIC (MOTION GRAPHIC FOCUSED)
+                // --- LOGIKA TITLE: SENTENCE CASE & NO DASHES ---
+                let title = (data.title || "Abstract motion graphic background").replace(/-/g, ' ');
+                title = title.replace(/\s+/g, ' ').trim().toLowerCase();
+                title = title.charAt(0).toUpperCase() + title.slice(1);
                 
-                // Category
-                document.getElementById(`cat-${idx}`).value = data.category || "miscellaneous";
-                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "miscellaneous";
-                
-                // TITLE PROCESSING (DIRECT & CONCISE)
-                let title = data.title || "Abstract motion graphic background";
-                title = title.replace(/\s+/g, ' ').trim();
-                
-                // Force Length (Min 50) - NO GENERIC FOOTAGE TERMS
-                if (title.length < 50) {
-                     // Tambahkan suffix yang relevan dengan motion graphic, bukan "Asset"
-                     title += " - Seamless Loop Motion Graphic Animation"; 
-                }
-                // Force Cut (Max 70)
-                if (title.length > MAX_TITLE) {
-                    title = title.substring(0, MAX_TITLE).replace(/\s\w*$/, "");
-                }
+                if (title.length < 50) title += " seamless loop motion graphic animation for creative projects";
+                if (title.length > MAX_TITLE) title = title.substring(0, MAX_TITLE).replace(/\s\w*$/, "");
                 document.getElementById(`title-${idx}`).value = title;
 
-
-                // DESCRIPTION PROCESSING (VISUAL FOCUSED)
-                let desc = data.description || "A high quality abstract animation.";
-                desc = desc.replace(/\s+/g, ' ').trim();
-                
-                // Force Context Start (Hapus "Video footage of" jika ada)
-                const forbiddenStarts = ["video footage of", "a video of", "stock footage of"];
-                forbiddenStarts.forEach(badStart => {
-                    if (desc.toLowerCase().startsWith(badStart)) {
-                        desc = desc.substring(badStart.length).trim();
-                        desc = desc.charAt(0).toUpperCase() + desc.slice(1);
-                    }
-                });
-                
-                // Force Length (Min 100)
-                if (desc.length < 100) {
-                    // Suffix yang relevan untuk Motion Graphics
-                    desc += " This abstract motion background is ideal for events, digital displays, and creative video editing projects.";
-                }
-                
-                // Force Cut (Max 150)
-                if (desc.length > MAX_DESC) {
-                    let sub = desc.substring(0, MAX_DESC);
-                    let lastDot = sub.lastIndexOf(".");
-                    if (lastDot > 100) desc = sub.substring(0, lastDot + 1);
-                    else desc = sub.substring(0, MAX_DESC).replace(/\s\w*$/, ".");
-                }
-                // Ensure ends with dot
-                if(!desc.endsWith('.')) desc += '.';
+                // --- LOGIKA DESCRIPTION ---
+                let desc = (data.description || "A high quality abstract animation.").replace(/\s+/g, ' ').trim();
+                if (desc.length < 100) desc += " This abstract motion background is ideal for events, digital displays, and creative video editing projects.";
+                if (desc.length > MAX_DESC) desc = desc.substring(0, MAX_DESC).replace(/\s\w*$/, ".");
+                if (!desc.endsWith('.')) desc += '.';
                 document.getElementById(`desc-${idx}`).value = desc;
 
-
-                // KEYWORD PROCESSING (NO IMAGES/PHOTOS)
+                // --- LOGIKA KEYWORDS: LOCK 45-48 ---
                 let rawKws = (data.keywords || "").replace(/\./g, '').split(',');
                 let cleanKws = [];
-                
                 rawKws.forEach(k => {
                     let w = k.trim().toLowerCase();
-                    // Filter angka dan kata "photo/image"
-                    if (/\d/.test(w)) return; 
-                    if (w === 'photo' || w === 'image' || w === 'shot' || w === 'photograph') return;
-                    if (w.length > 2) cleanKws.push(w);
+                    if (!/\d/.test(w) && !['photo','image','shot','photograph'].includes(w) && w.length > 2) cleanKws.push(w);
                 });
-                cleanKws = [...new Set(cleanKws)]; // Unique
-                
-                // INJECT BACKUP jika kurang dari 45
+                cleanKws = [...new Set(cleanKws)];
+
                 let backupIdx = 0;
                 while(cleanKws.length < 45 && backupIdx < BACKUP_KEYWORDS.length) {
-                    let word = BACKUP_KEYWORDS[backupIdx];
-                    if(!cleanKws.includes(word)) {
-                        cleanKws.push(word);
-                    }
+                    if(!cleanKws.includes(BACKUP_KEYWORDS[backupIdx])) cleanKws.push(BACKUP_KEYWORDS[backupIdx]);
                     backupIdx++;
                 }
-                
-                // Trim jika lebih dari 48
-                if (cleanKws.length > MAX_KW) {
-                    cleanKws = cleanKws.slice(0, MAX_KW);
-                }
-                
+                if (cleanKws.length > 48) cleanKws = cleanKws.slice(0, 48);
                 document.getElementById(`kw-${idx}`).value = cleanKws.join(', ');
 
+                document.getElementById(`cat-${idx}`).value = data.category || "miscellaneous";
+                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "miscellaneous";
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
-
             } catch(e) {
-                console.error(e);
                 updateStatus(idx, 'error', 'Error');
-                alert(`Gagal memproses file: ${item.file.name}. Cek Console.`);
             }
-
-            await new Promise(r => setTimeout(r, 1000));
         }
-        
         isProcessing = false;
         document.getElementById('btnProcess').disabled = false;
         document.getElementById('btnExport').style.display = 'inline-flex';
-        alert("Proses Selesai!");
-    }
-
-    function updateKeyUI() {
-        document.getElementById('indicator-1').style.color = currentKeyIndex === 0 ? 'var(--success)' : '#64748b';
-        if(apiKeys.length > 1) {
-            document.getElementById('indicator-2').style.color = currentKeyIndex === 1 ? 'var(--success)' : '#64748b';
-        }
-    }
-
-    function updateStatus(idx, type, text) {
-        const pill = document.getElementById(`status-pill-${idx}`);
-        const icon = document.getElementById(`status-icon-${idx}`);
-        const lbl = document.getElementById(`status-text-${idx}`);
-        lbl.innerText = text;
-        pill.className = 'status-pill';
-        if(type === 'processing') {
-            pill.classList.add('processing');
-            icon.innerHTML = '<div class="spinner"></div>';
-        } else if(type === 'success') {
-            pill.classList.add('success');
-            icon.innerText = '✅';
-        } else if(type === 'error') {
-            pill.classList.add('error');
-            icon.innerText = '❌';
-        } else {
-            icon.innerText = '⚫';
-        }
-    }
-
-    function getFilmstrip(file) {
-        return new Promise((resolve, reject) => {
-            const video = document.getElementById('hiddenVideo');
-            const canvas = document.getElementById('hiddenCanvas');
-            const ctx = canvas.getContext('2d');
-            const url = URL.createObjectURL(file);
-            video.src = url;
-            video.muted = true;
-            const w = 320, h = 180;
-            canvas.width = w*3; canvas.height = h;
-            const snap = (t) => new Promise(r => { video.currentTime=t; video.onseeked=()=>r(); });
-            video.onloadedmetadata = async () => {
-                try {
-                    await snap(video.duration * 0.1);
-                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, w, h);
-                    await snap(video.duration * 0.5);
-                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, w, 0, w, h);
-                    await snap(video.duration * 0.9);
-                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, w*2, 0, w, h);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8));
-                    URL.revokeObjectURL(url);
-                } catch(e) { reject(e); }
-            };
-            video.onerror = () => reject(new Error("Video corrupt"));
-        });
     }
 
     async function callAIWithFailover(base64) {
-        try {
-            return await makeRequest(apiKeys[currentKeyIndex], base64);
-        } catch (error) {
-            if (error.message.includes('429') || error.message.includes('Rate limit')) {
-                if (currentKeyIndex === 0 && apiKeys.length > 1) {
-                    currentKeyIndex = 1;
-                    updateKeyUI(); 
-                    return await makeRequest(apiKeys[currentKeyIndex], base64);
-                }
+        try { return await makeRequest(apiKeys[currentKeyIndex], base64); }
+        catch (error) {
+            if (currentKeyIndex === 0 && apiKeys.length > 1) {
+                currentKeyIndex = 1; updateKeyUI();
+                return await makeRequest(apiKeys[currentKeyIndex], base64);
             }
-            throw error; 
+            throw error;
         }
     }
 
     async function makeRequest(key, base64) {
-        // PROMPT SPECIFIC MOTION GRAPHICS - NO RESOLUTION FLUFF
-        const prompt = `
-        Role: Senior Motion Graphics & Microstock Metadata Specialist.
-        
-        TASK: Analyze 3 video frames of a Motion Graphic/Animation.
-        
-        STRICT TITLE RULES (50-70 chars):
-        1. FORMAT: [Adjective] [Subject] [Action/Context].
-        2. EXAMPLE: "Abstract orange digital background with thank you message".
-        3. FORBIDDEN: Do NOT use "4K", "HD", "HQ", "High Quality", "Stock Footage", "Asset", "Video Clip".
-        4. FOCUS: Describe the visual elements, colors, and movement directly. Concise and punchy.
-
-        STRICT DESCRIPTION RULES (100-150 chars):
-        1. Start directly with the visual style (e.g., "A 3D abstract render...", "Seamless loop animation of...").
-        2. Do NOT start with "Video footage of" or "A video of".
-        3. Describe the movement, lighting, and texture.
-
-        KEYWORDS RULES (Generate 100):
-        1. Focus on: abstract, motion, graphic, design, loop, seamless, animation, render, digital, technology, futuristic, glow, grid, pattern.
-        2. Avoid: photo, image, photography, shot, camera.
-        
-        3. CATEGORY: Pick ONE from list: [${CATEGORIES_LIST}]
-
-        OUTPUT JSON:
-        { "category": "string", "title": "string", "description": "string", "keywords": "string" }
-        `;
-
+        const prompt = `Role: Senior Motion Graphics & Microstock Metadata Specialist. Analyze 3 frames. JSON Output: category (from list), title (50-70 char, visual focused), description (100-150 char), keywords (comma separated). List: [${CATEGORIES_LIST}]`;
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [
-                    { role: "system", content: prompt },
-                    { role: "user", content: [
-                        { type: "text", text: "Analyze strict JSON." },
-                        { type: "image_url", image_url: { url: base64 } }
-                    ]}
-                ],
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Analyze JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
                 temperature: 0.4,
                 response_format: { type: "json_object" }
             })
         });
+        const d = await resp.json();
+        return JSON.parse(d.choices[0].message.content);
+    }
 
-        if (!resp.ok) {
-            const errText = await resp.text();
-            throw new Error(`API Fail: ${resp.status} ${errText}`);
-        }
+    function updateKeyUI() {
+        document.getElementById('indicator-1').style.color = currentKeyIndex === 0 ? 'var(--success)' : '#64748b';
+        if(apiKeys.length > 1) document.getElementById('indicator-2').style.color = currentKeyIndex === 1 ? 'var(--success)' : '#64748b';
+    }
 
-        const data = await resp.json();
-        let content = data.choices[0].message.content;
-        
-        try {
-            const first = content.indexOf('{');
-            const last = content.lastIndexOf('}');
-            if (first === -1 || last === -1) throw new Error("No JSON found");
-            return JSON.parse(content.substring(first, last+1));
-        } catch (e) {
-            throw new Error("Invalid JSON Syntax from AI");
-        }
+    function updateStatus(idx, type, text) {
+        const pill = document.getElementById(`status-pill-${idx}`);
+        const icon = document.getElementById(`status-icon-${idx}`);
+        document.getElementById(`status-text-${idx}`).innerText = text;
+        pill.className = `status-pill ${type}`;
+        icon.innerHTML = type === 'processing' ? '<div class="spinner"></div>' : (type === 'success' ? '✅' : '❌');
+    }
+
+    function getFilmstrip(file) {
+        return new Promise((resolve) => {
+            const video = document.getElementById('hiddenVideo');
+            const canvas = document.getElementById('hiddenCanvas');
+            const ctx = canvas.getContext('2d');
+            const url = URL.createObjectURL(file);
+            video.src = url;
+            video.onloadedmetadata = async () => {
+                const w = 320, h = 180;
+                canvas.width = w*3; canvas.height = h;
+                for(let i=0; i<3; i++) {
+                    video.currentTime = video.duration * (0.1 + i*0.4);
+                    await new Promise(r => video.onseeked = r);
+                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, i*w, 0, w, h);
+                }
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
+                URL.revokeObjectURL(url);
+            };
+        });
     }
 
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
-            const pill = document.getElementById(`status-pill-${idx}`);
-            if(!pill.classList.contains('success')) return;
-
-            const fname = `"${item.file.name.replace(/"/g, '""')}"`;
-            const tit = `"${document.getElementById(`title-${idx}`).value.replace(/"/g, '""')}"`;
-            const desc = `"${document.getElementById(`desc-${idx}`).value.replace(/"/g, '""')}"`;
-            const kw = `"${document.getElementById(`kw-${idx}`).value.replace(/"/g, '""')}"`;
-            const cat = `"${document.getElementById(`cat-${idx}`).value.replace(/"/g, '""')}"`;
-            
-            csv += `${fname},${tit},${desc},${kw},${cat}\n`;
+            if(!document.getElementById(`status-pill-${idx}`).classList.contains('success')) return;
+            const row = [item.file.name, document.getElementById(`title-${idx}`).value, document.getElementById(`desc-${idx}`).value, document.getElementById(`kw-${idx}`).value, document.getElementById(`cat-${idx}`).value];
+            csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
         });
-        
         const blob = new Blob([csv], {type: 'text/csv'});
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `metadata_motion_v6_${Date.now()}.csv`;
-        document.body.appendChild(a);
+        a.href = URL.createObjectURL(blob);
+        a.download = `metadata_v6_${Date.now()}.csv`;
         a.click();
-        document.body.removeChild(a);
     }
 </script>
 </body>
