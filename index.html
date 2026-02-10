@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata</title>
+    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -187,11 +187,13 @@ infographics
     ];
 
     // --- CONFIG ---
-    // Diperbarui sesuai request user
+    // Rule: Title 50-70, Desc 100-150, Keyword 45-48
     const MIN_TITLE = 50, MAX_TITLE = 70;
     const MIN_DESC = 100, MAX_DESC = 150;
     const MIN_KW = 45, MAX_KW = 48; 
-    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+    
+    // PERBAIKAN: Menggunakan Model Vision Llama 3.2 (Support Image)
+    const GROQ_MODEL = "llama-3.2-11b-vision-preview";
 
     let fileQueue = [];
     let isProcessing = false;
@@ -345,30 +347,30 @@ infographics
                     }
                 }
                 
-                // --- 3. PROCESSING LOGIC TERBARU (STRICT TITLE & KEYWORDS) ---
+                // --- 3. PROCESSING LOGIC STRICT ---
                 
                 // Category
                 document.getElementById(`cat-${idx}`).value = data.category || "miscellaneous";
                 document.getElementById(`cat-disp-${idx}`).innerText = data.category || "miscellaneous";
                 
-                // --- TITLE PROCESSING (REVISI LOGIKA) ---
-                // Rules: Sesuai video, Max 70, Kapital awal saja, Tidak boleh ada tanda "-"
+                // --- TITLE LOGIC (REVISI: NO HYPHEN, SENTENCE CASE, MAX 70) ---
                 let title = data.title || "Abstract motion graphic animation";
                 
-                // 1. Bersihkan tanda strip (-)
+                // 1. Clean: Ganti - dengan spasi
                 title = title.replace(/-/g, ' '); 
                 
-                // 2. Bersihkan spasi ganda
+                // 2. Clean: Spasi ganda
                 title = title.replace(/\s+/g, ' ').trim();
 
-                // 3. Format Sentence Case (Hanya huruf pertama besar, sisanya kecil)
+                // 3. Sentence Case: Kapital hanya huruf pertama
                 title = title.toLowerCase();
                 title = title.charAt(0).toUpperCase() + title.slice(1);
 
-                // 4. Force Logic Length (Min 50) - Tambah kata tanpa strip
+                // 4. Force Logic Length (Min 50) - Tambah suffix tanpa strip
                 if (title.length < 50) {
                      title += " seamless loop motion graphic animation design";
-                     // Pastikan format case tetap terjaga setelah penambahan
+                     // Pastikan format case tetap terjaga (kecil semua setelah ditambah)
+                     let firstPart = title.substring(0, title.lastIndexOf("design") - 1);
                      title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
                 }
 
@@ -376,18 +378,17 @@ infographics
                 if (title.length > MAX_TITLE) {
                     // Potong di 70
                     let sub = title.substring(0, MAX_TITLE);
-                    // Jangan potong di tengah kata, mundur ke spasi terakhir
+                    // Jangan potong di tengah kata, cari spasi terakhir
                     if (sub.lastIndexOf(" ") > 50) {
                         title = sub.substring(0, sub.lastIndexOf(" "));
                     } else {
-                        // Jika tidak ada spasi yang aman, potong paksa di 70
                         title = sub;
                     }
                 }
                 document.getElementById(`title-${idx}`).value = title;
 
 
-                // --- DESCRIPTION PROCESSING ---
+                // --- DESCRIPTION LOGIC ---
                 let desc = data.description || "A high quality abstract animation.";
                 desc = desc.replace(/\s+/g, ' ').trim();
                 
@@ -413,7 +414,7 @@ infographics
                 document.getElementById(`desc-${idx}`).value = desc;
 
 
-                // --- KEYWORD PROCESSING (REVISI LOGIKA: WAJIB 45-48) ---
+                // --- KEYWORD LOGIC (WAJIB 45-48) ---
                 let rawKws = (data.keywords || "").replace(/\./g, '').split(',');
                 let cleanKws = [];
                 
@@ -425,12 +426,10 @@ infographics
                 });
                 cleanKws = [...new Set(cleanKws)]; // Unique
                 
-                // FORCE FILL: Pastikan minimal 45 kata (Wajib)
+                // FORCE FILL: Isi sampai minimal 45 (Wajib)
                 let backupIdx = 0;
                 while(cleanKws.length < MIN_KW) {
-                    // Jika stok backup habis, ulangi dari awal backup list (loop)
-                    if (backupIdx >= BACKUP_KEYWORDS.length) backupIdx = 0;
-                    
+                    if (backupIdx >= BACKUP_KEYWORDS.length) backupIdx = 0; // Loop backup list
                     let word = BACKUP_KEYWORDS[backupIdx];
                     if(!cleanKws.includes(word)) {
                         cleanKws.push(word);
@@ -438,7 +437,7 @@ infographics
                     backupIdx++;
                 }
                 
-                // FORCE CUT: Pastikan maksimal 48 kata (Wajib)
+                // FORCE CUT: Potong maksimal 48 (Wajib)
                 if (cleanKws.length > MAX_KW) {
                     cleanKws = cleanKws.slice(0, MAX_KW);
                 }
@@ -451,7 +450,7 @@ infographics
             } catch(e) {
                 console.error(e);
                 updateStatus(idx, 'error', 'Error');
-                alert(`Gagal memproses file: ${item.file.name}. Cek Console.`);
+                alert(`Gagal memproses file: ${item.file.name}. Error: ${e.message}`);
             }
 
             await new Promise(r => setTimeout(r, 1000));
@@ -533,10 +532,8 @@ infographics
     }
 
     async function makeRequest(key, base64) {
-        // PROMPT DIUPDATE SUPAYA AI MENGERTI ATURAN BARU
         const prompt = `
         Role: Senior Motion Graphics & Microstock Metadata Specialist.
-        
         TASK: Analyze 3 video frames of a Motion Graphic/Animation.
         
         STRICT TITLE RULES (Must be relevant to visual):
@@ -560,38 +557,40 @@ infographics
         { "category": "string", "title": "string", "description": "string", "keywords": "string" }
         `;
 
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                messages: [
-                    { role: "system", content: prompt },
-                    { role: "user", content: [
-                        { type: "text", text: "Analyze strict JSON." },
-                        { type: "image_url", image_url: { url: base64 } }
-                    ]}
-                ],
-                temperature: 0.4,
-                response_format: { type: "json_object" }
-            })
-        });
-
-        if (!resp.ok) {
-            const errText = await resp.text();
-            throw new Error(`API Fail: ${resp.status} ${errText}`);
-        }
-
-        const data = await resp.json();
-        let content = data.choices[0].message.content;
-        
         try {
+            // FIX PENTING: Struktur User + Image dalam satu array content untuk Llama Vision
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: GROQ_MODEL, 
+                    messages: [
+                        { role: "user", content: [
+                            { type: "text", text: prompt }, 
+                            { type: "image_url", image_url: { url: base64 } }
+                        ]}
+                    ],
+                    temperature: 0.4,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            if (!resp.ok) {
+                const errText = await resp.text();
+                throw new Error(`API Fail: ${resp.status} - ${errText}`);
+            }
+
+            const data = await resp.json();
+            let content = data.choices[0].message.content;
+            
             const first = content.indexOf('{');
             const last = content.lastIndexOf('}');
             if (first === -1 || last === -1) throw new Error("No JSON found");
             return JSON.parse(content.substring(first, last+1));
+
         } catch (e) {
-            throw new Error("Invalid JSON Syntax from AI");
+            console.error("API Call Error:", e);
+            throw e;
         }
     }
 
