@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Pro V7 (Stable)</title>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
+    <title>Microstock Metadata Pro - Vision Edition V8</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
@@ -45,8 +45,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V7 Fix</span></h1>
-        <div style="font-size: 12px; opacity: 0.8;">Strict Logic & Anti-Fail System</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V8 Vision Fix</span></h1>
+        <div style="font-size: 12px; opacity: 0.8;">Strict S-P-O Logic & Vision Model</div>
     </div>
 
     <div class="controls">
@@ -75,7 +75,7 @@
         <thead>
             <tr>
                 <th style="width: 300px;">Media Asset</th>
-                <th>Metadata (S-P-O Logic & No Hanging Words)</th>
+                <th>Metadata (Optimized Subject-Object Logic)</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -89,7 +89,7 @@
     // --- DATABASE KATEGORI LENGKAP ---
     const FULL_CATEGORIES = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
 
-    // --- KEYWORDS CADANGAN (Agar tidak pernah kosong) ---
+    // --- KEYWORDS CADANGAN ---
     const BACKUP_KEYWORDS = [
         "motion", "graphic", "abstract", "visual", "loop", "animation", "render", "digital", "design", "creative", 
         "modern", "effect", "pattern", "dynamic", "vibrant", "futuristic", "overlay", "backdrop", "cinematic", 
@@ -99,8 +99,10 @@
         "multimedia", "cyber", "neon", "marketing", "promo", "broadcast"
     ];
 
-    // Gunakan Model Stable agar JSON Valid
-    const GROQ_MODEL = "llama-3.3-70b-versatile"; 
+    // --- MODEL CONFIGURATION (VISION MODELS ONLY) ---
+    // Menggunakan Model yang mendukung "image_url". 90b lebih akurat, 11b untuk backup.
+    const PRIMARY_MODEL = "llama-3.2-90b-vision-preview"; 
+    const BACKUP_MODEL = "llama-3.2-11b-vision-preview";
 
     let fileQueue = [];
     let apiKeys = [];
@@ -166,11 +168,13 @@
             try {
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
+                
+                // Minta data ke AI
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
                 // === 1. KATEGORI ===
                 let selectedCat = data.category || "backgrounds";
-                if(selectedCat.includes('null') || selectedCat.length < 3) selectedCat = "backgrounds";
+                if(!selectedCat || selectedCat.length < 3) selectedCat = "backgrounds";
                 document.getElementById(`cat-${idx}`).value = selectedCat;
                 document.getElementById(`cat-disp-${idx}`).innerText = selectedCat;
 
@@ -179,16 +183,14 @@
                 
                 // Hapus kata-kata "sampah"
                 const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template", "stock footage", "shot of", "video of"];
-                trash.forEach(w => {
-                     title = title.split(w).join(' ').trim();
-                });
+                trash.forEach(w => { title = title.split(w).join(' ').trim(); });
 
-                // Pastikan mengandung 3d/Abstract jika kategori memintanya
+                // Cek Kata Kunci Kategori
                 if(selectedCat.includes('3d') && !title.includes('3d')) title = "3d " + title;
                 if(selectedCat.includes('abstract') && !title.includes('abstract')) title = "abstract " + title;
 
-                // Bersihkan kata penghubung di akhir kalimat (penyebab "with")
-                const endBad = [" with", " and", " for", " of", " in", " on", " the", " a", " an"];
+                // Bersihkan kata penghubung di akhir kalimat
+                const endBad = [" with", " and", " for", " of", " in", " on", " the", " a", " an", " is"];
                 endBad.forEach(eb => {
                     if(title.endsWith(eb)) title = title.substring(0, title.length - eb.length);
                 });
@@ -196,11 +198,9 @@
                 // Perbaiki Subject-Predicate-Object (Jika kependekan, ambil object dari deskripsi)
                 if(title.length < 50) {
                      const descWords = (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ');
-                     let added = 0;
                      for(let w of descWords) {
                          if(w.length > 3 && !title.includes(w)) {
                              title += " " + w;
-                             added++;
                              if(title.length > 55) break;
                          }
                      }
@@ -209,39 +209,27 @@
                 // Final Format: Sentence case
                 title = title.replace(/\s+/g, ' ').trim();
                 title = title.charAt(0).toUpperCase() + title.slice(1);
-
-                // Potong jika kepanjangan (tapi jangan potong kata)
                 if(title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
-                
-                // Fallback terakhir jika masih kependekan
                 if(title.length < 50) title += " cinematic digital visualization";
-
                 document.getElementById(`title-${idx}`).value = title;
-
 
                 // === 3. DESCRIPTION LOGIC ===
                 let desc = (data.description || "High quality animation.").trim();
                 desc = desc.charAt(0).toUpperCase() + desc.slice(1);
                 if(desc.length < 100) desc += " This high-quality motion graphic video features professional visual effects perfect for digital projects and presentations.";
-                // Potong rapi
                 if(desc.length > 150) desc = desc.substring(0, 150).replace(/\s\w*$/, ".");
                 if(!desc.endsWith('.')) desc += '.';
                 document.getElementById(`desc-${idx}`).value = desc;
 
-
                 // === 4. KEYWORDS LOGIC (STRICT 45-48) ===
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
-                kws = [...new Set(kws)]; // Unique
-
-                // Isi jika kurang dari 45
+                kws = [...new Set(kws)]; 
                 let bIdx = 0;
                 while(kws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
                     if(!kws.includes(BACKUP_KEYWORDS[bIdx])) kws.push(BACKUP_KEYWORDS[bIdx]);
                     bIdx++;
                 }
-                // Potong jika lebih dari 48
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
-
 
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
@@ -249,7 +237,8 @@
             } catch(e) { 
                 console.error("Processing Error:", e);
                 updateStatus(idx, 'error', 'Fail'); 
-                alert(`Error pada file ${item.file.name}: ${e.message}. Cek Console.`);
+                // Tampilkan pesan error spesifik di console
+                alert(`Error pada file ${item.file.name}: ${e.message}.`);
             }
         }
         document.getElementById('btnProcess').disabled = false;
@@ -257,46 +246,61 @@
     }
 
     async function makeRequest(key, base64) {
-        // Prompt yang sangat spesifik
         const prompt = `
-        Role: Senior Microstock Metadata Specialist.
-        Task: Analyze the image/video frame.
-        1. CATEGORY: Must be exactly one from: [${FULL_CATEGORIES}].
-        2. TITLE (50-70 chars): Write a complete Subject-Predicate-Object sentence. E.g., "Abstract blue digital waves flowing in dark space". NO "Seamless loop", NO "Motion graphic", NO "Video of".
-        3. DESCRIPTION (100-150 chars): Describe lighting, texture, and movement.
-        4. KEYWORDS: Provide 50 relevant visual tags.
+        Role: Senior Metadata Specialist.
+        1. CATEGORY: Pick ONE from: [${FULL_CATEGORIES}].
+        2. TITLE (50-70 chars): Complete sentence (Subject+Predicate+Object). No "Seamless loop" or "Video of". No ending with "with"/"and".
+        3. DESCRIPTION (100-150 chars): Describe visual details.
+        4. KEYWORDS: 50 tags.
         Output strictly JSON: {"category": "...", "title": "...", "description": "...", "keywords": "..."}
         `;
 
-        try {
-            const resp = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
+        // RETRY LOGIC (Try Primary Model -> Fail -> Try Backup Model)
+        const tryFetch = async (modelName) => {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    model: GROQ_MODEL, // Menggunakan model v3.3 yang lebih pintar
+                    model: modelName,
                     messages: [
                         { role: "system", content: prompt }, 
-                        { role: "user", content: [{ type: "text", text: "Analyze strict JSON." }, { type: "image_url", image_url: { url: base64 } }] }
+                        { role: "user", content: [{ type: "text", text: "Analyze JSON." }, { type: "image_url", image_url: { url: base64 } }] }
                     ],
                     temperature: 0.2
                 })
             });
+            if(!resp.ok) {
+                const errText = await resp.text();
+                throw new Error(`API ${resp.status}: ${errText}`);
+            }
+            return await resp.json();
+        };
 
-            if(!resp.ok) throw new Error(`API Status: ${resp.status}`);
-            
-            const d = await resp.json();
-            const content = d.choices[0].message.content;
-            
-            // --- JSON CLEANER (Anti-Fail Logic) ---
+        try {
+            // Coba Model Utama (90b)
+            const d = await tryFetch(PRIMARY_MODEL);
+            return parseAIResponse(d);
+        } catch (err) {
+            console.warn(`Primary model failed (${err.message}), trying backup...`);
+            // Coba Backup (11b)
+            try {
+                const d2 = await tryFetch(BACKUP_MODEL);
+                return parseAIResponse(d2);
+            } catch (err2) {
+                throw new Error("All models failed. Check API Key or Groq limit.");
+            }
+        }
+    }
+
+    function parseAIResponse(data) {
+        try {
+            const content = data.choices[0].message.content;
             const jsonStart = content.indexOf('{');
             const jsonEnd = content.lastIndexOf('}');
-            if (jsonStart === -1 || jsonEnd === -1) throw new Error("AI did not return JSON");
-            
-            const cleanJson = content.substring(jsonStart, jsonEnd + 1);
-            return JSON.parse(cleanJson);
-
-        } catch (error) {
-            throw error;
+            if (jsonStart === -1 || jsonEnd === -1) throw new Error("Invalid JSON");
+            return JSON.parse(content.substring(jsonStart, jsonEnd + 1));
+        } catch (e) {
+            throw new Error("Failed to parse JSON from AI");
         }
     }
 
@@ -313,16 +317,16 @@
             const ctx = c.getContext('2d');
             const url = URL.createObjectURL(file);
             v.src = url;
-            v.onerror = () => rej(new Error("Video format error"));
+            v.onerror = () => rej(new Error("Video corrupt"));
             v.onloadedmetadata = async () => {
                 c.width = 960; c.height = 180;
                 try {
                     for(let i=0; i<3; i++) {
                         v.currentTime = v.duration * (0.2 + i * 0.3);
-                        await new Promise(r => { v.onseeked = r; setTimeout(r, 500); }); // Timeout safety
+                        await new Promise(r => { v.onseeked = r; setTimeout(r, 200); });
                         ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
                     }
-                    res(c.toDataURL('image/jpeg', 0.7));
+                    res(c.toDataURL('image/jpeg', 0.6)); // Compressing to 0.6 to avoid payload too large error
                 } catch(e) { rej(e); }
                 URL.revokeObjectURL(url);
             };
@@ -339,7 +343,7 @@
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `microstock_metadata_v7.csv`;
+        a.download = `metadata_vision_v8.csv`;
         a.click();
     }
 </script>
