@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
+    <title>Microstock Metadata</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
@@ -90,7 +90,7 @@
             </div>
             <div class="input-group">
                 <label>📂 Pilih Folder Video</label>
-                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*, .mkv, .flv, .avi, .mov, .wmv, .webm, .mpeg, .mpg, .3gp, .m4v" style="background: white;">
+                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*, .mkv, .flv, .avi, .mov, .wmv, .webm, .m4v, .3gp, .mpeg, .mpg" style="background: white;">
             </div>
             <div class="action-area">
                 <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">🚀 Mulai Proses</button>
@@ -104,7 +104,7 @@
         </table>
     </div>
 
-    <video id="hiddenVideo" style="display:none;" muted playsinline></video>
+    <video id="hiddenVideo" style="display:none;" muted playsinline preload="auto"></video>
     <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
     <script>
@@ -149,40 +149,18 @@
         }
 
         document.getElementById('fileInput').addEventListener('change', function (e) {
-            // FILTER UNIVERSAL: Ambil semua file yang terlihat seperti video berdasarkan ekstensi atau mime type
-            const allowedExt = /\.(mp4|mov|avi|mkv|flv|wmv|webm|mpg|mpeg|3gp|m4v|m2ts|mts|vob|ogv|ts)$/i;
+            const videoExts = ['.mp4', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.webm', '.m4v', '.3gp', '.mpeg', '.mpg'];
             const files = Array.from(e.target.files).filter(f => {
-                return f.type.startsWith('video/') || allowedExt.test(f.name);
+                const ext = f.name.substring(f.name.lastIndexOf('.')).toLowerCase();
+                return f.type.startsWith('video/') || videoExts.includes(ext);
             });
-
             const tbody = document.getElementById('resultBody');
             tbody.innerHTML = '';
             fileQueue = [];
             files.forEach((file, index) => {
                 fileQueue.push({ file, id: index });
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div class="preview-box" id="preview-${index}"><div style="height:140px; background:#eee;"></div></div>
-                        <div style="font-weight:600; font-size:12px; margin-top:10px;">${file.name}</div>
-                        <div class="cat-badge" id="cat-disp-${index}">Category: -</div>
-                        <div class="status-pill" id="status-pill-${index}">⚫ <span id="status-text-${index}">Pending</span></div>
-                        <input type="hidden" id="cat-${index}">
-                    </td>
-                    <td>
-                        <div class="meta-wrapper">
-                            <div class="meta-label"><span>TITLE (70-90 Chars)</span><span id="cnt-title-${index}">0</span></div>
-                            <input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})">
-                        </div>
-                        <div class="meta-wrapper">
-                            <div class="meta-label"><span>DESC (100-150)</span><span id="cnt-desc-${index}">0/150</span></div>
-                            <textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea>
-                        </div>
-                        <div class="meta-wrapper">
-                            <div class="meta-label"><span>KEYWORDS (Min 45 Words)</span><span id="cnt-kw-${index}">0 words</span></div>
-                            <textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea>
-                        </div>
-                    </td>`;
+                tr.innerHTML = `<td><div class="preview-box" id="preview-${index}"><div style="height:140px; background:#eee;"></div></div><div style="font-weight:600; font-size:12px; margin-top:10px;">${file.name}</div><div class="cat-badge" id="cat-disp-${index}">Category: -</div><div class="status-pill" id="status-pill-${index}">⚫ <span id="status-text-${index}">Pending</span></div><input type="hidden" id="cat-${index}"></td><td><div class="meta-wrapper"><div class="meta-label"><span>TITLE (70-90 Chars)</span><span id="cnt-title-${index}">0</span></div><input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})"></div><div class="meta-wrapper"><div class="meta-label"><span>DESC (100-150)</span><span id="cnt-desc-${index}">0/150</span></div><textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea></div><div class="meta-wrapper"><div class="meta-label"><span>KEYWORDS (Min 45 Words)</span><span id="cnt-kw-${index}">0 words</span></div><textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea></div></td>`;
                 tbody.appendChild(tr);
             });
         });
@@ -214,54 +192,59 @@
             return str.trim().replace(/[\s,]+(and|or|with|the|a|an|is|at|of|in|to|for)[\s,.]*$/i, "").replace(/[,\s]+$/, "");
         }
 
-        // FUNGSI GET FILMSTRIP DENGAN UNIVERSAL FALLBACK
+        // FUNGSI SNAPSHOT MAKSIMAL UNTUK SEMUA FORMAT (TERMASUK .MOV)
         function getFilmstrip(file) {
             return new Promise((resolve) => {
                 const v = document.getElementById('hiddenVideo');
                 const c = document.getElementById('hiddenCanvas');
                 const ctx = c.getContext('2d');
                 
-                // Fallback function: Bikin gambar teks nama file
-                const fallback = () => {
+                const createInfoCard = () => {
                     c.width = 960;
                     c.height = 180;
-                    ctx.fillStyle = "#111";
+                    ctx.fillStyle = "#ffffff";
                     ctx.fillRect(0, 0, 960, 180);
-                    ctx.font = "bold 20px Inter";
-                    ctx.fillStyle = "#fff";
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "bold 24px Inter";
                     ctx.textAlign = "center";
-                    ctx.fillText("PREVIEW NOT AVAILABLE", 480, 80);
-                    ctx.font = "14px Inter";
-                    ctx.fillStyle = "#aaa";
-                    ctx.fillText(file.name, 480, 110);
-                    resolve(c.toDataURL('image/jpeg')); // Tetap resolve, jangan reject!
+                    ctx.fillText("VIDEO FILE: " + file.name, 480, 90);
+                    ctx.font = "16px Inter";
+                    ctx.fillStyle = "#555555";
+                    ctx.fillText("(Visual Not Supported - Analyze Filename)", 480, 120);
+                    resolve(c.toDataURL('image/jpeg'));
                 };
 
-                const timeout = setTimeout(fallback, 4000); // 4 detik limit
+                const timeout = setTimeout(createInfoCard, 5000); // 5 Detik timeout untuk .mov berat
 
-                v.onloadeddata = async () => {
+                v.oncanplay = async () => {
                     clearTimeout(timeout);
                     try {
                         c.width = 960;
                         c.height = 180;
+                        
+                        // Nudge Video: Putar sebentar agar decoder aktif (Penting untuk .mov)
+                        v.play();
+                        await new Promise(r => setTimeout(r, 100));
+                        v.pause();
+
                         for (let i = 0; i < 3; i++) {
                             v.currentTime = v.duration * (0.1 + i * 0.4); 
-                            await new Promise(r => setTimeout(r, 200)); 
+                            await new Promise(r => v.onseeked = r); 
                             ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
                         }
                         resolve(c.toDataURL('image/jpeg'));
                     } catch (e) {
-                        fallback();
+                        createInfoCard();
                     }
                 };
 
                 v.onerror = () => {
                     clearTimeout(timeout);
-                    fallback(); // Format tidak didukung browser -> Pakai fallback
+                    createInfoCard();
                 };
 
                 v.src = URL.createObjectURL(file);
-                v.load(); // Paksa load
+                v.load();
             });
         }
 
@@ -273,15 +256,11 @@
             for (let item of fileQueue) {
                 const idx = item.id;
                 updateStatus(idx, 'processing', 'Analyzing...');
-                
-                // Ambil snapshot (atau fallback jika format aneh)
-                const base64 = await getFilmstrip(item.file);
-                document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
-                
                 try {
+                    const base64 = await getFilmstrip(item.file);
+                    document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                     let data = await makeRequest(apiKeys[currentKeyIndex], base64);
 
-                    // 1. CATEGORY
                     let finalCat = "backgrounds";
                     if (data.category) {
                        const match = ALL_CATEGORIES.find(c => c === data.category.toLowerCase() || c.endsWith('/' + data.category.toLowerCase()));
@@ -290,7 +269,6 @@
                     document.getElementById(`cat-${idx}`).value = finalCat;
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
-                    // 2. KEYWORDS LOGIC
                     let rawKw = data.keywords;
                     let kws = Array.isArray(rawKw) ? rawKw : (typeof rawKw === 'string' ? rawKw.split(',') : []);
                     let splitKws = [];
@@ -298,9 +276,7 @@
                         let parts = word.toString().toLowerCase().split(/[\s_-]+/);
                         parts.forEach(p => {
                             let clean = p.replace(/[^a-z]/g, '');
-                            if (clean.length > 2 && !STOP_WORDS.includes(clean)) {
-                                splitKws.push(clean);
-                            }
+                            if (clean.length > 2 && !STOP_WORDS.includes(clean)) splitKws.push(clean);
                         });
                     });
                     splitKws = [...new Set(splitKws)];
@@ -311,7 +287,6 @@
                     }
                     document.getElementById(`kw-${idx}`).value = splitKws.join(', ');
 
-                    // 3. TITLE LOGIC
                     let title = (data.title || "").trim();
                     title = title.replace(/['":;,.!?-]/g, '');
                     title = title.replace(/\b(saying|reads|written|that says|showing)\b/gi, ""); 
@@ -320,7 +295,6 @@
                     title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
 
                     const hasBackgroundInTitle = /\b(on|with)\s+.*background\b/i.test(title);
-
                     if (title.length < 70) {
                         if (title.toLowerCase().includes("thanks") || title.toLowerCase().includes("subscribe")) {
                              title += " for youtube end screen channel closing";
@@ -328,28 +302,18 @@
                              title += " motion background in seamless loop";
                         } else if (!hasBackgroundInTitle && (finalCat.includes("element") || finalCat.includes("overlay"))) {
                              title += " animation isolated on transparent background";
-                        } else if (hasBackgroundInTitle) {
-                             title += " with cinematic lighting effect";
                         } else {
-                             title += " rendered in modern 3d digital style";
+                             title += " with professional cinematic lighting effect";
                         }
                     }
-                    
-                    if (title.length < 70) {
-                        title += " with cinematic lighting";
-                    }
-
                     title = smartTrim(title, 70, 90);
                     title = cleanTrailing(title);
                     document.getElementById(`title-${idx}`).value = title;
 
-                    // 4. DESCRIPTION LOGIC
                     let desc = (data.description || "Video clip.").trim();
                     desc = desc.replace(/\b(static image|still photo|picture)\b/gi, "motion graphic video");
                     desc = desc.replace(/^High quality video clip\.?/i, "This video features");
-                    if (!desc.toLowerCase().startsWith("this video")) {
-                        desc = "This video features " + desc.charAt(0).toLowerCase() + desc.slice(1);
-                    }
+                    if (!desc.toLowerCase().startsWith("this video")) desc = "This video features " + desc.charAt(0).toLowerCase() + desc.slice(1);
                     if (desc.length < 100) desc += " ideal for event displays, backgrounds, and multimedia projects.";
                     let finalDesc = desc.substring(0, 150);
                     if (finalDesc.length < desc.length) finalDesc = finalDesc.replace(/\s\w*$/, ""); 
@@ -361,7 +325,7 @@
                     validate(idx);
                 } catch (e) {
                     console.error(e);
-                    updateStatus(idx, 'error', 'AI Error');
+                    updateStatus(idx, 'error', 'Fail');
                 }
             }
             document.getElementById('btnProcess').disabled = false;
@@ -371,19 +335,13 @@
 
         async function makeRequest(key, base64) {
             const prompt = `You are a Stock Video Metadata Expert. 
-            Input: Filmstrip of a VIDEO clip.
-            
+            Input: Filmstrip of a VIDEO clip. 
+            IMPORTANT: If you see a WHITE CARD with TEXT (Filename), analyze the text to guess the visual content!
             STRICT RULES:
-            1. Title: Create an ORGANIC formula: [Adjective] + [Color] + [Subject] + [Action] + [Context].
-               - NO "A video of". 
-               - IF TEXT IS VISIBLE (e.g., "Sale"), WRITE IT.
-               - Example: "Elegant golden thanks for watching text rotates on dark brown background".
-               - Target Length: 75-80 characters.
-            2. Keywords: Return 50 relevant SINGLE words. NO STOP WORDS (for, and, the).
+            1. Title: Create an ORGANIC formula: [Adjective] + [Color] + [Subject] + [Action] + [Context]. NO "saying". Target 80 chars.
+            2. Keywords: Return 50 relevant SINGLE words. NO STOP WORDS.
             3. Category: Select most relevant.
-            4. Description: Start with "This video features...". NEVER say "static image". Use verbs like "moves", "rotates", "shimmers".
-            
-            Return STRICT JSON: {category, title, description, keywords}`;
+            4. Description: Start with "This video features...". NEVER say "static image".`;
             
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -393,7 +351,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze visuals. Organic title. No 'saying'. JSON only." },
+                            { type: "text", text: "Analyze visuals or filename card. Organic title. JSON only." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
@@ -413,19 +371,13 @@
         function exportCSV() {
             let csv = "Filename,Title,Description,Keywords,Category\n";
             fileQueue.forEach((item, idx) => {
-                const row = [
-                    item.file.name,
-                    document.getElementById(`title-${idx}`).value,
-                    document.getElementById(`desc-${idx}`).value,
-                    document.getElementById(`kw-${idx}`).value,
-                    document.getElementById(`cat-${idx}`).value
-                ];
+                const row = [item.file.name, document.getElementById(`title-${idx}`).value, document.getElementById(`desc-${idx}`).value, document.getElementById(`kw-${idx}`).value, document.getElementById(`cat-${idx}`).value];
                 csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `microstock_video_v6.csv`;
+            a.download = `microstock_video_metadata.csv`;
             a.click();
         }
     </script>
