@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microstock Metadata Pro - Motion Graphic Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
@@ -72,7 +72,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro (SPOK Fix)</span></h1>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro (SPOK FIXED)</span></h1>
         <div style="font-size: 12px; opacity: 0.8;">Strict Visual Description Mode</div>
     </div>
 
@@ -102,7 +102,7 @@
         <thead>
             <tr>
                 <th style="width: 300px;">Media Asset</th>
-                <th>Metadata (SPOK Structured & Strict Categories)</th>
+                <th>Metadata (SPOK Structured & Strict Keywords)</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -113,50 +113,28 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- KONFIGURASI KATEGORI LENGKAP SESUAI PERMINTAAN ---
+    // --- LIST KATEGORI LENGKAP ---
     const ALL_CATEGORIES = [
-        "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", 
-        "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", 
-        "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", 
-        "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
-        "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", 
-        "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", 
-        "bugs/technology", "bugs/water", "bugs/miscellaneous",
+        "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
+        "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
         "distortions",
-        "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", 
-        "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", 
-        "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
-        "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", 
-        "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", 
-        "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", 
-        "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", 
-        "interface-effects/miscellaneous",
-        "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", 
-        "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", 
-        "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", 
-        "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
-        "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", 
-        "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", 
-        "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
+        "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
+        "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", "interface-effects/miscellaneous",
+        "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
+        "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
         "particles",
-        "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", 
-        "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", 
-        "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
-        "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", 
-        "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", 
-        "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", 
-        "transitions/technology", "transitions/water", "transitions/miscellaneous",
+        "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
+        "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", "transitions/miscellaneous",
         "water-and-fluid",
-        "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", 
-        "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", 
-        "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", 
-        "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous",
+        "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous",
         "infographics"
     ];
 
     const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "render", "digital", "design", "creative", "concept", "modern", "effect", "futuristic", "pattern", "glow", "texture", "dynamic", "element", "colorful", "artistic", "display", "presentation", "backdrop", "overlay", "energy", "flow", "clean", "soft", "sharp", "gradient", "composition", "style", "cinematic", "technology", "shapes", "geometry", "bright", "vibrant", "elegant", "smooth", "ambient", "high tech", "decoration", "wallpaper", "studio", "pro", "visuals"];
 
-    const GROQ_MODEL = "meta-llama/llama-3.3-70b-versatile"; // Menggunakan model yang lebih pintar untuk instruksi kompleks
+    const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48; 
+    // Menggunakan model 8b-instant untuk kecepatan dan reliabilitas (mengurangi risiko 'Fail')
+    const GROQ_MODEL = "llama-3.1-8b-instant"; 
 
     let fileQueue = [];
     let apiKeys = [];
@@ -203,13 +181,10 @@
         const t = document.getElementById(`title-${idx}`).value.length;
         const d = document.getElementById(`desc-${idx}`).value.length;
         const k = document.getElementById(`kw-${idx}`).value.split(',').filter(x => x.trim()).length;
-        
         document.getElementById(`cnt-title-${idx}`).innerText = `${t}/70`;
         document.getElementById(`cnt-title-${idx}`).className = (t < 50 || t > 70) ? 'count-err' : 'count-ok';
-        
         document.getElementById(`cnt-desc-${idx}`).innerText = `${d}/150`;
         document.getElementById(`cnt-desc-${idx}`).className = (d < 100 || d > 150) ? 'count-err' : 'count-ok';
-        
         document.getElementById(`cnt-kw-${idx}`).innerText = `${k} words`;
         document.getElementById(`cnt-kw-${idx}`).className = (k < 45 || k > 48) ? 'count-err' : 'count-ok';
     }
@@ -227,52 +202,53 @@
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- LOGIKA TITLE SPOK ANTI-POTONG ---
+                // --- LOGIKA JUDUL (SPOK & TIDAK KEPOTONG) ---
                 let title = (data.title || "").trim();
-                // Hapus tanda kutip jika AI bandel
-                title = title.replace(/['"]/g, '');
-                
-                // Pastikan struktur kalimat (Huruf besar awal)
+                // Pastikan huruf besar di awal
                 title = title.charAt(0).toUpperCase() + title.slice(1);
                 
-                // Truncate cerdas (potong di spasi terakhir sebelum 70)
+                // Jika lebih dari 70 karakter, potong di spasi terakhir sebelum 70
                 if(title.length > 70) {
-                    let tmp = title.substring(0, 70);
-                    if(tmp.lastIndexOf(" ") > 40) { // Pastikan tidak memotong terlalu pendek
-                        title = tmp.substring(0, tmp.lastIndexOf(" ")); 
+                    let tempTitle = title.substring(0, 70);
+                    // Cari spasi terakhir untuk memotong agar kata tidak rusak
+                    let lastSpace = tempTitle.lastIndexOf(" ");
+                    if (lastSpace > 40) { 
+                        title = tempTitle.substring(0, lastSpace);
                     } else {
-                        title = tmp; // Force cut jika spasi aneh
+                        title = tempTitle; // Fallback jika tidak ada spasi yang aman
                     }
                 }
                 
-                // Jika terlalu pendek, tambahkan konteks
+                // Jika terlalu pendek (di bawah 50), tambahkan konteks
                 if(title.length < 50) {
                     title = title + " loop for video production";
                 }
+                
                 document.getElementById(`title-${idx}`).value = title;
 
 
-                // --- LOGIKA DESKRIPSI (PREFIX + SUFFIX) ---
-                const DESC_SUFFIX = " This unique visual asset is designed for high-end video production and digital signage applications.";
+                // --- LOGIKA DESKRIPSI (WAJIB ADA SUFFIX) ---
+                const SUFFIX = " This unique visual asset is designed for high-end video production and digital signage applications.";
+                // Ruang tersisa untuk deskripsi visual (150 total - panjang suffix)
+                const availableSpace = 150 - SUFFIX.length; 
                 
-                // Hitung sisa ruang untuk deskripsi visual
-                const maxVisualChars = 150 - DESC_SUFFIX.length; // Sekitar 50-55 karakter
+                let descVisual = (data.description || "").trim();
+                // Bersihkan tanda titik di akhir karena suffix dimulai dengan spasi
+                descVisual = descVisual.replace(/[.]+$/, "");
                 
-                let visualDesc = (data.description || "").trim();
-                // Hapus tanda baca di akhir deskripsi visual karena suffix dimulai dengan spasi
-                visualDesc = visualDesc.replace(/[.]+$/, ""); 
-                
-                // Potong deskripsi visual agar muat
-                if(visualDesc.length > maxVisualChars) {
-                    let tmp = visualDesc.substring(0, maxVisualChars);
-                    visualDesc = tmp.substring(0, tmp.lastIndexOf(" ")); // Potong di spasi
+                // Potong deskripsi visual jika terlalu panjang agar suffix muat pas
+                if (descVisual.length > availableSpace) {
+                    let tempDesc = descVisual.substring(0, availableSpace);
+                    let lastSpaceDesc = tempDesc.lastIndexOf(" ");
+                    if (lastSpaceDesc > 10) {
+                        descVisual = tempDesc.substring(0, lastSpaceDesc);
+                    }
                 }
                 
-                let fullDesc = visualDesc + DESC_SUFFIX;
-                document.getElementById(`desc-${idx}`).value = fullDesc;
+                document.getElementById(`desc-${idx}`).value = descVisual + SUFFIX;
 
 
-                // --- KEYWORDS ---
+                // --- LOGIKA KEYWORDS ---
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
                 kws = [...new Set(kws)];
                 let bIdx = 0;
@@ -282,21 +258,25 @@
                 }
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
 
-                // --- CATEGORY ---
-                // Validasi apakah kategori dari AI ada di daftar kita
-                let finalCat = data.category || "backgrounds";
-                if (!ALL_CATEGORIES.includes(finalCat)) {
-                    // Jika AI ngaco, cari yang mirip atau default ke backgrounds
-                    finalCat = ALL_CATEGORIES.find(c => c.includes(finalCat)) || "backgrounds";
-                }
+                // --- LOGIKA KATEGORI (MATCHING) ---
+                let aiCat = data.category || "";
+                let finalCat = "backgrounds"; // Default
                 
+                // Cek apakah kategori AI ada di daftar kita
+                if (ALL_CATEGORIES.includes(aiCat)) {
+                    finalCat = aiCat;
+                } else {
+                    // Cari yang mirip
+                    let match = ALL_CATEGORIES.find(c => aiCat.includes(c) || c.includes(aiCat.split('/')[0]));
+                    if (match) finalCat = match;
+                }
+
                 document.getElementById(`cat-${idx}`).value = finalCat;
                 document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
-                
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
             } catch(e) { 
-                console.error(e);
+                console.error(e); // Lihat console untuk detail error
                 updateStatus(idx, 'error', 'Fail'); 
             }
         }
@@ -305,32 +285,40 @@
     }
 
     async function makeRequest(key, base64) {
-        // --- PROMPT DIPERBARUI UNTUK STRUKTUR SPOK & KATEGORI KETAT ---
-        const systemPrompt = `
-        You are a Metadata Expert for Microstock. 
-        AVAILABLE CATEGORIES: ${JSON.stringify(ALL_CATEGORIES)}
+        // PROMPT SANGAT SPESIFIK AGAR FORMAT BENAR
+        const prompt = `
+        You are a Metadata API. 
+        LIST OF VALID CATEGORIES: ${JSON.stringify(ALL_CATEGORIES)}
         
-        Analyze the image and return a JSON object with:
-        1. "category": EXACTLY one string from the AVAILABLE CATEGORIES list above.
-        2. "title": A single complete English sentence (Subject + Predicate + Object). MAX 65 characters. NO "Thank you", NO "Watching", NO Text quotes. Describe the VISUALS only (e.g., "Abstract blue digital waves flowing smoothly on dark background").
-        3. "description": A very short visual description (max 8 words). ONLY describe what is seen. Do NOT include "Designed for...". Example: "Blue neon lines glowing in darkness".
-        4. "keywords": 50 comma-separated keywords relevant to the visual.
+        Analyze the image. Return ONLY VALID JSON with these keys:
+        - "category": Choose exactly one from the list above.
+        - "title": A single SPOK sentence (Subject Predicate Object Keterangan) about the visual. MAX 65 chars. NO "Thanks", NO text quotes.
+        - "description": Extremely short visual description (max 5-7 words).
+        - "keywords": 50 comma separated keywords.
         `;
-
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        
+        const resp = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [
-                    { role: "system", content: systemPrompt }, 
-                    { role: "user", content: [{ type: "text", text: "Return strictly valid JSON." }, { type: "image_url", image_url: { url: base64 } }] }
-                ],
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "JSON ONLY." }, { type: "image_url", image_url: { url: base64 } }] }],
                 response_format: { type: "json_object" }
             })
         });
+        
         const d = await resp.json();
-        return JSON.parse(d.choices[0].message.content);
+        let content = d.choices[0].message.content;
+        
+        // PEMBERSIH JSON (Fix Error Fail)
+        // Kadang AI memberi output ```json ... ``` yang bikin error
+        if (content.includes("```json")) {
+            content = content.split("```json")[1].split("```")[0];
+        } else if (content.includes("```")) {
+            content = content.split("```")[1].split("```")[0];
+        }
+        
+        return JSON.parse(content);
     }
 
     function updateStatus(idx, type, text) {
@@ -360,19 +348,13 @@
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
-            const row = [
-                item.file.name, 
-                document.getElementById(`title-${idx}`).value, 
-                document.getElementById(`desc-${idx}`).value, 
-                document.getElementById(`kw-${idx}`).value, 
-                document.getElementById(`cat-${idx}`).value
-            ];
+            const row = [item.file.name, document.getElementById(`title-${idx}`).value, document.getElementById(`desc-${idx}`).value, document.getElementById(`kw-${idx}`).value, document.getElementById(`cat-${idx}`).value];
             csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
         });
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `microstock_v6_spok.csv`;
+        a.download = `microstock_v6.csv`;
         a.click();
     }
 </script>
