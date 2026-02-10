@@ -3,139 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata AI - Professional Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Microstock AI - Ultimate Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --bg-page: #f9fafb;
-            --bg-card: #ffffff;
-            --border: #e5e7eb;
-            --text-main: #111827;
-            --text-sub: #6b7280;
-            --success: #059669;
-            --error: #dc2626;
-            --warning: #d97706;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-body: #f1f5f9;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg-page); color: var(--text-main); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
-
-        /* HEADER */
-        header { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-        .brand { font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        .brand span { background: #e0e7ff; color: var(--primary); font-size: 11px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-
-        /* CONTAINER */
-        .container { max-width: 1400px; margin: 24px auto; padding: 0 24px; display: flex; gap: 24px; flex: 1; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; overflow: hidden; }
 
         /* SIDEBAR */
-        .sidebar { width: 300px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; height: fit-content; position: sticky; top: 24px; }
-        .sidebar-title { font-size: 13px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.5px; }
+        .sidebar { width: 320px; background: #0f172a; color: white; padding: 25px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
+        .brand { font-size: 20px; font-weight: 700; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; color: #818cf8; }
+        .brand span { color: white; }
+
+        .control-group { margin-bottom: 20px; }
+        .control-label { display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 6px; color: var(--text-main); }
-        .input-std { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; transition: all 0.2s; box-sizing: border-box; }
-        .input-std:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .input-dark { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; font-size: 13px; outline: none; transition: 0.2s; box-sizing: border-box; }
+        .input-dark:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
 
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-success { background: var(--success); color: white; margin-top: 10px; }
-        .btn-success:hover { background: #047857; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; margin-top: 10px; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: white; margin-top: 15px; }
+        .btn-success:hover { background: #059669; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .rules-box { background: #f3f4f6; border-radius: 8px; padding: 12px; font-size: 11px; color: var(--text-sub); line-height: 1.5; margin-top: 20px; border: 1px solid var(--border); }
-        .rules-box strong { color: var(--text-main); }
+        .stats-box { background: #1e293b; border-radius: 8px; padding: 15px; margin-top: auto; font-size: 12px; color: #94a3b8; border: 1px solid #334155; line-height: 1.6; }
+        .stats-highlight { color: #818cf8; font-weight: bold; }
 
         /* MAIN CONTENT */
-        .main-content { flex: 1; display: flex; flex-direction: column; gap: 16px; }
-
-        /* VIDEO CARD */
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; transition: 0.2s; position: relative; }
-        .card:hover { border-color: #c7d2fe; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .main-area { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); }
         
-        .card-status { width: 5px; background: var(--border); flex-shrink: 0; }
-        .status-processing .card-status { background: var(--warning); }
-        .status-success .card-status { background: var(--success); }
-        .status-error .card-status { background: var(--error); }
+        /* GRID LAYOUT */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(850px, 1fr)); gap: 20px; }
 
-        .card-preview { width: 220px; background: #f9fafb; border-right: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-        .preview-img { width: 100%; aspect-ratio: 16/9; background: #e5e7eb; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
-        .filename { font-size: 12px; font-weight: 600; color: var(--text-main); word-break: break-all; }
-        .cat-tag { font-size: 10px; background: #e0e7ff; color: var(--primary); padding: 4px 8px; border-radius: 4px; font-weight: 600; text-align: center; border: 1px solid #c7d2fe; }
+        /* CARD DESIGN */
+        .card { background: var(--surface); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; display: flex; transition: transform 0.2s; }
+        .card:hover { border-color: #cbd5e1; }
 
-        .card-body { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .card-media { width: 240px; background: #f8fafc; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .preview-thumb { width: 100%; aspect-ratio: 16/9; background: #e2e8f0; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
+        .file-name { margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--text-main); text-align: center; word-break: break-all; }
+        .cat-badge { margin-top: 5px; background: #e0e7ff; color: var(--primary); font-size: 10px; padding: 3px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; }
 
-        /* METADATA FIELDS */
-        .meta-group { position: relative; }
-        .meta-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; }
-        .char-counter { font-variant-numeric: tabular-nums; }
-        .char-ok { color: var(--success); }
-        .char-bad { color: var(--error); }
+        .card-form { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 
-        .meta-input { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13px; line-height: 1.5; color: var(--text-main); background: #fff; transition: 0.2s; }
-        .meta-input:focus { outline: none; border-color: var(--primary); }
-        textarea.meta-input { resize: vertical; min-height: 70px; }
+        /* INPUT GROUPS */
+        .form-row { position: relative; }
+        .form-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .form-label-sm { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
+        .char-count { font-size: 11px; font-weight: 600; }
+        
+        .txt-input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13px; color: var(--text-main); transition: 0.2s; background: #fff; box-sizing: border-box; }
+        .txt-input:focus { border-color: var(--primary); outline: none; }
+        textarea.txt-input { min-height: 70px; resize: vertical; }
 
-        /* UTILS */
-        .hidden { display: none; }
-        .empty-state { text-align: center; color: var(--text-sub); padding: 60px; font-size: 14px; border: 2px dashed var(--border); border-radius: 12px; background: #fff; }
+        /* VALIDATION COLORS */
+        .status-ok { color: var(--success); }
+        .status-err { color: var(--error); }
+        .border-err { border-color: var(--error) !important; background: #fef2f2; }
+
+        /* EMPTY STATE */
+        .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-sub); border: 2px dashed var(--border); border-radius: 12px; margin-top: 20px; min-height: 300px; }
+        .empty-icon { font-size: 48px; margin-bottom: 10px; opacity: 0.5; }
+
+        /* LOADING */
+        .spinner { width: 16px; height: 16px; border: 2px solid #ffffff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="brand">Microstock AI <span>Professional</span></div>
-    <div style="font-size: 12px; color: var(--text-sub);">Auto-Lock Constraints System</div>
-</header>
+<aside class="sidebar">
+    <div class="brand">⚡ Microstock<span>AI</span></div>
 
-<div class="container">
-    <aside class="sidebar">
-        <div class="sidebar-title">Configuration</div>
-        
-        <div class="form-group">
-            <label class="form-label">Groq API Key</label>
-            <input type="password" id="apiKey" class="input-std" placeholder="gsk_xxxxxxxx...">
-        </div>
+    <div class="control-group">
+        <label class="control-label">1. Groq API Key</label>
+        <input type="password" id="apiKey" class="input-dark" placeholder="gsk_xxxxxxxx...">
+    </div>
 
-        <div class="form-group">
-            <label class="form-label">Select Video Folder</label>
-            <input type="file" id="fileInput" class="input-std" webkitdirectory directory multiple>
-        </div>
+    <div class="control-group">
+        <label class="control-label">2. Video Source</label>
+        <input type="file" id="fileInput" class="input-dark" webkitdirectory directory multiple>
+    </div>
 
-        <div id="statusIndicator" style="font-size:12px; font-weight:600; color:var(--primary); margin: 10px 0; text-align:center;"></div>
+    <div id="statusBox" style="font-size: 13px; font-weight:600; color: #818cf8; margin: 10px 0; min-height: 20px;"></div>
 
-        <button id="btnProcess" class="btn btn-primary" onclick="startProcessing()">
-            🚀 Start AI Processing
-        </button>
+    <button id="btnProcess" class="btn btn-primary" onclick="startProcessing()">
+        <span class="spinner" id="mainSpinner"></span>
+        <span>Start Processing</span>
+    </button>
 
-        <button id="btnExport" class="btn btn-success hidden" onclick="exportCSV()">
-            📥 Download Final CSV
-        </button>
+    <button id="btnExport" class="btn btn-success" onclick="exportCSV()" style="display:none;">
+        <span>Download CSV</span>
+    </button>
 
-        <div class="rules-box">
-            <strong>Active Constraints:</strong><br>
-            • Title: 50-70 Chars (Smart Trim)<br>
-            • Desc: 100-150 Chars (Smart Trim)<br>
-            • Keyword: <strong>LOCKED 45-48 Words</strong><br>
-            (Auto-fill if &lt;45, Auto-cut if &gt;48)
-        </div>
-    </aside>
+    <div class="stats-box">
+        <div>Target Constraints:</div>
+        • Title: <span class="stats-highlight">50-70</span> chars<br>
+        • Desc: <span class="stats-highlight">100-150</span> chars<br>
+        • Keywords: <span class="stats-highlight">45-48</span> words (Locked)
+    </div>
+</aside>
 
-    <main class="main-content" id="resultsContainer">
+<main class="main-area">
+    <div class="header-area">
+        <div class="page-title">Dashboard</div>
+    </div>
+
+    <div id="cardsContainer" class="cards-grid">
         <div class="empty-state">
-            Start by selecting a folder containing video files.<br>
-            Supported formats: .mp4, .mov, .avi
+            <div class="empty-icon">📂</div>
+            <div>Select a folder containing videos to begin.</div>
         </div>
-    </main>
-</div>
+    </div>
+</main>
 
-<video id="hiddenVideo" class="hidden" muted playsinline></video>
-<canvas id="hiddenCanvas" class="hidden"></canvas>
+<video id="hiddenVideo" style="display:none;" muted playsinline></video>
+<canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- KONFIGURASI KETAT ---
+    // --- CONFIGURATION ---
     const CONFIG = {
         minTitle: 50, maxTitle: 70,
         minDesc: 100, maxDesc: 150,
@@ -143,16 +144,17 @@
         model: "meta-llama/llama-4-scout-17b-16e-instruct"
     };
 
-    // Database Kategori (Lengkap)
-    const CATEGORIES_DB = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
+    const CATEGORIES = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
 
-    // Keyword Cadangan (Jika AI malas, sistem akan inject ini sampai 45)
-    const SAFE_KEYWORDS = [
-        "video", "footage", "clip", "background", "motion", "graphic", "abstract", 
-        "digital", "hd", "4k", "stock", "creative", "art", "style", "concept", 
-        "view", "scene", "shot", "media", "element", "design", "backdrop", 
-        "texture", "pattern", "visual", "effect", "animation", "dynamic", "modern", 
-        "presentation", "project", "movie", "cinema", "film", "production"
+    // --- CADANGAN KEYWORD (GARANSI TIDAK KOSONG) ---
+    const BACKUP_KEYWORDS = [
+        "video", "footage", "clip", "background", "motion", "abstract", "digital", 
+        "hd", "4k", "stock", "creative", "art", "graphic", "design", "element", 
+        "texture", "pattern", "backdrop", "visual", "effect", "animation", "dynamic", 
+        "modern", "presentation", "cinematic", "film", "production", "media", 
+        "concept", "style", "technology", "futuristic", "light", "color", "bright", 
+        "dark", "seamless", "loop", "wallpaper", "screen", "display", "monitor", 
+        "broadcast", "overlay", "template", "project", "business", "corporate"
     ];
 
     let fileQueue = [];
@@ -160,15 +162,15 @@
 
     if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
 
-    // --- FILE LISTENER ---
+    // --- FILE HANDLER ---
     document.getElementById('fileInput').addEventListener('change', (e) => {
         const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
-        const container = document.getElementById('resultsContainer');
+        const container = document.getElementById('cardsContainer');
         container.innerHTML = '';
         fileQueue = [];
 
         if(files.length === 0) {
-            container.innerHTML = `<div class="empty-state">No valid video files found.</div>`;
+            container.innerHTML = `<div class="empty-state">No valid videos found.</div>`;
             return;
         }
 
@@ -177,265 +179,244 @@
             createCard(idx, file.name);
         });
 
-        document.getElementById('statusIndicator').innerText = `Ready to process ${files.length} videos`;
+        document.getElementById('statusBox').innerText = `Ready: ${files.length} videos loaded`;
     });
 
-    // --- UI CARD CREATION ---
     function createCard(id, filename) {
         const html = `
         <div class="card" id="card-${id}">
-            <div class="card-status"></div>
-            <div class="card-preview">
-                <div class="preview-img" id="thumb-${id}" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11px;">Waiting...</div>
-                <div class="filename">${filename}</div>
-                <div class="cat-tag" id="cat-disp-${id}">Category: -</div>
+            <div class="card-media">
+                <div class="preview-thumb" id="thumb-${id}" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">Waiting...</div>
+                <div class="file-name">${filename}</div>
+                <div class="cat-badge" id="badge-cat-${id}">-</div>
                 <input type="hidden" id="cat-${id}">
             </div>
-            <div class="card-body">
-                <div class="meta-group">
-                    <div class="meta-header">
-                        <span>Title (${CONFIG.minTitle}-${CONFIG.maxTitle})</span>
-                        <span class="char-counter" id="cnt-title-${id}">0</span>
+            <div class="card-form">
+                <div class="form-row">
+                    <div class="form-header">
+                        <span class="form-label-sm">Title (${CONFIG.minTitle}-${CONFIG.maxTitle})</span>
+                        <span class="char-count" id="cnt-title-${id}">0</span>
                     </div>
-                    <input type="text" class="meta-input" id="title-${id}" oninput="validate(${id})">
+                    <input type="text" class="txt-input" id="title-${id}" oninput="validate(${id})">
                 </div>
-                <div class="meta-group">
-                    <div class="meta-header">
-                        <span>Description (${CONFIG.minDesc}-${CONFIG.maxDesc})</span>
-                        <span class="char-counter" id="cnt-desc-${id}">0</span>
+                <div class="form-row">
+                    <div class="form-header">
+                        <span class="form-label-sm">Description (${CONFIG.minDesc}-${CONFIG.maxDesc})</span>
+                        <span class="char-count" id="cnt-desc-${id}">0</span>
                     </div>
-                    <textarea class="meta-input" id="desc-${id}" oninput="validate(${id})"></textarea>
+                    <textarea class="txt-input" id="desc-${id}" oninput="validate(${id})"></textarea>
                 </div>
-                <div class="meta-group">
-                    <div class="meta-header">
-                        <span>Keywords (LOCKED: ${CONFIG.minKw}-${CONFIG.maxKw})</span>
-                        <span class="char-counter" id="cnt-kw-${id}">0</span>
+                <div class="form-row">
+                    <div class="form-header">
+                        <span class="form-label-sm">Keywords (${CONFIG.minKw}-${CONFIG.maxKw})</span>
+                        <span class="char-count" id="cnt-kw-${id}">0</span>
                     </div>
-                    <textarea class="meta-input" id="kw-${id}" style="min-height:100px;" oninput="validate(${id})"></textarea>
+                    <textarea class="txt-input" id="kw-${id}" style="min-height:90px;" oninput="validate(${id})"></textarea>
                 </div>
             </div>
         </div>
         `;
-        document.getElementById('resultsContainer').insertAdjacentHTML('beforeend', html);
+        document.getElementById('cardsContainer').insertAdjacentHTML('beforeend', html);
     }
 
-    // --- PROCESSING ENGINE ---
+    // --- MAIN LOGIC ---
     async function startProcessing() {
         const apiKey = document.getElementById('apiKey').value.trim();
-        if(!apiKey) return alert("Please enter Groq API Key");
+        if(!apiKey) return alert("Please enter API Key!");
         localStorage.setItem('GROQ_KEY', apiKey);
 
         isProcessing = true;
         document.getElementById('btnProcess').disabled = true;
-        
+        document.getElementById('mainSpinner').style.display = 'block';
+
         for(const item of fileQueue) {
-            const card = document.getElementById(`card-${item.id}`);
-            card.classList.add('status-processing');
-            document.getElementById('statusIndicator').innerText = `Processing: ${item.file.name}...`;
+            const id = item.id;
+            document.getElementById('statusBox').innerText = `Processing: ${item.file.name}`;
+            
+            // Highlight active card
+            document.getElementById(`card-${id}`).style.borderColor = "#6366f1";
 
             try {
                 // 1. Snapshot
-                const base64 = await captureFrame(item.file);
-                document.getElementById(`thumb-${item.id}`).innerHTML = `<img src="${base64}" class="preview-img">`;
+                const base64 = await getSnapshot(item.file);
+                document.getElementById(`thumb-${id}`).innerHTML = `<img src="${base64}" class="preview-thumb">`;
 
-                // 2. AI Request
+                // 2. AI Call
                 const data = await callAI(apiKey, base64);
 
-                // 3. FILL & FIX DATA
+                // 3. AUTO-FIX DATA
                 
-                // > Category
-                document.getElementById(`cat-${item.id}`).value = data.category;
-                document.getElementById(`cat-disp-${item.id}`).innerText = data.category;
+                // Category
+                document.getElementById(`cat-${id}`).value = data.category || "backgrounds";
+                document.getElementById(`badge-cat-${id}`).innerText = data.category || "backgrounds";
 
-                // > Title (Smart Truncate)
-                let tit = data.title || "";
-                if(tit.length > CONFIG.maxTitle) {
-                    let sub = tit.substring(0, CONFIG.maxTitle);
-                    let lastSp = sub.lastIndexOf(" ");
-                    tit = (lastSp > 50) ? sub.substring(0, lastSp) : sub;
+                // Title (Smart Truncate)
+                let t = data.title || "";
+                if(t.length > CONFIG.maxTitle) {
+                    let cut = t.substring(0, CONFIG.maxTitle);
+                    let s = cut.lastIndexOf(" ");
+                    t = (s > 50) ? cut.substring(0, s) : cut;
                 }
-                document.getElementById(`title-${item.id}`).value = tit;
+                document.getElementById(`title-${id}`).value = t;
 
-                // > Description (Smart Truncate)
-                let desc = data.description || "";
-                if(desc.length > CONFIG.maxDesc) {
-                    let sub = desc.substring(0, CONFIG.maxDesc);
-                    let lastSp = sub.lastIndexOf(" ");
-                    desc = (lastSp > 100) ? sub.substring(0, lastSp) : sub;
+                // Desc (Smart Truncate)
+                let d = data.description || "";
+                if(d.length > CONFIG.maxDesc) {
+                    let cut = d.substring(0, CONFIG.maxDesc);
+                    let s = cut.lastIndexOf(" ");
+                    d = (s > 100) ? cut.substring(0, s) : cut;
                 }
-                document.getElementById(`desc-${item.id}`).value = desc;
+                document.getElementById(`desc-${id}`).value = d;
 
-                // > KEYWORD ENGINE (THE FIX)
-                let rawKw = (data.keywords || "").replace(/\./g, '').split(',');
-                let cleanKw = [];
+                // KEYWORD MAGIC (ANTI-KOSONG)
+                let kRaw = (data.keywords || "").replace(/\./g, '');
+                let kList = kRaw.split(',').map(k => k.trim().toLowerCase()).filter(k => k.length > 2);
                 
-                // Phase 1: Cleaning & Splitting
-                rawKw.forEach(k => {
-                    let w = k.trim().toLowerCase();
-                    if(w.includes(' ')) cleanKw.push(...w.split(' ')); // Pecah frase
-                    else if(w.length > 2) cleanKw.push(w);
+                // Split phrases if AI failed (e.g., "blue sky" -> "blue", "sky")
+                let kFinal = [];
+                kList.forEach(k => {
+                    if(k.includes(' ')) kFinal.push(...k.split(' '));
+                    else kFinal.push(k);
                 });
-                
-                // Phase 2: Deduplicate
-                cleanKw = [...new Set(cleanKw)];
+                kFinal = [...new Set(kFinal)]; // Unique
 
-                // Phase 3: AUTO-FILL (Jika kurang dari 45)
-                if(cleanKw.length < CONFIG.minKw) {
-                    let needed = CONFIG.minKw - cleanKw.length;
+                // FILLING MECHANISM (Jika < 45)
+                if(kFinal.length < CONFIG.minKw) {
+                    let need = CONFIG.minKw - kFinal.length;
                     let added = 0;
-                    for(let safe of SAFE_KEYWORDS) {
-                        if(!cleanKw.includes(safe) && added < needed) {
-                            cleanKw.push(safe);
+                    for(let safe of BACKUP_KEYWORDS) {
+                        if(!kFinal.includes(safe) && added < need) {
+                            kFinal.push(safe);
                             added++;
                         }
                     }
                 }
 
-                // Phase 4: AUTO-CUT (Jika lebih dari 48)
-                if(cleanKw.length > CONFIG.maxKw) {
-                    cleanKw = cleanKw.slice(0, CONFIG.maxKw);
+                // TRIMMING MECHANISM (Jika > 48)
+                if(kFinal.length > CONFIG.maxKw) {
+                    kFinal = kFinal.slice(0, CONFIG.maxKw);
                 }
 
-                document.getElementById(`kw-${item.id}`).value = cleanKw.join(', ');
+                document.getElementById(`kw-${id}`).value = kFinal.join(', ');
 
-                // 4. Update UI
-                card.classList.remove('status-processing');
-                card.classList.add('status-success');
-                validate(item.id);
+                // Final Validate
+                validate(id);
+                document.getElementById(`card-${id}`).style.borderColor = "#10b981"; // Green Border
 
             } catch (e) {
                 console.error(e);
-                card.classList.remove('status-processing');
-                card.classList.add('status-error');
-                document.getElementById(`thumb-${item.id}`).innerHTML = `<span style="color:red;font-size:10px;">${e.message}</span>`;
+                document.getElementById(`card-${id}`).style.borderColor = "#ef4444";
+                document.getElementById(`thumb-${id}`).innerHTML = `<span style="color:red">Error</span>`;
             }
 
-            await new Promise(r => setTimeout(r, 1500)); // Delay
+            await new Promise(r => setTimeout(r, 1500));
         }
 
         isProcessing = false;
         document.getElementById('btnProcess').disabled = false;
-        document.getElementById('btnExport').classList.remove('hidden');
-        document.getElementById('statusIndicator').innerText = "All Processed! Check metadata.";
-        alert("Processing Complete!");
+        document.getElementById('mainSpinner').style.display = 'none';
+        document.getElementById('btnExport').style.display = 'flex';
+        document.getElementById('statusBox').innerText = "All Complete! Ready to Export.";
+        alert("Processing Finished!");
     }
 
-    // --- VALIDATOR UI ---
+    // --- VALIDATION ---
     function validate(id) {
         // Title
-        const tVal = document.getElementById(`title-${id}`).value;
-        const tCnt = document.getElementById(`cnt-title-${id}`);
-        tCnt.innerText = `${tVal.length}`;
-        tCnt.className = (tVal.length >= CONFIG.minTitle && tVal.length <= CONFIG.maxTitle) ? 'char-counter char-ok' : 'char-counter char-bad';
+        const t = document.getElementById(`title-${id}`).value.length;
+        const tEl = document.getElementById(`cnt-title-${id}`);
+        tEl.innerText = t;
+        tEl.className = (t >= CONFIG.minTitle && t <= CONFIG.maxTitle) ? "char-count status-ok" : "char-count status-err";
 
         // Desc
-        const dVal = document.getElementById(`desc-${id}`).value;
-        const dCnt = document.getElementById(`cnt-desc-${id}`);
-        dCnt.innerText = `${dVal.length}`;
-        dCnt.className = (dVal.length >= CONFIG.minDesc && dVal.length <= CONFIG.maxDesc) ? 'char-counter char-ok' : 'char-counter char-bad';
+        const d = document.getElementById(`desc-${id}`).value.length;
+        const dEl = document.getElementById(`cnt-desc-${id}`);
+        dEl.innerText = d;
+        dEl.className = (d >= CONFIG.minDesc && d <= CONFIG.maxDesc) ? "char-count status-ok" : "char-count status-err";
 
-        // Keywords
-        const kVal = document.getElementById(`kw-${id}`).value;
-        const kCnt = document.getElementById(`cnt-kw-${id}`);
-        const count = kVal.split(',').filter(x => x.trim().length > 0).length;
-        kCnt.innerText = `${count}`;
-        kCnt.className = (count >= CONFIG.minKw && count <= CONFIG.maxKw) ? 'char-counter char-ok' : 'char-counter char-bad';
-    }
-
-    // --- AI PROMPT ---
-    async function callAI(key, base64) {
-        const prompt = `
-        Role: Microstock Metadata Specialist.
-        Input: 3 Video Frames.
-        
-        TASK:
-        1. CATEGORY: Pick ONE from: [${CATEGORIES_DB}]
-        
-        2. TITLE (50-70 chars): Descriptive sentence. Focus on subject + action.
-        
-        3. DESCRIPTION (100-150 chars): Detailed visual description.
-        
-        4. KEYWORDS (CRITICAL):
-           - GENERATE 70 (SEVENTY) KEYWORDS.
-           - I will cut them down later, but I need MANY to start with.
-           - SINGLE WORDS ONLY. No phrases.
-           - Include: visual, color, style, concept, technical terms.
-
-        OUTPUT JSON ONLY:
-        {"category": "...", "title": "...", "description": "...", "keywords": "..."}
-        `;
-
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: CONFIG.model,
-                messages: [
-                    { role: "system", content: prompt },
-                    { role: "user", content: [
-                        { type: "text", text: "Analyze frames. Generate JSON." },
-                        { type: "image_url", image_url: { url: base64 } }
-                    ]}
-                ],
-                temperature: 0.1,
-                response_format: { type: "json_object" }
-            })
-        });
-
-        const data = await resp.json();
-        const content = data.choices[0].message.content;
-        return JSON.parse(content.substring(content.indexOf('{'), content.lastIndexOf('}')+1));
+        // KW
+        const kwTxt = document.getElementById(`kw-${id}`).value;
+        const kwArr = kwTxt.split(',').filter(x => x.trim().length > 0);
+        const kEl = document.getElementById(`cnt-kw-${id}`);
+        kEl.innerText = kwArr.length;
+        kEl.className = (kwArr.length >= CONFIG.minKw && kwArr.length <= CONFIG.maxKw) ? "char-count status-ok" : "char-count status-err";
     }
 
     // --- SNAPSHOT ---
-    function captureFrame(file) {
+    function getSnapshot(file) {
         return new Promise((resolve, reject) => {
             const vid = document.getElementById('hiddenVideo');
             const cvs = document.getElementById('hiddenCanvas');
             const ctx = cvs.getContext('2d');
             const url = URL.createObjectURL(file);
-            
             vid.src = url; vid.muted = true;
-            const w=320, h=180;
-            cvs.width = w*3; cvs.height = h;
-
-            const seek = (t) => new Promise(r => { vid.currentTime=t; vid.onseeked=()=>r(); });
-
-            vid.onloadedmetadata = async () => {
-                try {
-                    await seek(vid.duration * 0.2);
-                    ctx.drawImage(vid,0,0,vid.videoWidth,vid.videoHeight,0,0,w,h);
-                    await seek(vid.duration * 0.5);
-                    ctx.drawImage(vid,0,0,vid.videoWidth,vid.videoHeight,w,0,w,h);
-                    await seek(vid.duration * 0.8);
-                    ctx.drawImage(vid,0,0,vid.videoWidth,vid.videoHeight,w*2,0,w,h);
-                    resolve(cvs.toDataURL('image/jpeg', 0.8));
-                    URL.revokeObjectURL(url);
-                } catch(e) { reject(e); }
+            
+            vid.onloadedmetadata = () => {
+                vid.currentTime = vid.duration * 0.5; // Middle frame
             };
-            vid.onerror = () => reject(new Error("Video Error"));
+            
+            vid.onseeked = () => {
+                cvs.width = 320; cvs.height = 180;
+                ctx.drawImage(vid, 0, 0, 320, 180);
+                resolve(cvs.toDataURL('image/jpeg', 0.8));
+                URL.revokeObjectURL(url);
+            };
+            vid.onerror = () => reject("Video Error");
         });
     }
 
-    // --- EXPORT CSV ---
+    // --- AI PROMPT ---
+    async function callAI(key, base64) {
+        const prompt = `
+        Role: Microstock Metadata Expert.
+        Task: Analyze image. Output JSON.
+        
+        CONSTRAINTS:
+        1. CATEGORY: Pick ONE from: [${CATEGORIES}]
+        2. TITLE: 55-65 chars. Descriptive.
+        3. DESCRIPTION: 110-140 chars. Detailed.
+        4. KEYWORDS: Generate 70 (SEVENTY) single words. Comma separated. 
+           - Must cover: Visuals, Colors, Concepts, Style.
+           - DO NOT STOP until you have 70 words. I will filter them.
+
+        OUTPUT JSON: {"category": "...", "title": "...", "description": "...", "keywords": "..."}
+        `;
+
+        try {
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: CONFIG.model,
+                    messages: [
+                        { role: "system", content: prompt },
+                        { role: "user", content: [
+                            { type: "text", text: "Analyze." },
+                            { type: "image_url", image_url: { url: base64 } }
+                        ]}
+                    ],
+                    temperature: 0.3, // Slightly higher creative to get more keywords
+                    response_format: { type: "json_object" }
+                })
+            });
+            const json = await resp.json();
+            return JSON.parse(json.choices[0].message.content);
+        } catch(e) { throw e; }
+    }
+
+    // --- EXPORT ---
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
-        fileQueue.forEach((item) => {
+        fileQueue.forEach(item => {
             const id = item.id;
-            const el = (id) => document.getElementById(id).value.replace(/"/g, '""');
-            if(!document.getElementById(`title-${id}`).value) return; 
-
-            csv += `"${item.file.name.replace(/"/g, '""')}","${el(`title-${id}`)}","${el(`desc-${id}`)}","${el(`kw-${id}`)}","${el(`cat-${id}`)}"\n`;
+            const get = (id) => document.getElementById(id).value.replace(/"/g, '""');
+            csv += `"${item.file.name.replace(/"/g, '""')}","${get('title-'+id)}","${get('desc-'+id)}","${get('kw-'+id)}","${get('cat-'+id)}"\n`;
         });
-
-        const blob = new Blob([csv], {type: 'text/csv'});
+        const blob = new Blob([csv], {type:'text/csv'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `microstock_final_${Date.now()}.csv`;
-        document.body.appendChild(a);
+        a.href = url; a.download = `microstock_${Date.now()}.csv`;
         a.click();
-        document.body.removeChild(a);
     }
 </script>
 </body>
