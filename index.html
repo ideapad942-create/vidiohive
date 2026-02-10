@@ -3,49 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Microstock Metadata Pro - V8 Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
-        .header { background: #1e1b4b; color: white; padding: 20px; font-weight: bold; }
-        .controls { padding: 20px; border-bottom: 1px solid #e2e8f0; }
-        .input-field { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; color: white; cursor: pointer; font-weight: 600; }
-        .btn-primary { background: #6366f1; }
-        .btn-success { background: #10b981; }
+        :root { --primary: #6366f1; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
+        .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: #f8fafc; padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 15px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        /* HEADER */
+        .header { background: #1e1b4b; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .badge { background: #0ea5e9; font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
+
+        /* CONTROLS */
+        .controls { padding: 20px; background: #f1f5f9; border-bottom: 1px solid var(--border); }
+        .api-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #64748b; }
+        .input-field { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
+        .btn { padding: 0 20px; height: 42px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+        .btn-blue { background: var(--primary); }
+        .btn-green { background: #10b981; }
+        .btn-dark { background: #334155; }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 700; color: #475569; border-bottom: 2px solid var(--border); text-transform: uppercase; }
+        td { padding: 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+        /* PREVIEW & STATUS */
+        .preview-box { width: 260px; height: 146px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; position: relative; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .status-pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+        .st-pending { background: #e2e8f0; color: #64748b; }
+        .st-proc { background: #e0e7ff; color: #4338ca; }
+        .st-ok { background: #dcfce7; color: #15803d; }
+        .st-err { background: #fee2e2; color: #b91c1c; }
+
+        /* INPUTS */
+        .meta-row { margin-bottom: 15px; position: relative; }
+        .meta-head { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 5px; }
+        .meta-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; font-family: inherit; }
+        textarea.meta-input { min-height: 70px; resize: vertical; }
         
-        .meta-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
-        textarea.meta-input { height: 70px; resize: vertical; }
-        
-        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
-        .status-processing { background: #e0e7ff; color: #4338ca; }
-        .status-success { background: #dcfce7; color: #15803d; }
-        .status-error { background: #fee2e2; color: #b91c1c; }
+        .count-ok { color: #10b981; }
+        .count-bad { color: #ef4444; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">Metadata Generator (SPOK Logic)</div>
+    <div class="header">
+        <h1>Metadata Generator <span class="badge">V8 PRO FIX</span></h1>
+        <div style="font-size:11px; opacity:0.8;">2 Keys • 3 Snapshots • SPOK Logic</div>
+    </div>
 
     <div class="controls">
-        <label style="font-size:12px; font-weight:bold;">API KEY GROQ:</label>
-        <input type="password" id="apiKey" class="input-field" placeholder="gsk_...">
-        <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple>
-        <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">Mulai Proses</button>
-        <button class="btn btn-success" id="btnExport" onclick="exportCSV()" style="display:none;">Download CSV</button>
+        <div class="api-grid">
+            <div class="input-group">
+                <label>🔑 API Key 1 (Primary)</label>
+                <input type="password" id="apiKey1" class="input-field" placeholder="gsk_...">
+            </div>
+            <div class="input-group">
+                <label>🔑 API Key 2 (Rotation)</label>
+                <input type="password" id="apiKey2" class="input-field" placeholder="gsk_...">
+            </div>
+            <div style="display:flex; align-items:end;">
+                <button class="btn btn-dark" onclick="saveKeys()">💾 Save Keys</button>
+            </div>
+        </div>
+        
+        <div class="input-group" style="margin-bottom: 15px;">
+            <label>📂 Select Video Folder</label>
+            <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*">
+        </div>
+
+        <div>
+            <button class="btn btn-blue" id="btnStart" onclick="startProcessing()">🚀 Start Processing</button>
+            <button class="btn btn-green" id="btnExport" onclick="exportCSV()" style="display:none;">📥 Download CSV</button>
+        </div>
     </div>
-    
-    <table id="resultTable">
+
+    <table>
         <thead>
             <tr>
-                <th width="300">Preview</th>
-                <th>Metadata</th>
+                <th width="300">Preview (3 Frames)</th>
+                <th>Metadata Result</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -56,7 +98,7 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- DATABASE KATEGORI LENGKAP ---
+    // --- 1. CONFIGURATION ---
     const CATEGORIES = [
         "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
         "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
@@ -69,192 +111,237 @@
         "water-and-fluid", "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous", "infographics"
     ];
 
-    const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "digital", "design", "creative", "concept", "modern", "technology", "futuristic", "background", "overlay", "element", "dynamic", "glow", "energy", "clean", "smooth", "cinematic", "presentation", "display", "style", "artistic", "colorful", "bright", "soft", "sharp", "pattern", "texture", "geometry", "shapes", "line", "curve", "flow", "liquid", "tech", "data", "network", "cyber", "space", "science", "business", "corporate"];
+    const BACKUP_KWS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "digital", "design", "creative", "concept", "modern", "technology", "futuristic", "background", "overlay", "element", "dynamic", "glow", "energy", "clean", "smooth", "cinematic", "presentation", "display", "style", "artistic", "colorful", "bright", "soft", "sharp", "pattern", "texture", "geometry", "shapes", "line", "curve", "flow", "liquid", "tech", "data", "network", "cyber", "space", "science", "business", "corporate"];
 
     let fileQueue = [];
-    if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
+    let apiKeys = [];
+    let currentKeyIndex = 0;
 
+    // Load Saved Keys
+    if(localStorage.getItem('KEY1')) document.getElementById('apiKey1').value = localStorage.getItem('KEY1');
+    if(localStorage.getItem('KEY2')) document.getElementById('apiKey2').value = localStorage.getItem('KEY2');
+
+    function saveKeys() {
+        localStorage.setItem('KEY1', document.getElementById('apiKey1').value.trim());
+        localStorage.setItem('KEY2', document.getElementById('apiKey2').value.trim());
+        alert("Keys Saved!");
+    }
+
+    // --- 2. FILE HANDLING ---
     document.getElementById('fileInput').addEventListener('change', function(e) {
         const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
+        fileQueue = [];
         const tbody = document.getElementById('resultBody');
         tbody.innerHTML = '';
-        fileQueue = [];
-        
-        files.forEach((file, index) => {
-            fileQueue.push({ file, id: index });
+
+        files.forEach((file, idx) => {
+            fileQueue.push({ file, id: idx });
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>
-                    <div style="width:240px; height:135px; background:#eee; border-radius:8px; overflow:hidden; margin-bottom:5px;" id="preview-${index}"></div>
-                    <div style="font-weight:bold; font-size:11px;">${file.name}</div>
-                    <div id="status-${index}" class="status-pill">Pending</div>
-                    <div id="cat-disp-${index}" style="font-size:10px; margin-top:5px; color:#666;">Category: -</div>
-                    <input type="hidden" id="cat-${index}">
+                    <div class="preview-box" id="preview-${idx}"></div>
+                    <div style="font-weight:600; font-size:12px; margin-top:5px;">${file.name}</div>
+                    <div class="status-pill st-pending" id="status-${idx}">Pending</div>
+                    <div style="font-size:10px; margin-top:4px;" id="cat-disp-${idx}">-</div>
+                    <input type="hidden" id="cat-${idx}">
                 </td>
                 <td>
-                    <div style="font-size:10px; font-weight:bold; margin-bottom:2px;">TITLE (50-70) <span id="len-title-${index}"></span></div>
-                    <input type="text" class="meta-input" id="title-${index}" oninput="checkLen(${index})">
-                    
-                    <div style="font-size:10px; font-weight:bold; margin-bottom:2px;">DESCRIPTION (100-150) <span id="len-desc-${index}"></span></div>
-                    <textarea class="meta-input" id="desc-${index}" oninput="checkLen(${index})"></textarea>
-                    
-                    <div style="font-size:10px; font-weight:bold; margin-bottom:2px;">KEYWORDS (45-48) <span id="len-kw-${index}"></span></div>
-                    <textarea class="meta-input" id="kw-${index}" oninput="checkLen(${index})"></textarea>
+                    <div class="meta-row">
+                        <div class="meta-head"><span>TITLE (50-70)</span><span id="cnt-title-${idx}">0</span></div>
+                        <input type="text" class="meta-input" id="title-${idx}" oninput="validate(${idx})">
+                    </div>
+                    <div class="meta-row">
+                        <div class="meta-head"><span>DESCRIPTION (100-150)</span><span id="cnt-desc-${idx}">0</span></div>
+                        <textarea class="meta-input" id="desc-${idx}" oninput="validate(${idx})"></textarea>
+                    </div>
+                    <div class="meta-row">
+                        <div class="meta-head"><span>KEYWORDS (45-48)</span><span id="cnt-kw-${idx}">0</span></div>
+                        <textarea class="meta-input" id="kw-${idx}" oninput="validate(${idx})"></textarea>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
         });
     });
 
-    function checkLen(idx) {
+    function validate(idx) {
         const t = document.getElementById(`title-${idx}`).value.length;
         const d = document.getElementById(`desc-${idx}`).value.length;
         const k = document.getElementById(`kw-${idx}`).value.split(',').filter(x=>x.trim()).length;
-        
-        const tSpan = document.getElementById(`len-title-${idx}`);
-        tSpan.innerText = t;
-        tSpan.style.color = (t>=50 && t<=70) ? 'green' : 'red';
-        
-        const dSpan = document.getElementById(`len-desc-${idx}`);
-        dSpan.innerText = d;
-        dSpan.style.color = (d>=100 && d<=150) ? 'green' : 'red';
 
-        const kSpan = document.getElementById(`len-kw-${idx}`);
-        kSpan.innerText = k;
-        kSpan.style.color = (k>=45 && k<=48) ? 'green' : 'red';
+        const tEl = document.getElementById(`cnt-title-${idx}`);
+        tEl.innerText = t + "/70";
+        tEl.className = (t >= 50 && t <= 70) ? 'count-ok' : 'count-bad';
+
+        const dEl = document.getElementById(`cnt-desc-${idx}`);
+        dEl.innerText = d + "/150";
+        dEl.className = (d >= 100 && d <= 150) ? 'count-ok' : 'count-bad';
+
+        const kEl = document.getElementById(`cnt-kw-${idx}`);
+        kEl.innerText = k + " words";
+        kEl.className = (k >= 45 && k <= 48) ? 'count-ok' : 'count-bad';
     }
 
+    // --- 3. PROCESSING LOGIC ---
     async function startProcessing() {
-        const key = document.getElementById('apiKey').value;
-        if(!key) return alert("API Key Kosong!");
-        localStorage.setItem('GROQ_KEY', key);
-        document.getElementById('btnProcess').disabled = true;
+        const k1 = document.getElementById('apiKey1').value.trim();
+        const k2 = document.getElementById('apiKey2').value.trim();
+        apiKeys = [k1, k2].filter(k => k);
 
-        for(let item of fileQueue) {
+        if (apiKeys.length === 0) return alert("Please enter at least one API Key!");
+
+        document.getElementById('btnStart').disabled = true;
+
+        for (let item of fileQueue) {
             const idx = item.id;
-            updateStatus(idx, 'status-processing', 'Analyzing...');
+            updateStatus(idx, 'st-proc', 'Processing (3 Snaps)...');
             
             try {
-                const base64 = await getFrame(item.file);
-                document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}" style="width:100%;">`;
+                // STEP A: GET 3 SNAPSHOTS (Fixes Error 400 by compressing size)
+                const snapshots = await getSnapshots(item.file);
                 
-                // --- PANGGILAN API NORMAL (TANPA JSON MODE AGAR TIDAK ERROR) ---
-                const rawJson = await callApi(key, base64);
-                
-                // --- LOGIKA UTAMA (SPOK & RULES) ---
-                
-                // 1. TITLE Logic
-                let title = (rawJson.title || "").trim();
-                // Hapus kata sampah
-                title = title.replace(/thanks for watching|video background|loop|seamless/gi, "").trim();
-                // Pastikan huruf besar awal
-                title = title.charAt(0).toUpperCase() + title.slice(1);
-                // Potong rapi max 70
-                if(title.length > 70) title = title.substring(0, 70).split(' ').slice(0, -1).join(' ');
-                // Tambal jika kependekan (<50)
-                if(title.length < 50) title = (title + " features abstract motion design elements for video").substring(0, 70);
-                
-                // 2. DESCRIPTION Logic
-                let desc = (rawJson.description || "").trim();
-                // Potong rapi max 150
-                if(desc.length > 150) desc = desc.substring(0, 150).split(' ').slice(0, -1).join(' ');
-                // Tambal jika kependekan (<100)
-                if(desc.length < 100) desc = (desc + " This high quality visual asset is designed for professional video production and digital signage applications.").substring(0, 150);
+                // Show first snapshot in preview
+                document.getElementById(`preview-${idx}`).innerHTML = `<img src="${snapshots[0]}">`;
 
-                // 3. KEYWORDS Logic
-                let kws = (rawJson.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w.length > 2);
-                kws = [...new Set(kws)]; // Hapus duplikat
-                // Isi jika kurang dari 45
-                let b = 0;
-                while(kws.length < 45 && b < BACKUP_KEYWORDS.length) {
-                    if(!kws.includes(BACKUP_KEYWORDS[b])) kws.push(BACKUP_KEYWORDS[b]);
-                    b++;
-                }
+                // STEP B: CALL API (Round Robin Keys)
+                const currentKey = apiKeys[currentKeyIndex];
+                const rawData = await callGroqAPI(currentKey, snapshots);
                 
-                // 4. CATEGORY Logic
-                let cat = CATEGORIES.includes(rawJson.category) ? rawJson.category : "backgrounds";
+                // STEP C: APPLY SPOK & RULES
+                applyRules(idx, rawData);
 
-                // --- MASUKKAN KE INPUT ---
-                document.getElementById(`title-${idx}`).value = title;
-                document.getElementById(`desc-${idx}`).value = desc;
-                document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', '); // Ambil max 48
-                document.getElementById(`cat-${idx}`).value = cat;
-                document.getElementById(`cat-disp-${idx}`).innerText = "Cat: " + cat;
+                updateStatus(idx, 'st-ok', 'Done');
+                
+                // Rotate Key
+                currentKeyIndex = (currentKeyIndex + 1) % apiKeys.length;
 
-                updateStatus(idx, 'status-success', 'Done');
-                checkLen(idx);
-
-            } catch(e) {
-                console.error(e);
-                updateStatus(idx, 'status-error', 'Fail: ' + e.message);
+            } catch (error) {
+                console.error(error);
+                let msg = "Error";
+                if (error.message.includes("400")) msg = "400 Bad Request (Size)";
+                else if (error.message.includes("429")) msg = "429 Rate Limit";
+                else msg = error.message;
+                
+                updateStatus(idx, 'st-err', msg);
             }
         }
-        document.getElementById('btnProcess').disabled = false;
-        document.getElementById('btnExport').style.display = 'inline-block';
+
+        document.getElementById('btnStart').disabled = false;
+        document.getElementById('btnExport').style.display = 'inline-flex';
     }
 
-    async function callApi(key, base64) {
-        // PROMPT DI SINI DIATUR AGAR HASILNYA SUDAH MENDEKATI SPOK
-        const prompt = `Analyze this image. Return a raw JSON object (no markdown).
-        {
-            "category": "choose one from list: [${CATEGORIES.join(', ')}]",
-            "title": "SPOK sentence (Subject Verb Object). Max 70 chars. Example: Abstract blue particles float in dark space.",
-            "description": "SPOK sentence. Max 150 chars. Professional tone.",
-            "keywords": "48 comma separated words"
-        }`;
+    // --- 4. API & AI LOGIC ---
+    async function callGroqAPI(key, images) {
+        // Construct User Content with Multiple Images
+        const content = [
+            { type: "text", text: `Analyze these 3 video frames. Return JSON only: {"category": "string", "title": "string", "description": "string", "keywords": "string"}. RULES: Title & Desc must be SPOK sentences. Category must be strict.` }
+        ];
+        
+        // Add images to payload
+        images.forEach(img => {
+            content.push({ type: "image_url", image_url: { url: img } });
+        });
 
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
-                model: "llama-3.2-11b-vision-preview", // Model Vision Standar
-                messages: [
-                    { role: "user", content: [
-                        { type: "text", text: prompt },
-                        { type: "image_url", image_url: { url: base64 } }
-                    ]}
-                ],
+                model: "llama-3.2-11b-vision-preview", // Vision Model
+                messages: [{ role: "user", content: content }],
                 temperature: 0.1,
-                max_tokens: 300
+                max_tokens: 350
             })
         });
 
-        if(!resp.ok) throw new Error("API Error " + resp.status);
+        if (!resp.ok) throw new Error(`API Fail: ${resp.status}`);
         const data = await resp.json();
         let txt = data.choices[0].message.content;
         
-        // PEMBERSIH MANUAL (Agar tidak Bad Request karena format)
+        // CLEANUP JSON (Manual parsing to avoid 400 error on strict mode)
         txt = txt.replace(/```json/g, '').replace(/```/g, '').trim();
         const start = txt.indexOf('{');
         const end = txt.lastIndexOf('}');
-        if(start === -1 || end === -1) throw new Error("Invalid JSON");
+        if (start === -1 || end === -1) throw new Error("Invalid JSON Format");
         
-        return JSON.parse(txt.substring(start, end+1));
+        return JSON.parse(txt.substring(start, end + 1));
+    }
+
+    function applyRules(idx, data) {
+        // 1. TITLE
+        let title = (data.title || "").replace(/thanks for watching|video background/gi, "").trim();
+        title = title.charAt(0).toUpperCase() + title.slice(1);
+        if (title.length > 70) title = title.substring(0, 70).split(' ').slice(0, -1).join(' ');
+        if (title.length < 50) title = (title + " features abstract motion elements for professional video projects").substring(0, 70);
+        
+        // 2. DESC
+        let desc = (data.description || "").trim();
+        if (desc.length > 150) desc = desc.substring(0, 150).split(' ').slice(0, -1).join(' ');
+        if (desc.length < 100) desc = (desc + " This high quality visual asset is designed for digital signage and broadcast production.").substring(0, 150);
+
+        // 3. KEYWORDS
+        let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w.length > 2);
+        kws = [...new Set(kws)];
+        let b = 0;
+        while(kws.length < 45 && b < BACKUP_KWS.length) {
+            if(!kws.includes(BACKUP_KWS[b])) kws.push(BACKUP_KWS[b]);
+            b++;
+        }
+
+        // 4. CATEGORY
+        let cat = CATEGORIES.includes(data.category) ? data.category : "backgrounds";
+
+        document.getElementById(`title-${idx}`).value = title;
+        document.getElementById(`desc-${idx}`).value = desc;
+        document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
+        document.getElementById(`cat-${idx}`).value = cat;
+        document.getElementById(`cat-disp-${idx}`).innerText = cat;
+        
+        validate(idx);
+    }
+
+    // --- 5. SNAPSHOT GENERATOR (3 FRAMES) ---
+    function getSnapshots(file) {
+        return new Promise((resolve, reject) => {
+            const v = document.getElementById('hiddenVideo');
+            const c = document.getElementById('hiddenCanvas');
+            const ctx = c.getContext('2d');
+            const url = URL.createObjectURL(file);
+            v.src = url;
+            
+            const shots = [];
+            const timestamps = [0.2, 0.5, 0.8]; // Awal, Tengah, Akhir
+            let currentStep = 0;
+
+            v.onloadedmetadata = () => {
+                c.width = 480; c.height = 270; // RESIZE 480p to prevent Payload Error 400
+                seekNext();
+            };
+
+            function seekNext() {
+                if (currentStep >= 3) {
+                    URL.revokeObjectURL(url);
+                    resolve(shots);
+                    return;
+                }
+                v.currentTime = v.duration * timestamps[currentStep];
+            }
+
+            v.onseeked = () => {
+                ctx.drawImage(v, 0, 0, c.width, c.height);
+                // QUALITY 0.5 IS CRITICAL TO AVOID ERROR 400
+                shots.push(c.toDataURL('image/jpeg', 0.5)); 
+                currentStep++;
+                seekNext();
+            };
+
+            v.onerror = (e) => reject(e);
+        });
     }
 
     function updateStatus(idx, cls, txt) {
         const el = document.getElementById(`status-${idx}`);
         el.className = `status-pill ${cls}`;
         el.innerText = txt;
-    }
-
-    function getFrame(file) {
-        return new Promise((resolve, reject) => {
-            const v = document.getElementById('hiddenVideo');
-            const c = document.getElementById('hiddenCanvas');
-            const ctx = c.getContext('2d');
-            
-            v.src = URL.createObjectURL(file);
-            v.onloadedmetadata = () => {
-                v.currentTime = 1.0; // Ambil detik ke-1
-            };
-            v.onseeked = () => {
-                c.width = 480; c.height = 270; // Resize agar ringan
-                ctx.drawImage(v, 0, 0, c.width, c.height);
-                resolve(c.toDataURL('image/jpeg', 0.6));
-            };
-            v.onerror = reject;
-        });
     }
 
     function exportCSV() {
@@ -268,10 +355,9 @@
             csv += `"${item.file.name}","${t}","${d}","${k}","${c}"\n`;
         });
         const blob = new Blob([csv], {type: 'text/csv'});
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = "metadata_spok.csv";
+        a.href = URL.createObjectURL(blob);
+        a.download = "metadata_v8_pro.csv";
         a.click();
     }
 </script>
