@@ -6,6 +6,7 @@
     <title>Microstock Metadata Pro - Motion Graphic Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS TIDAK BERUBAH SAMA SEKALI */
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
         .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border); overflow: hidden; }
@@ -40,7 +41,7 @@
     <div class="container">
         <div class="header">
             <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-            <div style="font-size: 12px; opacity: 0.8;">Strict Video Logic & Direct Titles</div>
+            <div style="font-size: 12px; opacity: 0.8;">Strict Video Context & Smart Titles</div>
         </div>
 
         <div class="controls">
@@ -69,7 +70,7 @@
             <thead>
                 <tr>
                     <th style="width: 300px;">Media Asset</th>
-                    <th>Metadata (No "The Image" - Pure Video Description)</th>
+                    <th>Metadata (Professional Video Focus)</th>
                 </tr>
             </thead>
             <tbody id="resultBody"></tbody>
@@ -199,9 +200,9 @@
             return str.trim().replace(/[\s,]+(and|or|with|the|a|an|is|at|of|in|to|for)[\s,.]*$/i, "").replace(/[,\s]+$/, "");
         }
 
-        // Fungsi membersihkan awalan "The image shows" atau "A video of"
+        // Fungsi membersihkan awalan "The image shows" atau "A video of" agar to the point
         function cleanStart(str) {
-            // Hapus: "The image", "This video", "A 3d render of", "Seamless loop of" (biar tidak duplikat)
+            // Hapus: "The image", "This video", "A 3d render of"
             return str.replace(/^(the|this|a|an)\s+(image|video|clip|footage|picture|shot|view|rendering|illustration|animation)\s+(shows|features|depicts|of|is|displaying)?\s*/i, "")
                       .replace(/^shows\s+/i, ""); 
         }
@@ -233,34 +234,32 @@
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
                     // ------------------------------------------
-                    // TITLE LOGIC (SPOK & VIDEO CENTRIC)
+                    // TITLE LOGIC (SMART SUFFIX & CLEANUP)
                     // ------------------------------------------
                     let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
                     
                     // 1. Bersihkan awalan "The image..."
                     title = cleanStart(title);
                     
-                    // 2. Bersihkan akhiran
-                    title = cleanTrailing(title);
-
-                    // 3. Kapitalisasi awal
+                    // 2. Kapitalisasi awal
                     title = title.charAt(0).toUpperCase() + title.slice(1);
 
-                    // 4. LOGIKA SUFFIX PENGGANTI "FOR CREATIVE..."
-                    // Jika judul kependekan, tambahkan teknis videonya, bukan kalimat marketing.
-                    if (title.length < 50) {
+                    // 3. LOGIKA SUFFIX CERDAS (Bukan marketing generik, tapi spek teknis)
+                    if (title.length < 55) { // Hanya tambah jika judul pendek
                         if (finalCat.includes("background") || finalCat.includes("abstract")) {
-                            if (!title.toLowerCase().includes("loop")) title += " - Seamless Motion Loop";
-                        } else if (finalCat.includes("overlays") || finalCat.includes("element")) {
-                            title += " with Alpha Channel";
+                            if (!title.toLowerCase().includes("loop")) title += " - Seamless Loop Video";
+                        } else if (finalCat.includes("overlays") || finalCat.includes("element") || finalCat.includes("lower")) {
+                            title += " Animation with Alpha Channel";
                         } else if (finalCat.includes("3d")) {
-                            title += " - 3D Render Animation";
+                            title += " 3D Render Animation";
+                        } else if (finalCat.includes("transitions")) {
+                            title += " Video Transition Effect";
                         } else {
-                            title += " - Motion Graphic Video";
+                            title += " Motion Graphic Animation";
                         }
                     }
 
-                    // 5. Potong rapi max 70 char
+                    // 4. Potong rapi max 70 char
                     if (title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
                     title = cleanTrailing(title);
 
@@ -268,28 +267,30 @@
 
 
                     // ------------------------------------------
-                    // DESC LOGIC (VIDEO FOCUS)
+                    // DESC LOGIC (VIDEO FOCUS & CONTEXT)
                     // ------------------------------------------
                     let desc = (data.description || "High quality motion graphic.").trim();
                     
-                    // Bersihkan "The image shows" dari deskripsi juga
-                    if (desc.toLowerCase().startsWith("the image") || desc.toLowerCase().startsWith("this image")) {
-                        desc = desc.replace(/^(the|this)\s+image\s+(shows|features|depicts|is)?\s*/i, "This video features ");
-                    }
+                    // Ganti "The image shows" menjadi lebih video-oriented
+                    desc = desc.replace(/^(The|This)\s+image\s+(shows|features|depicts|is)?\s*/i, "This motion graphic video features ");
+                    desc = desc.replace(/^It\s+is\s+a\s+(picture|photo)\s+of\s*/i, "This video clip shows ");
 
                     desc = cleanTrailing(desc);
                     if (!desc.endsWith('.')) desc += ".";
 
-                    // Tambahan kalimat teknis (bukan marketing kosong)
+                    // Tambahan kalimat teknis sesuai kategori
                     if (desc.length < 100) {
                         if (finalCat.includes("loop") || finalCat.includes("background")) {
-                            desc += " Ideally designed for backgrounds, presentations, and digital signage displays.";
+                            desc += " Ideal for use as a background in presentations, events, and YouTube videos.";
+                        } else if (finalCat.includes("overlay")) {
+                            desc += " Designed with a transparent background for easy compositing in video editing software.";
                         } else {
-                            desc += " Perfect for video editing, compositing, and professional broadcast projects.";
+                            desc += " Perfect for filmmakers, video editors, and broadcast production.";
                         }
                     }
                     
                     let finalDesc = desc.substring(0, 150);
+                    // Pastikan tidak memotong di tengah kata
                     if (finalDesc.length < desc.length) finalDesc = finalDesc.replace(/\s\w*$/, ""); 
                     finalDesc = cleanTrailing(finalDesc);
                     if (!finalDesc.endsWith('.')) finalDesc += ".";
@@ -300,8 +301,8 @@
                     // KEYWORDS LOGIC
                     // ------------------------------------------
                     let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
-                    // Hapus kata "image", "photo" dari keywords
-                    kws = kws.filter(w => w !== "image" && w !== "photo" && w !== "picture");
+                    // Hapus kata yang salah konteks
+                    kws = kws.filter(w => w !== "image" && w !== "photo" && w !== "picture" && w !== "illustration");
                     
                     kws = [...new Set(kws)];
                     let bIdx = 0;
@@ -324,16 +325,16 @@
 
         async function makeRequest(key, base64) {
             const categoriesStr = ALL_CATEGORIES.join(", ");
-            // PROMPT DIPERBARUI AGAR FOCUS KE VIDEO/ANIMASI
-            const prompt = `You are a Microstock Metadata Expert for VIDEO CONTENT (Motion Graphics, 3D Animations, Footage).
-            Input: A filmstrip summarizing a VIDEO clip.
+            // PROMPT BARU: STRICT VIDEO CONTEXT
+            const prompt = `You are a Stock Video Metadata Expert. 
+            Input: A filmstrip summarizing a VIDEO clip (Motion Graphic, 3D Render, or Footage).
             
             STRICT RULES:
-            1. NEVER use words like "The image", "This photo", "The picture". Use "3D Animation", "Motion Graphic", "Abstract Loop", or "Video Footage" instead.
-            2. Category: Must be EXACTLY from this list: [${categoriesStr}].
-            3. Title: Start directly with the subject (e.g., "Blue Neon Tunnel Loop", "Golden Particles Falling"). Do not start with "A video of".
-            4. Description: Describe the MOVEMENT and VISUALS. Use complete sentences.
-            5. Keywords: Focus on visual style, movement, and concept.`;
+            1. NEVER use words like "The image", "This photo", "The picture". Treat input as "Video", "Clip", "Animation", or "3D Render".
+            2. Category: Pick ONE from: [${categoriesStr}].
+            3. Title: Start directly with the Visual Subject (e.g., "Blue Neon Tunnel", "Golden Particles"). Do NOT start with "A video of".
+            4. Description: Describe the MOVEMENT and VISUALS accurately. Use "This video features..." or "A 3D animation of...".
+            5. Keywords: Focus on movement (loop, spin, fly), style (3d, flat, grunge), and content.`;
             
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -343,7 +344,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze this video filmstrip. Return Strict JSON." },
+                            { type: "text", text: "Analyze this video filmstrip. Return Strict JSON: {category, title, description, keywords}." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
