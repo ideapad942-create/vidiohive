@@ -255,7 +255,7 @@
     <div class="container">
         <div class="header">
             <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-            <div style="font-size: 12px; opacity: 0.8;">Strict Visual Description Mode</div>
+            <div style="font-size: 12px; opacity: 0.8;">SPOK Logic & Strict Category Mode</div>
         </div>
 
         <div class="controls">
@@ -284,7 +284,7 @@
             <thead>
                 <tr>
                     <th style="width: 300px;">Media Asset</th>
-                    <th>Metadata (Sentence Case & Strict Keywords)</th>
+                    <th>Metadata (SPOK Logic & Perfect Sentence)</th>
                 </tr>
             </thead>
             <tbody id="resultBody"></tbody>
@@ -295,7 +295,55 @@
     <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
     <script>
-        const CATEGORIES_LIST = `backgrounds, backgrounds/abstract, backgrounds/nature, elements, overlays, transitions, infographics`;
+        // DAFTAR KATEGORI LENGKAP SESUAI PERMINTAAN
+        const ALL_CATEGORIES = [
+            "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", 
+            "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", 
+            "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", 
+            "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", 
+            "backgrounds/miscellaneous",
+            "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", 
+            "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", 
+            "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
+            "distortions",
+            "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", 
+            "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", 
+            "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", 
+            "elements/technology", "elements/water", "elements/miscellaneous",
+            "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", 
+            "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", 
+            "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", 
+            "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", 
+            "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", 
+            "interface-effects/miscellaneous",
+            "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", 
+            "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", 
+            "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", 
+            "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", 
+            "lower-thirds/miscellaneous",
+            "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", 
+            "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", 
+            "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", 
+            "overlays/technology", "overlays/water", "overlays/miscellaneous",
+            "particles",
+            "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", 
+            "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", 
+            "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", 
+            "revealer/technology", "revealer/water", "revealer/miscellaneous",
+            "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", 
+            "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", 
+            "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", 
+            "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", 
+            "transitions/miscellaneous",
+            "water-and-fluid",
+            "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", 
+            "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", 
+            "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", 
+            "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", 
+            "miscellaneous/miscellaneous",
+            "infographics"
+        ];
+
         const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "render", "digital", "design", "creative", "concept", "modern", "effect", "futuristic", "pattern", "glow", "texture", "dynamic", "element", "colorful", "artistic", "display", "presentation", "backdrop", "overlay", "energy", "flow", "clean", "soft", "sharp", "gradient", "composition", "style", "cinematic", "technology", "shapes", "geometry", "bright", "vibrant", "elegant", "smooth", "ambient", "high tech", "decoration", "wallpaper", "studio", "pro", "visuals"];
 
         const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48;
@@ -363,6 +411,15 @@
             document.getElementById(`cnt-kw-${idx}`).className = (k < 45 || k > 48) ? 'count-err' : 'count-ok';
         }
 
+        // FUNGSI PEMBERSIH KATA SAMBUNG (LOGIKA SPOK)
+        function cleanTrailingConnectors(str) {
+            // Hapus spasi berlebih
+            str = str.trim();
+            // Regex untuk menghapus kata sambung di akhir kalimat: and, or, with, the, a, of, in, at
+            // Juga menghapus koma atau titik yang menggantung
+            return str.replace(/[\s,]+(and|or|with|the|a|an|is|at|of|in|to|for)[\s,.]*$/i, "").replace(/[,\s]+$/, "");
+        }
+
         async function startProcessing() {
             apiKeys = [document.getElementById('apiKey1').value, document.getElementById('apiKey2').value].filter(k => k);
             if (!apiKeys.length) return alert("Isi API Key!");
@@ -376,24 +433,59 @@
                     document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                     let data = await makeRequest(apiKeys[currentKeyIndex], base64);
 
-                    // --- TITLE LOGIC ---
+                    // --- TITLE LOGIC (SPOK PERFECT) ---
                     let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
                     const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template"];
                     trash.forEach(w => title = title.split(w).join('').trim());
-
-                    if (title.length < 50) {
-                        title += " " + (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ').slice(0, 8).join(' ');
-                    }
-                    title = title.replace(/\s+/g, ' ').trim();
+                    
+                    // Bersihkan kata sambung yang menggantung
+                    title = cleanTrailingConnectors(title);
+                    
+                    // Kapitalisasi awal
                     title = title.charAt(0).toUpperCase() + title.slice(1);
+
+                    // Logika Tambahan jika kependekan, pastikan sambungan logis
+                    if (title.length < 50) {
+                        title += " for creative professional projects";
+                    }
+                    
+                    // Potong jika kepanjangan tapi jangan memotong kata
                     if (title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
-                    if (title.length < 50) title += " for creative professional projects";
+                    
+                    // Final check untuk kata sambung setelah pemotongan
+                    title = cleanTrailingConnectors(title);
+                    
                     document.getElementById(`title-${idx}`).value = title;
 
-                    // --- DESC LOGIC ---
+                    // --- DESC LOGIC (SPOK PERFECT) ---
                     let desc = (data.description || "High quality visual.").trim();
-                    if (desc.length < 100) desc += " This unique visual asset is designed for high-end video production and digital signage applications.";
-                    document.getElementById(`desc-${idx}`).value = desc.substring(0, 150);
+                    
+                    // Bersihkan kata sambung di akhir deskripsi asli AI sebelum ditambah kalimat marketing
+                    desc = cleanTrailingConnectors(desc);
+                    
+                    // Pastikan diakhiri titik sebelum kalimat baru
+                    if (!desc.endsWith('.')) desc += ".";
+
+                    // Tambahan kalimat marketing yang sempurna (tidak terpotong "digit")
+                    if (desc.length < 100) {
+                        desc += " This unique visual asset is designed for high-end video production and digital signage applications.";
+                    }
+                    
+                    // Potong hard limit 150
+                    let finalDesc = desc.substring(0, 150);
+                    
+                    // Jika terpotong di tengah kata, mundur ke spasi terakhir
+                    if (finalDesc.length < desc.length) {
+                        finalDesc = finalDesc.replace(/\s\w*$/, ""); 
+                    }
+
+                    // Bersihkan lagi jaga-jaga kalau terpotong pas di kata "and"
+                    finalDesc = cleanTrailingConnectors(finalDesc);
+                    
+                    // Pastikan diakhiri titik
+                    if (!finalDesc.endsWith('.')) finalDesc += ".";
+
+                    document.getElementById(`desc-${idx}`).value = finalDesc;
 
                     // --- KEYWORDS LOGIC ---
                     let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
@@ -405,11 +497,24 @@
                     }
                     document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
 
-                    document.getElementById(`cat-${idx}`).value = data.category || "backgrounds";
-                    document.getElementById(`cat-disp-${idx}`).innerText = data.category || "backgrounds";
+                    // --- CATEGORY LOGIC (STRICT LIST) ---
+                    // Cek apakah kategori dari AI ada di list kita, kalau tidak default ke 'backgrounds'
+                    let finalCat = "backgrounds";
+                    if (data.category && ALL_CATEGORIES.includes(data.category)) {
+                        finalCat = data.category;
+                    } else if (data.category) {
+                        // Coba cari partial match
+                        const match = ALL_CATEGORIES.find(c => c === data.category.toLowerCase() || c.endsWith('/' + data.category.toLowerCase()));
+                        if (match) finalCat = match;
+                    }
+
+                    document.getElementById(`cat-${idx}`).value = finalCat;
+                    document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
+                    
                     updateStatus(idx, 'success', 'Done');
                     validate(idx);
                 } catch (e) {
+                    console.error(e);
                     updateStatus(idx, 'error', 'Fail');
                 }
             }
@@ -418,7 +523,15 @@
         }
 
         async function makeRequest(key, base64) {
-            const prompt = `Senior Microstock Expert. Analyze frames. Return JSON: {category, title, description, keywords}. Focus on visual details.`;
+            // Prompt yang diperbarui agar AI tahu list kategori yang valid dan aturan kalimat
+            const categoriesStr = ALL_CATEGORIES.join(", ");
+            const prompt = `You are a Microstock Metadata Expert. Analyze frames. Return JSON: {category, title, description, keywords}.
+            RULES:
+            1. Category must be EXACTLY from this list: [${categoriesStr}]. Pick the most specific sub-category.
+            2. Title: Subject-Verb-Object format. NO trailing connectors (and, or, with). COMPLETE sentences only.
+            3. Description: Detailed visual description. COMPLETE sentences only. Do not end with 'and' or 'digit'.
+            4. Keywords: Relevant tags only.`;
+            
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
@@ -427,7 +540,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Strict JSON." },
+                            { type: "text", text: "Strict JSON. Ensure complete sentences." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
@@ -478,7 +591,7 @@
             const blob = new Blob([csv], { type: 'text/csv' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `microstock_v6.csv`;
+            a.download = `microstock_v6_pro.csv`;
             a.click();
         }
     </script>
