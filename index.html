@@ -376,64 +376,50 @@ infographics`;
             const idx = item.id;
             updateStatus(idx, 'processing', 'Analyzing...');
             try {
-                // --- KEMBALIKAN LOGIC SNAPSHOT 3 FRAME ---
+                // 1. Ambil Filmstrip (3 frame) - Tetap sesuai sistem Anda
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- TITLE LOGIC (SPOK + 50-70 Chars) ---
-                let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
-                if(title.startsWith("a ")) title = title.substring(2);
-                if(title.startsWith("the ")) title = title.substring(4);
-                title = title.charAt(0).toUpperCase() + title.slice(1);
-                title = title.replace(/\.$/, "");
-
+                // --- LOGIKA TITLE ---
+                let title = (data.title || "").trim();
                 if(title.length < 50) title += " seamlessly specifically for digital presentation"; 
                 if(title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
                 document.getElementById(`title-${idx}`).value = title;
 
-                // --- DESC LOGIC (Title + Fixed Suffix) ---
+                // --- LOGIKA DESC ---
                 let descTitlePart = title;
                 const maxTitleInDesc = 150 - SUFFIX_DESC.length;
                 if (descTitlePart.length > maxTitleInDesc) {
                     descTitlePart = descTitlePart.substring(0, maxTitleInDesc).replace(/\s\w*$/, "");
                 }
-                let desc = descTitlePart + SUFFIX_DESC;
-                document.getElementById(`desc-${idx}`).value = desc;
+                document.getElementById(`desc-${idx}`).value = descTitlePart + SUFFIX_DESC;
 
-                // --- KEYWORDS LOGIC: FAIL-SAFE AGAR TIDAK KOSONG ---
-                let kws = [];
-                if (data.keywords) {
-                    kws = data.keywords.split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
-                }
+                // --- LOGIKA KEYWORDS (ANTI-KOSONG) ---
+                let rawKeywords = data.keywords ? data.keywords.split(',').map(w => w.trim().toLowerCase()).filter(w => w.length > 2) : [];
                 
-                // Jika kosong atau kurang dari 45, isi paksa dari Backup
-                kws = [...new Set(kws)];
-                let bIdx = 0;
-                while(kws.length < 48 && bIdx < BACKUP_KEYWORDS.length) {
-                    if(!kws.includes(BACKUP_KEYWORDS[bIdx])) kws.push(BACKUP_KEYWORDS[bIdx]);
-                    bIdx++;
-                }
-                document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
+                // Jika AI gagal/kosong, gabungkan dengan backup
+                let combinedKeywords = [...new Set([...rawKeywords, ...BACKUP_KEYWORDS])];
+                let finalKeywords = combinedKeywords.slice(0, 48).join(', ');
+                
+                document.getElementById(`kw-${idx}`).value = finalKeywords;
 
-                // --- CATEGORY LOGIC: WAJIB AMBIL DARI LIST ---
-                let finalCat = data.category || "backgrounds";
-                finalCat = finalCat.trim();
+                // --- LOGIKA CATEGORY (WAJIB TAMPIL) ---
+                let aiCat = (data.category || "").trim().toLowerCase();
+                // Validasi terhadap list besar Anda
+                let finalCat = CATEGORIES_LIST.includes(aiCat) && aiCat.length > 3 ? aiCat : "backgrounds/miscellaneous";
                 
-                // Validasi kasar: Jika kategori dari AI tidak ada di list string besar, fallback ke backgrounds/miscellaneous
-                // (Kita lakukan pengecekan sederhana apakah string output ada di dalam LIST raksasa di atas)
-                if (!CATEGORIES_LIST.includes(finalCat)) {
-                    finalCat = "backgrounds/miscellaneous";
-                }
-                
+                // Update ke dua tempat: Input hidden (untuk CSV) dan Span (untuk Tampilan UI)
                 document.getElementById(`cat-${idx}`).value = finalCat;
-                document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
+                document.getElementById(`cat-disp-${idx}`).innerText = "Category: " + finalCat;
                 
+                // Akhiri dengan status sukses
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
+
             } catch(e) { 
-                console.error(e);
+                console.error("Error pada file " + idx, e);
                 updateStatus(idx, 'error', 'Fail'); 
             }
         }
