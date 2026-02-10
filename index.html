@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Pro V6</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Microstock Metadata Pro - Motion Pro V7 (Stable)</title>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
@@ -45,8 +45,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Edition</span></h1>
-        <div style="font-size: 12px; opacity: 0.8;">Smart S-P-O Logic Active</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V7 Fix</span></h1>
+        <div style="font-size: 12px; opacity: 0.8;">Strict Logic & Anti-Fail System</div>
     </div>
 
     <div class="controls">
@@ -75,7 +75,7 @@
         <thead>
             <tr>
                 <th style="width: 300px;">Media Asset</th>
-                <th>Metadata (Optimized Subject-Object Logic)</th>
+                <th>Metadata (S-P-O Logic & No Hanging Words)</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -86,10 +86,21 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- DAFTAR KATAGORI WAJIB ---
+    // --- DATABASE KATEGORI LENGKAP ---
     const FULL_CATEGORIES = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
 
-    const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "animation", "render", "digital", "design", "creative", "modern", "effect", "pattern", "dynamic", "vibrant", "futuristic", "overlay", "backdrop", "cinematic", "presentation", "texture", "smooth", "high quality", "clean", "shapes", "geometry", "gradient", "energy", "flow", "bright", "elegant", "technology", "display", "artwork", "video asset", "composition", "minimalist", "professional", "luxury", "soft", "dark", "glow", "particles", "3d animation", "rendering", "artistic"];
+    // --- KEYWORDS CADANGAN (Agar tidak pernah kosong) ---
+    const BACKUP_KEYWORDS = [
+        "motion", "graphic", "abstract", "visual", "loop", "animation", "render", "digital", "design", "creative", 
+        "modern", "effect", "pattern", "dynamic", "vibrant", "futuristic", "overlay", "backdrop", "cinematic", 
+        "presentation", "texture", "smooth", "high quality", "clean", "shapes", "geometry", "gradient", "energy", 
+        "flow", "bright", "elegant", "technology", "display", "artwork", "video asset", "composition", "minimalist", 
+        "professional", "luxury", "soft", "dark", "glow", "particles", "3d animation", "rendering", "artistic", 
+        "multimedia", "cyber", "neon", "marketing", "promo", "broadcast"
+    ];
+
+    // Gunakan Model Stable agar JSON Valid
+    const GROQ_MODEL = "llama-3.3-70b-versatile"; 
 
     let fileQueue = [];
     let apiKeys = [];
@@ -114,7 +125,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>
-                    <div class="preview-box" id="preview-${index}"><div style="height:140px; background:#eee;"></div></div>
+                    <div class="preview-box" id="preview-${index}"><div style="height:140px; background:#1e293b; color:#fff; display:flex; align-items:center; justify-content:center;">Waiting...</div></div>
                     <div style="font-weight:600; font-size:12px; margin-top:10px;">${file.name}</div>
                     <div class="cat-badge" id="cat-disp-${index}">Category: -</div>
                     <div class="status-pill" id="status-pill-${index}">⚫ <span id="status-text-${index}">Pending</span></div>
@@ -145,8 +156,8 @@
     }
 
     async function startProcessing() {
-        apiKeys = [document.getElementById('apiKey1').value, document.getElementById('apiKey2').value].filter(k => k);
-        if(!apiKeys.length) return alert("Isi API Key!");
+        apiKeys = [document.getElementById('apiKey1').value.trim(), document.getElementById('apiKey2').value.trim()].filter(k => k);
+        if(!apiKeys.length) return alert("Harap isi API Key!");
         document.getElementById('btnProcess').disabled = true;
 
         for(let item of fileQueue) {
@@ -157,91 +168,136 @@
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- KATEGORI ---
-                const selectedCat = data.category || "backgrounds";
+                // === 1. KATEGORI ===
+                let selectedCat = data.category || "backgrounds";
+                if(selectedCat.includes('null') || selectedCat.length < 3) selectedCat = "backgrounds";
                 document.getElementById(`cat-${idx}`).value = selectedCat;
                 document.getElementById(`cat-disp-${idx}`).innerText = selectedCat;
 
-                // --- LOGIKA TITLE (SENTENCE CASE & S-P-O) ---
+                // === 2. TITLE LOGIC (S-P-O & No Hanging Words) ===
                 let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
                 
-                // Bersihkan potongan kata sisa
-                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template", "footage", "with", "and"];
+                // Hapus kata-kata "sampah"
+                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template", "stock footage", "shot of", "video of"];
                 trash.forEach(w => {
-                    const words = title.split(' ');
-                    if(words[words.length-1] === w) words.pop();
-                    title = words.join(' ').trim();
+                     title = title.split(w).join(' ').trim();
                 });
 
-                // Cek Kata Kunci Kategori
+                // Pastikan mengandung 3d/Abstract jika kategori memintanya
                 if(selectedCat.includes('3d') && !title.includes('3d')) title = "3d " + title;
                 if(selectedCat.includes('abstract') && !title.includes('abstract')) title = "abstract " + title;
 
-                // Bangun Kalimat Utuh (Subject + Predicate + Object)
+                // Bersihkan kata penghubung di akhir kalimat (penyebab "with")
+                const endBad = [" with", " and", " for", " of", " in", " on", " the", " a", " an"];
+                endBad.forEach(eb => {
+                    if(title.endsWith(eb)) title = title.substring(0, title.length - eb.length);
+                });
+
+                // Perbaiki Subject-Predicate-Object (Jika kependekan, ambil object dari deskripsi)
                 if(title.length < 50) {
-                    const descWords = (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ');
-                    for(let word of descWords) {
-                        if(title.length >= 62) break;
-                        if(!title.includes(word) && word.length > 3) title += " " + word;
-                    }
+                     const descWords = (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ');
+                     let added = 0;
+                     for(let w of descWords) {
+                         if(w.length > 3 && !title.includes(w)) {
+                             title += " " + w;
+                             added++;
+                             if(title.length > 55) break;
+                         }
+                     }
                 }
 
-                // Final Touch Judul
+                // Final Format: Sentence case
                 title = title.replace(/\s+/g, ' ').trim();
                 title = title.charAt(0).toUpperCase() + title.slice(1);
-                
-                // Pastikan tidak diakhiri kata penghubung
-                if(title.endsWith(" with") || title.endsWith(" and")) title = title.substring(0, title.lastIndexOf(" "));
-                
+
+                // Potong jika kepanjangan (tapi jangan potong kata)
                 if(title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
-                if(title.length < 50) title += " cinematic visual animation asset";
+                
+                // Fallback terakhir jika masih kependekan
+                if(title.length < 50) title += " cinematic digital visualization";
+
                 document.getElementById(`title-${idx}`).value = title;
 
-                // --- DESC LOGIC ---
-                let desc = (data.description || "").trim();
+
+                // === 3. DESCRIPTION LOGIC ===
+                let desc = (data.description || "High quality animation.").trim();
+                desc = desc.charAt(0).toUpperCase() + desc.slice(1);
                 if(desc.length < 100) desc += " This high-quality motion graphic video features professional visual effects perfect for digital projects and presentations.";
-                document.getElementById(`desc-${idx}`).value = desc.substring(0, 150);
+                // Potong rapi
+                if(desc.length > 150) desc = desc.substring(0, 150).replace(/\s\w*$/, ".");
+                if(!desc.endsWith('.')) desc += '.';
+                document.getElementById(`desc-${idx}`).value = desc;
 
-                // --- KEYWORDS LOGIC (STRICT 45-48) ---
+
+                // === 4. KEYWORDS LOGIC (STRICT 45-48) ===
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
-                kws = [...new Set(kws)];
+                kws = [...new Set(kws)]; // Unique
 
+                // Isi jika kurang dari 45
                 let bIdx = 0;
                 while(kws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
                     if(!kws.includes(BACKUP_KEYWORDS[bIdx])) kws.push(BACKUP_KEYWORDS[bIdx]);
                     bIdx++;
                 }
+                // Potong jika lebih dari 48
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
+
 
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
-            } catch(e) { updateStatus(idx, 'error', 'Fail'); console.error(e); }
+
+            } catch(e) { 
+                console.error("Processing Error:", e);
+                updateStatus(idx, 'error', 'Fail'); 
+                alert(`Error pada file ${item.file.name}: ${e.message}. Cek Console.`);
+            }
         }
         document.getElementById('btnProcess').disabled = false;
         document.getElementById('btnExport').style.display = 'inline-flex';
     }
 
     async function makeRequest(key, base64) {
-        const prompt = `Role: Senior Microstock Video Metadata Specialist. 
-        Analyze the video frames provided. 
-        1. Categorize using ONLY this list: [${FULL_CATEGORIES}].
-        2. Write a TITLE (50-70 chars): Must be a complete Subject-Predicate-Object sentence. If it's 3D, mention "3D". If it's Abstract, mention "Abstract". NO incomplete fragments.
-        3. Write a DESCRIPTION (100-150 chars): Identify this as a video/animation.
-        4. Generate KEYWORDS: 50 relevant words.
-        Return ONLY JSON format: {"category": "", "title": "", "description": "", "keywords": ""}`;
+        // Prompt yang sangat spesifik
+        const prompt = `
+        Role: Senior Microstock Metadata Specialist.
+        Task: Analyze the image/video frame.
+        1. CATEGORY: Must be exactly one from: [${FULL_CATEGORIES}].
+        2. TITLE (50-70 chars): Write a complete Subject-Predicate-Object sentence. E.g., "Abstract blue digital waves flowing in dark space". NO "Seamless loop", NO "Motion graphic", NO "Video of".
+        3. DESCRIPTION (100-150 chars): Describe lighting, texture, and movement.
+        4. KEYWORDS: Provide 50 relevant visual tags.
+        Output strictly JSON: {"category": "...", "title": "...", "description": "...", "keywords": "..."}
+        `;
 
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Process this video asset." }, { type: "image_url", image_url: { url: base64 } }] }],
-                response_format: { type: "json_object" },
-                temperature: 0.2
-            })
-        });
-        const d = await resp.json();
-        return JSON.parse(d.choices[0].message.content);
+        try {
+            const resp = await fetch("[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: GROQ_MODEL, // Menggunakan model v3.3 yang lebih pintar
+                    messages: [
+                        { role: "system", content: prompt }, 
+                        { role: "user", content: [{ type: "text", text: "Analyze strict JSON." }, { type: "image_url", image_url: { url: base64 } }] }
+                    ],
+                    temperature: 0.2
+                })
+            });
+
+            if(!resp.ok) throw new Error(`API Status: ${resp.status}`);
+            
+            const d = await resp.json();
+            const content = d.choices[0].message.content;
+            
+            // --- JSON CLEANER (Anti-Fail Logic) ---
+            const jsonStart = content.indexOf('{');
+            const jsonEnd = content.lastIndexOf('}');
+            if (jsonStart === -1 || jsonEnd === -1) throw new Error("AI did not return JSON");
+            
+            const cleanJson = content.substring(jsonStart, jsonEnd + 1);
+            return JSON.parse(cleanJson);
+
+        } catch (error) {
+            throw error;
+        }
     }
 
     function updateStatus(idx, type, text) {
@@ -251,19 +307,24 @@
     }
 
     function getFilmstrip(file) {
-        return new Promise(res => {
+        return new Promise((res, rej) => {
             const v = document.getElementById('hiddenVideo');
             const c = document.getElementById('hiddenCanvas');
             const ctx = c.getContext('2d');
-            v.src = URL.createObjectURL(file);
+            const url = URL.createObjectURL(file);
+            v.src = url;
+            v.onerror = () => rej(new Error("Video format error"));
             v.onloadedmetadata = async () => {
                 c.width = 960; c.height = 180;
-                for(let i=0; i<3; i++) {
-                    v.currentTime = v.duration * (0.2 + i * 0.3);
-                    await new Promise(r => v.onseeked = r);
-                    ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
-                }
-                res(c.toDataURL('image/jpeg'));
+                try {
+                    for(let i=0; i<3; i++) {
+                        v.currentTime = v.duration * (0.2 + i * 0.3);
+                        await new Promise(r => { v.onseeked = r; setTimeout(r, 500); }); // Timeout safety
+                        ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
+                    }
+                    res(c.toDataURL('image/jpeg', 0.7));
+                } catch(e) { rej(e); }
+                URL.revokeObjectURL(url);
             };
         });
     }
@@ -271,13 +332,14 @@
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
+            if(!document.getElementById(`status-pill-${idx}`).classList.contains('success')) return;
             const row = [item.file.name, document.getElementById(`title-${idx}`).value, document.getElementById(`desc-${idx}`).value, document.getElementById(`kw-${idx}`).value, document.getElementById(`cat-${idx}`).value];
             csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
         });
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `microstock_metadata_v6.csv`;
+        a.download = `microstock_metadata_v7.csv`;
         a.click();
     }
 </script>
