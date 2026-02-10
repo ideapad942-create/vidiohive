@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
+    <title>VidioHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
@@ -40,7 +40,7 @@
     <div class="container">
         <div class="header">
             <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-            <div style="font-size: 12px; opacity: 0.8;">Organic SPOK Titles & Clean Keywords</div>
+            <div style="font-size: 12px; opacity: 0.8;">Organic Titles (No "Saying") & Video Descriptions</div>
         </div>
 
         <div class="controls">
@@ -81,56 +81,20 @@
 
     <script>
         const ALL_CATEGORIES = [
-            "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", 
-            "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", 
-            "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", 
-            "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", 
-            "backgrounds/miscellaneous",
-            "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", 
-            "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", 
-            "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
-            "distortions",
-            "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", 
-            "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", 
-            "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", 
-            "elements/technology", "elements/water", "elements/miscellaneous",
-            "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", 
-            "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", 
-            "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", 
-            "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", 
-            "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", 
-            "interface-effects/miscellaneous",
-            "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", 
-            "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", 
-            "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", 
-            "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", 
-            "lower-thirds/miscellaneous",
-            "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", 
-            "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", 
-            "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", 
-            "overlays/technology", "overlays/water", "overlays/miscellaneous",
-            "particles",
-            "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", 
-            "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", 
-            "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", 
-            "revealer/technology", "revealer/water", "revealer/miscellaneous",
-            "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", 
-            "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", 
-            "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", 
-            "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", 
-            "transitions/miscellaneous",
-            "water-and-fluid",
-            "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", 
-            "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", 
-            "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", 
-            "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", 
-            "miscellaneous/miscellaneous",
-            "infographics"
+            "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
+            "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
+            "distortions", "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
+            "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", "interface-effects/miscellaneous",
+            "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
+            "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
+            "particles", "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
+            "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", "transitions/miscellaneous",
+            "water-and-fluid", "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous", "infographics"
         ];
 
         const BACKUP_KEYWORDS = ["video", "clip", "footage", "animation", "motion", "graphic", "render", "digital", "art", "design", "background", "loop", "seamless", "abstract", "creative", "concept", "modern", "futuristic", "style", "effect", "visual", "display", "presentation", "backdrop", "wallpaper", "texture", "pattern", "shape", "color", "light", "bright", "dark", "glow", "shine", "energy", "power", "tech", "technology", "cyber", "space", "business", "corporate", "event", "show", "broadcast"];
 
-        const STOP_WORDS = ["for", "and", "the", "with", "in", "on", "at", "to", "a", "an", "is", "of", "it", "this", "that", "image", "photo", "picture", "video", "clip"];
+        const STOP_WORDS = ["for", "and", "the", "with", "in", "on", "at", "to", "a", "an", "is", "of", "it", "this", "that", "image", "photo", "picture", "video", "clip", "saying", "reads"];
 
         const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
@@ -194,13 +158,12 @@
             document.getElementById(`cnt-kw-${idx}`).className = (k < 45) ? 'count-err' : 'count-ok';
         }
 
-        // FUNGSI POTONG PINTAR
+        // FUNGSI TRIM PINTAR
         function smartTrim(str, min, max) {
             str = str.replace(/['":;,.!?-]/g, '').trim(); 
             if (str.length >= min && str.length <= max) return str;
             if (str.length > max) {
                 let trimmed = str.substring(0, max);
-                // Potong di spasi terakhir agar kata tidak putus
                 return trimmed.substring(0, trimmed.lastIndexOf(" ")).trim();
             }
             return str;
@@ -232,13 +195,11 @@
                     document.getElementById(`cat-${idx}`).value = finalCat;
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
-                    // 2. KEYWORDS LOGIC (CLEAN & SPLIT)
+                    // 2. KEYWORDS LOGIC (CLEAN & SPLIT & NO STOP WORDS)
                     let rawKw = data.keywords;
                     let kws = Array.isArray(rawKw) ? rawKw : (typeof rawKw === 'string' ? rawKw.split(',') : []);
                     let splitKws = [];
                     kws.forEach(word => {
-                        // Pecah kalimat "Thanks for watching" jadi "thanks", "watching"
-                        // Hilangkan "for"
                         let parts = word.toString().toLowerCase().split(/[\s_-]+/);
                         parts.forEach(p => {
                             let clean = p.replace(/[^a-z]/g, '');
@@ -247,10 +208,8 @@
                             }
                         });
                     });
+                    splitKws = [...new Set(splitKws)];
                     
-                    splitKws = [...new Set(splitKws)]; // Hapus duplikat
-                    
-                    // Isi backup
                     let bIdx = 0;
                     while (splitKws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
                         if (!splitKws.includes(BACKUP_KEYWORDS[bIdx])) splitKws.push(BACKUP_KEYWORDS[bIdx]);
@@ -258,49 +217,55 @@
                     }
                     document.getElementById(`kw-${idx}`).value = splitKws.join(', ');
 
-                    // 3. TITLE LOGIC (ORGANIK & SPOK)
+                    // 3. TITLE LOGIC (ORGANIK & DIRECT)
                     let title = (data.title || "").trim();
                     title = title.replace(/['":;,.!?-]/g, '');
-                    // Bersihkan awalan sampah
+                    // Hapus kata kerja deskriptif yang tidak perlu di metadata
+                    title = title.replace(/\b(saying|reads|written|that says|showing)\b/gi, ""); 
+                    title = title.replace(/\s+/g, ' '); // Hapus spasi ganda
+                    
+                    // Hapus awalan standar
                     title = title.replace(/^(the|this|a|an)\s+(video|clip|animation)\s+/i, "");
                     title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
 
-                    // PENTING: Perpanjangan Organik (Bukan Marketing Template)
-                    // Jika kurang 70 chars, tambah detail VISUAL / STYLE, bukan "for youtube"
+                    // PENTING: Perpanjangan Organik Berdasarkan Konteks
+                    // Jangan tambah "on transparent" jika judul sudah ada "on [color] background"
+                    const hasBackgroundInTitle = /\b(on|with)\s+.*background\b/i.test(title);
+
                     if (title.length < 70) {
-                        if (title.toLowerCase().includes("loop") || finalCat.includes("abstract")) {
-                            title += " in seamless motion style";
-                        } else if (title.toLowerCase().includes("text") || finalCat.includes("lower")) {
-                            title += " animation on transparent background";
-                        } else if (finalCat.includes("overlay")) {
-                            title += " with glowing light effect";
+                        if (title.toLowerCase().includes("thanks") || title.toLowerCase().includes("subscribe")) {
+                             title += " for youtube end screen channel closing";
+                        } else if (finalCat.includes("abstract") && !title.includes("loop")) {
+                             title += " motion background in seamless loop";
+                        } else if (!hasBackgroundInTitle && (finalCat.includes("element") || finalCat.includes("overlay"))) {
+                             title += " animation isolated on transparent background";
+                        } else if (hasBackgroundInTitle) {
+                             // Jika sudah ada background, tambah detail lighting/style
+                             title += " with cinematic lighting effect";
                         } else {
-                            title += " rendered in modern digital style";
+                             title += " rendered in modern 3d digital style";
                         }
                     }
-                    
-                    // Jika masih kurang sedikit, tambah detail warna/suasana
-                    if (title.length < 70) {
-                        title += " with cinematic lighting";
-                    }
 
-                    // Potong Pintar (Max 90)
+                    // Trim dan Bersihkan
                     title = smartTrim(title, 70, 90);
                     title = cleanTrailing(title);
                     document.getElementById(`title-${idx}`).value = title;
 
-                    // 4. DESCRIPTION LOGIC
+                    // 4. DESCRIPTION LOGIC (NO STATIC IMAGE)
                     let desc = (data.description || "Video clip.").trim();
-                    // Hapus "High quality..." atau "The image shows"
-                    desc = desc.replace(/^(The|This)\s+(image|video)\s+(shows|features)?/i, "This video features");
-                    desc = desc.replace(/^High quality video clip\.?/i, "This video shows");
                     
-                    // Pastikan diawali This video features/shows
+                    // Ganti "static image" atau "photo" dengan istilah video
+                    desc = desc.replace(/\b(static image|still photo|picture)\b/gi, "motion graphic video");
+                    
+                    // Pastikan tidak diawali "High quality..."
+                    desc = desc.replace(/^High quality video clip\.?/i, "This video features");
+                    
                     if (!desc.toLowerCase().startsWith("this video")) {
-                        desc = "This video features " + desc;
+                        desc = "This video features " + desc.charAt(0).toLowerCase() + desc.slice(1);
                     }
 
-                    if (desc.length < 100) desc += " Perfect for use in multimedia projects requiring detailed visual elements.";
+                    if (desc.length < 100) desc += " ideal for event displays, backgrounds, and multimedia projects.";
                     let finalDesc = desc.substring(0, 150);
                     if (finalDesc.length < desc.length) finalDesc = finalDesc.replace(/\s\w*$/, ""); 
                     finalDesc = cleanTrailing(finalDesc);
@@ -323,14 +288,13 @@
             Input: Filmstrip of a VIDEO clip.
             
             STRICT RULES:
-            1. Title: Create a NATURAL, ORGANIC sentence (Subject + Verb + Object + Context). 
-               - NO "A video of". 
-               - IF TEXT IS VISIBLE (e.g., "Sale"), WRITE IT.
-               - Example: "Golden 3d text saying thank you rotates on dark black background".
-               - Target Length: 80 characters.
-            2. Keywords: Return 50 relevant SINGLE words. Split phrases (e.g. "dark blue" -> "dark", "blue"). NO STOP WORDS (for, and, the).
-            3. Category: Select relevant one.
-            4. Description: Start with "This video features...".
+            1. Title: Create an ORGANIC formula: [Adjective] + [Color] + [Subject] + [Action] + [Context].
+               - DO NOT use words like "saying", "reads", "written".
+               - Example: "Elegant golden thanks for watching text rotates on dark brown background".
+               - Target Length: 75-80 characters.
+            2. Keywords: Return 50 relevant SINGLE words. NO STOP WORDS (for, and, the).
+            3. Category: Select most relevant.
+            4. Description: Start with "This video features...". NEVER say "static image". Use verbs like "moves", "rotates", "shimmers".
             
             Return STRICT JSON: {category, title, description, keywords}`;
             
@@ -342,7 +306,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze visuals. Natural title. Split keywords. JSON only." },
+                            { type: "text", text: "Analyze visuals. Organic title. No 'saying'. JSON only." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
