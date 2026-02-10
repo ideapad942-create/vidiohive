@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIDEO METADATA GENERATOR - 3 FRAME ANALYSIS</title>
+    <title>MICROSTOCK METADATA GENERATOR - V2</title>
     <style>
         :root { 
             --primary: #d946ef; /* Fuchsia */
@@ -16,7 +16,7 @@
 
         body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         
-        .container { max-width: 1100px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; min-height: 80vh; display: flex; flex-direction: column; }
+        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; min-height: 80vh; display: flex; flex-direction: column; }
 
         /* Header & Tabs */
         .header { background: #1e293b; color: white; padding: 20px; display: flex; align-items: center; justify-content: space-between; }
@@ -64,8 +64,12 @@
         
         .meta-content { flex-grow: 1; }
         .meta-row { margin-bottom: 15px; }
-        .meta-label { font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
-        .meta-val { font-size: 14px; line-height: 1.5; color: #334155; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #f1f5f9; }
+        .meta-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .meta-label { font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; display: block; }
+        .char-count { font-size: 10px; color: #94a3b8; font-weight: 600; }
+        
+        .meta-val { font-size: 14px; line-height: 1.5; color: #334155; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #f1f5f9; width: 100%; box-sizing: border-box; font-family: inherit; }
+        textarea.meta-val { resize: vertical; min-height: 60px; }
 
         /* Buttons */
         .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
@@ -75,13 +79,17 @@
         .btn-success:hover { background: #059669; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+        .category-tag {
+            background: #e0e7ff; color: #4338ca; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #c7d2fe; display: inline-block; margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ STOCK FOOTAGE METADATA (3-FRAME AI)</h1>
+        <h1>🎞️ STOCK METADATA AI (V2)</h1>
     </div>
 
     <div class="tabs">
@@ -94,6 +102,7 @@
         <div class="form-group">
             <label class="label">Groq API Key (Model Llama Vision)</label>
             <input type="password" id="apiKey" class="input-field" placeholder="gsk_xxxxxxxx...">
+            <small style="color: #64748b;">API Key disimpan lokal di browser Anda.</small>
         </div>
 
         <div class="form-group">
@@ -106,17 +115,16 @@
             </div>
         </div>
 
-        <div id="fileStatus" style="margin-top: 15px; font-weight: bold; color: var(--primary); display: none;">
-            </div>
+        <div id="fileStatus" style="margin-top: 15px; font-weight: bold; color: var(--primary); display: none;"></div>
 
         <button id="btnNext1" class="btn btn-primary" style="margin-top: 20px; display: none;" onclick="switchTab(1)">Lanjut ke Proses ➡️</button>
     </div>
 
     <div id="tab1" class="content">
         <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="margin: 0 0 10px 0;">Analisis Frame & Metadata</h2>
-            <p style="font-size: 13px; color: #64748b;">Sistem mengambil 3 screenshot (Awal, Tengah, Akhir) untuk dianalisis.</p>
-            <button id="btnStart" class="btn btn-primary" style="width: 200px;" onclick="startProcessing()">🚀 Mulai Proses</button>
+            <h2 style="margin: 0 0 10px 0;">Antrian Proses</h2>
+            <p style="font-size: 13px; color: #64748b;">Sistem akan menganalisis 3 frame per video untuk menentukan kategori dan metadata.</p>
+            <button id="btnStart" class="btn btn-primary" style="width: 200px;" onclick="startProcessing()">🚀 Mulai AI Generator</button>
         </div>
 
         <div class="queue-container">
@@ -137,7 +145,7 @@
         <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
             <div>
                 <h2 style="margin:0;">Hasil Metadata</h2>
-                <p style="font-size:12px; color:#64748b; margin:5px 0 0 0;">Pastikan cek ulang sebelum upload.</p>
+                <p style="font-size:12px; color:#64748b; margin:5px 0 0 0;">Cek Title (Max 70), Desc (Max 150), Keyword (Min 45).</p>
             </div>
             <button class="btn btn-success" onclick="exportCSV()">📥 Download CSV Final</button>
         </div>
@@ -150,17 +158,33 @@
 <canvas id="procCanvas" style="display:none;"></canvas>
 
 <script>
+    // --- DATABASE KATEGORI ---
+    const CATEGORIES = `
+backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous
+bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous
+distortions
+elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous
+interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous
+lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous
+overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous
+particles
+revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous
+transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous
+water-and-fluid
+miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous
+infographics
+    `;
+
     let queue = [];
     let results = [];
     let isProcessing = false;
 
-    // --- SETUP & NAVIGATION ---
+    // --- NAVIGASI ---
     function switchTab(idx) {
         document.querySelectorAll('.content').forEach((c, i) => c.classList.toggle('active', i === idx));
         document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
     }
 
-    // Load API Key from storage
     if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
 
     // --- FILE HANDLING ---
@@ -202,7 +226,7 @@
         }
     }
 
-    // --- SNAPSHOT LOGIC (THE 3-FRAME FILMSTRIP) ---
+    // --- SNAPSHOT GENERATOR ---
     async function createFilmstrip(file) {
         return new Promise((resolve, reject) => {
             const video = document.getElementById('procVideo');
@@ -213,14 +237,11 @@
             video.src = url;
             video.muted = true;
 
-            // Kita akan ambil 3 frame, jadi canvas lebar 3x
-            // Resolusi per frame (dikecilkan biar ringan buat API): 320x180
             const fW = 320; 
             const fH = 180;
             canvas.width = fW * 3; 
             canvas.height = fH;
 
-            // Helper untuk seek & draw
             const capture = (timeRatio, posX) => {
                 return new Promise((res) => {
                     video.currentTime = video.duration * timeRatio;
@@ -233,12 +254,10 @@
 
             video.onloadedmetadata = async () => {
                 try {
-                    // Ambil frame di 10%, 50%, 90%
-                    await capture(0.1, 0);       // Kiri
-                    await capture(0.5, fW);      // Tengah
-                    await capture(0.9, fW * 2);  // Kanan
-                    
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Quality 0.7
+                    await capture(0.1, 0);       
+                    await capture(0.5, fW);      
+                    await capture(0.9, fW * 2);  
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8); 
                     URL.revokeObjectURL(url);
                     resolve(dataUrl);
                 } catch (e) {
@@ -254,7 +273,7 @@
         });
     }
 
-    // --- AI PROCESSING ---
+    // --- AI PROCESSING CORE ---
     async function startProcessing() {
         const apiKey = document.getElementById('apiKey').value.trim();
         if (!apiKey) return alert("Masukkan API Key Groq dulu!");
@@ -274,33 +293,42 @@
             statusCell.innerHTML = `<span class="badge b-proc">Snapshot...</span>`;
 
             try {
-                // 1. Generate Filmstrip
+                // 1. Snapshot
                 const filmstripBase64 = await createFilmstrip(item.file);
-                
-                // Update UI Preview Table
                 imgCell.innerHTML = `<img src="${filmstripBase64}" style="width:100%; border-radius:4px; border:1px solid #ccc;">`;
-                statusCell.innerHTML = `<span class="badge b-proc">AI Thinking...</span>`;
+                statusCell.innerHTML = `<span class="badge b-proc">AI Analyzing...</span>`;
 
-                // 2. Call Groq
+                // 2. Groq AI
                 const metadata = await callGroqAI(apiKey, filmstripBase64.split(',')[1]);
 
-                // 3. Save & Render
+                // 3. Save
                 results.push({
+                    id: item.id,
                     filename: item.filename,
                     ...metadata,
                     preview: filmstripBase64
                 });
 
-                renderResultCard({ filename: item.filename, ...metadata, preview: filmstripBase64 });
+                renderResultCard(results[results.length - 1]);
                 statusCell.innerHTML = `<span class="badge b-done">DONE</span>`;
 
             } catch (error) {
                 console.error(error);
                 statusCell.innerHTML = `<span class="badge b-fail">ERROR</span>`;
+                // Add error card
+                renderResultCard({
+                    id: item.id,
+                    filename: item.filename,
+                    title: "ERROR",
+                    description: error.message,
+                    keywords: "error",
+                    category: "miscellaneous",
+                    preview: ""
+                });
             }
 
-            // Delay sedikit untuk rate limit
-            await new Promise(r => setTimeout(r, 1000));
+            // Rate limit delay (sedikit jeda biar tidak kena limit 429)
+            await new Promise(r => setTimeout(r, 2000));
         }
 
         isProcessing = false;
@@ -311,20 +339,29 @@
 
     async function callGroqAI(key, base64Image) {
         const systemPrompt = `
-        You are an expert Stock Footage Metadata Specialist.
-        I will provide a "filmstrip" image composed of 3 frames from a single video (Start, Middle, End).
-        Analyze the sequence to understand the context, action, lighting, and color.
+        You are a highly precise Stock Video Metadata Specialist.
+        I will provide a 3-frame filmstrip of a video. Analyze it carefully.
 
-        OUTPUT REQUIREMENTS (Strict JSON format):
-        1. "title": A professional, descriptive title (max 70 chars). Focus on Subject + Action + Setting.
-        2. "description": A detailed sentence describing the action, lighting, and mood (approx 150-200 chars). Mention if it's slow motion, timelapse, or static if clearly visible.
-        3. "keywords": A string of 45-50 comma-separated keywords.
-           - MUST include: colors, objects, emotions, demographics (if people), technical terms (e.g., shallow depth of field, bokeh, if visible).
-           - STRICTLY NO: "4k", "hd", "video", "clip", "footage".
-           - Separate compound words (e.g., "blue sky" -> "blue, sky").
+        STRICT REQUIREMENTS:
+        1. **CATEGORY**: Select EXACTLY ONE category from this provided list that matches best:
+           [${CATEGORIES}]
+        
+        2. **TITLE**: Max 70 Characters. Concise. Subject + Action/Type + Context.
+        
+        3. **DESCRIPTION**: Max 150 Characters. Describe visual style, lighting, and movement.
+        
+        4. **KEYWORDS**: 
+           - Minimum 45 keywords.
+           - SINGLE WORDS ONLY. Split all phrases. (e.g., "film burn" must be "film, burn").
+           - Include: visual elements, colors, conceptual terms, technical terms (bokeh, 4k, etc if applicable).
 
-        Example JSON:
-        {"title": "Young woman jogging in park during sunset", "description": "A side view of an athletic young woman jogging along a park path, illuminated by warm golden hour sunlight with trees in the background.", "keywords": "woman, female, jogging, running, exercise, fitness, park, nature, sunset, golden hour, sunlight, warm, athletic, healthy, lifestyle, outdoor, summer, happy, active, trees, green, path, road, sport, cardio, training, workout, determination, energy, motion, speed, dynamic, casual, sportswear, side view, profile, morning, evening, leisure, recreation, wellness, vitality, person, adult, caucasian, beautiful, scene"}
+        OUTPUT JSON ONLY:
+        {
+          "category": "string (exact match from list)",
+          "title": "string (max 70 chars)",
+          "description": "string (max 150 chars)",
+          "keywords": "string (comma separated, min 45 words, no phrases)"
+        }
         `;
 
         try {
@@ -335,17 +372,16 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "llama-3.2-90b-vision-preview", // Model vision terbaik Groq saat ini
+                    model: "llama-3.2-90b-vision-preview",
                     messages: [
                         { role: "system", content: systemPrompt },
                         { role: "user", content: [
-                            { type: "text", text: "Generate metadata from this video filmstrip." },
+                            { type: "text", text: "Analyze this video frames and generate strict JSON metadata." },
                             { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
                         ]}
                     ],
                     temperature: 0.1,
-                    max_tokens: 1024,
-                    response_format: { type: "json_object" }
+                    max_tokens: 1024
                 })
             });
 
@@ -353,65 +389,132 @@
             if(data.error) throw new Error(data.error.message);
             
             let content = data.choices[0].message.content;
-            return JSON.parse(content);
+
+            // --- BUG FIX: JSON CLEANER ---
+            // Llama terkadang memberikan markdown ```json ... ```, kita hapus itu
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                content = jsonMatch[0];
+            } else {
+                throw new Error("Invalid JSON format from AI");
+            }
+
+            const parsed = JSON.parse(content);
+
+            // Double Check Lengths (Fallback JavaScript)
+            if(parsed.title.length > 70) parsed.title = parsed.title.substring(0, 67) + "...";
+            if(parsed.description.length > 150) parsed.description = parsed.description.substring(0, 147) + "...";
+            
+            // Force Split Phrases in Keywords
+            let kws = parsed.keywords.split(',').map(k => k.trim());
+            let cleanKws = [];
+            kws.forEach(k => {
+                if(k.includes(' ')) {
+                    cleanKws.push(...k.split(' '));
+                } else {
+                    cleanKws.push(k);
+                }
+            });
+            // Ensure unique and join
+            parsed.keywords = [...new Set(cleanKws)].join(', ');
+
+            return parsed;
+
         } catch (e) {
             console.error("AI Error:", e);
-            // Fallback jika JSON rusak
-            return { title: "Error Generating Title", description: "Error generating description", keywords: "error" };
+            throw e;
         }
     }
 
-    // --- RENDERING RESULTS ---
+    // --- RENDER & EXPORT ---
     function renderResultCard(data) {
         const div = document.createElement('div');
         div.className = 'result-card';
+        div.id = `card-${data.id}`;
+        
+        // Count chars for UI
+        const titleLen = data.title ? data.title.length : 0;
+        const descLen = data.description ? data.description.length : 0;
+        const kwCount = data.keywords ? data.keywords.split(',').length : 0;
+
         div.innerHTML = `
             <div class="filmstrip-box">
-                <img src="${data.preview}" class="filmstrip-img">
-                <div class="filmstrip-caption">Preview: Awal - Tengah - Akhir</div>
+                ${data.preview ? `<img src="${data.preview}" class="filmstrip-img">` : '<div style="height:100px; background:#ddd;">No Image</div>'}
                 <div style="margin-top:10px; font-weight:bold; font-size:12px; word-break:break-all;">${data.filename}</div>
             </div>
             <div class="meta-content">
+                <div class="category-tag">📂 ${data.category || 'Uncategorized'}</div>
+                
                 <div class="meta-row">
-                    <span class="meta-label">TITLE</span>
-                    <div class="meta-val" contenteditable="true">${data.title}</div>
+                    <div class="meta-header">
+                        <span class="meta-label">TITLE (Max 70)</span>
+                        <span class="char-count" id="count-t-${data.id}">${titleLen}/70</span>
+                    </div>
+                    <input type="text" class="meta-val" value="${data.title || ''}" oninput="updateCount('t', ${data.id}, this)">
                 </div>
+
                 <div class="meta-row">
-                    <span class="meta-label">DESCRIPTION</span>
-                    <div class="meta-val" contenteditable="true">${data.description}</div>
+                    <div class="meta-header">
+                        <span class="meta-label">DESCRIPTION (Max 150)</span>
+                        <span class="char-count" id="count-d-${data.id}">${descLen}/150</span>
+                    </div>
+                    <textarea class="meta-val" oninput="updateCount('d', ${data.id}, this)">${data.description || ''}</textarea>
                 </div>
+
                 <div class="meta-row">
-                    <span class="meta-label">KEYWORDS (${data.keywords.split(',').length})</span>
-                    <div class="meta-val" contenteditable="true">${data.keywords}</div>
+                    <div class="meta-header">
+                        <span class="meta-label">KEYWORDS (Separated, Min 45)</span>
+                        <span class="char-count" id="count-k-${data.id}">Total: ${kwCount}</span>
+                    </div>
+                    <textarea class="meta-val" style="min-height:80px;">${data.keywords || ''}</textarea>
                 </div>
             </div>
         `;
         document.getElementById('resultsContainer').appendChild(div);
     }
 
-    // --- CSV EXPORT ---
+    function updateCount(type, id, el) {
+        const val = el.value;
+        const display = document.getElementById(`count-${type}-${id}`);
+        if(type === 't') display.innerText = `${val.length}/70`;
+        if(type === 'd') display.innerText = `${val.length}/150`;
+    }
+
     function exportCSV() {
         if(results.length === 0) return alert("Belum ada data yang diproses!");
 
-        // Header CSV
-        let csvContent = "Filename,Title,Description,Keywords\n";
+        // Collect current data from inputs (in case user edited)
+        let csvContent = "Filename,Category,Title,Description,Keywords\n";
 
-        results.forEach(row => {
-            // Bersihkan data untuk format CSV (double quotes escape)
-            const cleanFile = row.filename.replace(/"/g, '""'); // Hanya nama file
-            const cleanTitle = row.title.replace(/"/g, '""');
-            const cleanDesc = row.description.replace(/"/g, '""');
-            const cleanKw = row.keywords.replace(/"/g, '""');
+        results.forEach(item => {
+            // Get live values from DOM if possible, else fallback to memory
+            const card = document.getElementById(`card-${item.id}`);
+            let title = item.title;
+            let desc = item.description;
+            let kws = item.keywords;
 
-            // Format CSV: "Filename","Title","Desc","Keywords"
-            csvContent += `"${cleanFile}","${cleanTitle}","${cleanDesc}","${cleanKw}"\n`;
+            if(card) {
+                const inputs = card.querySelectorAll('.meta-val');
+                title = inputs[0].value;
+                desc = inputs[1].value;
+                kws = inputs[2].value;
+            }
+
+            // Clean for CSV
+            const cFile = `"${item.filename.replace(/"/g, '""')}"`;
+            const cCat = `"${(item.category || '').replace(/"/g, '""')}"`;
+            const cTitle = `"${title.replace(/"/g, '""')}"`;
+            const cDesc = `"${desc.replace(/"/g, '""')}"`;
+            const cKw = `"${kws.replace(/"/g, '""')}"`;
+
+            csvContent += `${cFile},${cCat},${cTitle},${cDesc},${cKw}\n`;
         });
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `metadata_video_${Date.now()}.csv`);
+        link.setAttribute("download", `microstock_metadata_${Date.now()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
