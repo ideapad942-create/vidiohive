@@ -59,7 +59,7 @@
         
         .preview-box { width: 280px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #000; }
         .preview-box img { width: 100%; display: block; }
-        .cat-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: center; }
+        .cat-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: center; word-break: break-all; }
 
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; }
         .status-pill.processing { background: #e0e7ff; color: #4338ca; }
@@ -113,10 +113,25 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    const CATEGORIES_LIST = `backgrounds, backgrounds/abstract, backgrounds/nature, elements, overlays, transitions, infographics`;
+    // List Kategori Lengkap
+    const VALID_CATEGORIES = `
+backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous,
+bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous,
+distortions,
+elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous,
+interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous,
+lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous,
+overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous,
+particles,
+revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous,
+transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous,
+water-and-fluid,
+miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous,
+infographics`;
+
     const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "render", "digital", "design", "creative", "concept", "modern", "effect", "futuristic", "pattern", "glow", "texture", "dynamic", "element", "colorful", "artistic", "display", "presentation", "backdrop", "overlay", "energy", "flow", "clean", "soft", "sharp", "gradient", "composition", "style", "cinematic", "technology", "shapes", "geometry", "bright", "vibrant", "elegant", "smooth", "ambient", "high tech", "decoration", "wallpaper", "studio", "pro", "visuals"];
 
-    const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48; 
+    const SUFFIX_DESC = " This unique visual asset is designed for high-end video production and digital signage applications.";
     const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
     let fileQueue = [];
@@ -185,26 +200,44 @@
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- TITLE LOGIC: NO DASH, SENTENCE CASE, UNIQUE ---
+                // --- TITLE LOGIC (SPOK + 50-70 Chars) ---
                 let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
-                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template"];
-                trash.forEach(w => title = title.split(w).join('').trim());
+                // Hapus kata sambung tak perlu di awal
+                if(title.startsWith("a ")) title = title.substring(2);
+                if(title.startsWith("the ")) title = title.substring(4);
                 
-                if(title.length < 50) {
-                    title += " " + (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ').slice(0, 8).join(' ');
-                }
-                title = title.replace(/\s+/g, ' ').trim();
+                // Pastikan Sentence case
                 title = title.charAt(0).toUpperCase() + title.slice(1);
-                if(title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
-                if(title.length < 50) title += " for creative professional projects";
+                
+                // Pastikan tidak ada titik di akhir
+                title = title.replace(/\.$/, "");
+
+                // Logic padding jika kependekan agar tetap SPOK
+                if(title.length < 50) {
+                    title += " seamlessly specifically for digital presentation"; 
+                }
+                
+                // Hard cut max 70, tapi usahakan di word boundary
+                if(title.length > 70) {
+                    title = title.substring(0, 70).replace(/\s\w*$/, "");
+                }
+                
                 document.getElementById(`title-${idx}`).value = title;
 
-                // --- DESC LOGIC ---
-                let desc = (data.description || "High quality visual.").trim();
-                if(desc.length < 100) desc += " This unique visual asset is designed for high-end video production and digital signage applications.";
-                document.getElementById(`desc-${idx}`).value = desc.substring(0, 150);
+                // --- DESC LOGIC (Title + Fixed Suffix) ---
+                // Suffix panjangnya sekitar 98 chars. Max desc 150.
+                // Jadi bagian judul di deskripsi max 150 - 98 = 52 chars.
+                let descTitlePart = title;
+                const maxTitleInDesc = 150 - SUFFIX_DESC.length; // Sekitar 52
+                
+                if (descTitlePart.length > maxTitleInDesc) {
+                    descTitlePart = descTitlePart.substring(0, maxTitleInDesc).replace(/\s\w*$/, "");
+                }
+                
+                let desc = descTitlePart + SUFFIX_DESC;
+                document.getElementById(`desc-${idx}`).value = desc;
 
-                // --- KEYWORDS LOGIC: STRICT 45-48 ---
+                // --- KEYWORDS LOGIC ---
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
                 kws = [...new Set(kws)];
                 let bIdx = 0;
@@ -214,24 +247,57 @@
                 }
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
 
-                document.getElementById(`cat-${idx}`).value = data.category || "backgrounds";
-                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "backgrounds";
+                // --- CATEGORY LOGIC ---
+                // Validasi agar sesuai list
+                let finalCat = data.category || "backgrounds/abstract";
+                // Bersihkan string dari spasi aneh
+                finalCat = finalCat.trim().toLowerCase();
+                // Cek apakah ada di list VALID_CATEGORIES
+                if (!VALID_CATEGORIES.toLowerCase().includes(finalCat)) {
+                    finalCat = "backgrounds/abstract"; // Fallback aman
+                }
+
+                document.getElementById(`cat-${idx}`).value = finalCat;
+                document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
+                
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
-            } catch(e) { updateStatus(idx, 'error', 'Fail'); }
+            } catch(e) { 
+                console.error(e);
+                updateStatus(idx, 'error', 'Fail'); 
+            }
         }
         document.getElementById('btnProcess').disabled = false;
         document.getElementById('btnExport').style.display = 'inline-flex';
     }
 
     async function makeRequest(key, base64) {
-        const prompt = `Senior Microstock Expert. Analyze frames. Return JSON: {category, title, description, keywords}. Focus on visual details.`;
+        // Prompt Engineering Khusus SPOK dan Kategori
+        const prompt = `
+        You are a Metadata Expert. Analyze these video frames.
+        
+        1. CATEGORY: Pick exactly ONE category from this list:
+        ${VALID_CATEGORIES}
+        
+        2. TITLE: Create a generic SPOK (Subject Predicate Object Keterangan/Adverb) sentence.
+        - STRICT LENGTH: Must be between 50 and 65 characters.
+        - Format: Sentence case. No period at end.
+        - DO NOT start with "A" or "The".
+        - Example: "Golden particles flow smoothly across the dark modern screen"
+        - Example: "Blue abstract shapes rotate slowly in a futuristic digital loop"
+        - NEVER cut off the sentence.
+        
+        3. KEYWORDS: List 50 relevant visual keywords.
+        
+        Return pure JSON: { "category": "...", "title": "...", "keywords": "..." }
+        `;
+        
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Strict JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "JSON only." }, { type: "image_url", image_url: { url: base64 } }] }],
                 response_format: { type: "json_object" }
             })
         });
