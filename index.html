@@ -3,111 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MICROSTOCK AI GENERATOR - LLAMA 4 UPDATED</title>
+    <title>Microstock Metadata AI - Pro Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --bg: #f1f5f9; --text: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        
-        h1 { margin-top: 0; color: var(--primary); font-size: 24px; display: flex; align-items: center; gap: 10px; }
-        .tag-new { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #bbf7d0; }
+        :root {
+            --primary: #4f46e5; /* Indigo 600 */
+            --primary-hover: #4338ca;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
 
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        
-        .btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s; }
-        .btn:hover { background: #1d4ed8; }
-        .btn:disabled { background: #94a3b8; cursor: not-allowed; }
-        .btn-success { background: #16a34a; }
-        .btn-success:hover { background: #15803d; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; font-size: 13px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; vertical-align: top; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; font-weight: 700; color: #475569; }
-        tr:last-child td { border-bottom: none; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
-        .st-pending { background: #f1f5f9; color: #64748b; }
-        .st-proc { background: #dbeafe; color: #1e40af; }
-        .st-done { background: #dcfce7; color: #166534; }
-        .st-error { background: #fee2e2; color: #991b1b; }
+        /* HEADER */
+        header { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        h1 { margin: 0; font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .badge-pro { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
-        .meta-input { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-family: inherit; font-size: 13px; margin-bottom: 5px; transition: border 0.2s; }
-        .meta-input:focus { border-color: var(--primary); outline: none; }
-        textarea.meta-input { min-height: 70px; resize: vertical; }
+        /* LAYOUT */
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
         
-        .char-count { font-size: 11px; color: #64748b; text-align: right; margin-bottom: 4px; font-weight: 500; }
-        .preview-img { width: 100%; max-width: 200px; border-radius: 6px; border: 1px solid #e2e8f0; display: block; }
-        .error-log { color: #dc2626; font-size: 11px; margin-top: 5px; display: none; background: #fef2f2; padding: 5px; border-radius: 4px; }
+        /* SIDEBAR (CONTROLS) */
+        .sidebar { width: 320px; background: var(--bg-card); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
         
-        /* Helper class for category dropdown suggestion if needed, currently text input */
+        .control-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; text-transform: uppercase; }
+        .input-std { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; box-sizing: border-box; transition: 0.2s; }
+        .input-std:focus { border-color: var(--primary); outline: none; ring: 2px solid #e0e7ff; }
+        
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* CONTENT AREA (RESULTS) */
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; scroll-behavior: smooth; }
+        .empty-state { text-align: center; color: var(--text-sub); margin-top: 100px; }
+
+        /* CARD DESIGN */
+        .video-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 24px; display: flex; overflow: hidden; position: relative; }
+        .card-status-bar { width: 6px; background: var(--border); flex-shrink: 0; }
+        .status-processing .card-status-bar { background: var(--warning); }
+        .status-success .card-status-bar { background: var(--success); }
+        .status-error .card-status-bar { background: var(--error); }
+
+        .card-media { width: 280px; background: #f9fafb; border-right: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .filmstrip-img { width: 100%; border-radius: 6px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .filename-text { font-size: 13px; font-weight: 600; color: var(--text-main); word-break: break-all; }
+
+        .card-data { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* FORM INPUTS IN CARD */
+        .field-group { position: relative; }
+        .field-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .field-label { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
+        .field-counter { font-size: 11px; font-weight: 600; }
+        
+        .meta-input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.5; color: var(--text-main); box-sizing: border-box; background: #f9fafb; }
+        .meta-input:focus { background: white; border-color: var(--primary); outline: none; }
+        textarea.meta-input { resize: vertical; min-height: 60px; }
+
+        /* VALIDATION COLORS */
+        .valid-good { color: var(--success); }
+        .valid-bad { color: var(--error); }
+        .border-good { border-color: var(--success) !important; background: #f0fdf4 !important; }
+        .border-bad { border-color: var(--error) !important; background: #fef2f2 !important; }
+
+        /* PROGRESS */
+        #globalStatus { font-weight: 600; font-size: 14px; margin-top: 10px; text-align: center; color: var(--primary); height: 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>
-        🎞️ MICROSTOCK METADATA AI 
-        <span class="tag-new">Llama 4 Vision</span>
-    </h1>
-    
-    <div class="input-group">
-        <label>1. Masukkan API Key Groq</label>
-        <input type="password" id="apiKey" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxx">
-        <small style="color: #64748b;">Menggunakan model baru: <b>meta-llama/llama-4-scout-17b-16e-instruct</b></small>
-    </div>
+<header>
+    <h1>🎞️ Microstock AI <span class="badge-pro">Pro</span></h1>
+    <div style="font-size: 12px; color: var(--text-sub);">Version 3.0 (Llama 4 Vision)</div>
+</header>
 
-    <div class="input-group">
-        <label>2. Pilih Folder Video (Mp4/Mov)</label>
-        <div style="display: flex; gap: 10px;">
-            <input type="file" id="fileInput" webkitdirectory directory multiple style="flex:1;">
+<div class="main-layout">
+    <div class="sidebar">
+        <div class="control-group">
+            <label>1. Groq API Key</label>
+            <input type="password" id="apiKey" class="input-std" placeholder="gsk_xxxxxxxx...">
+        </div>
+
+        <div class="control-group">
+            <label>2. Video Folder</label>
+            <input type="file" id="fileInput" class="input-std" webkitdirectory directory multiple>
+        </div>
+
+        <div class="control-group" style="margin-top: auto;">
+            <div id="globalStatus"></div>
+            <button id="btnProcess" class="btn btn-primary" onclick="startProcessing()">
+                <span>🚀 Mulai Proses AI</span>
+            </button>
+            <button id="btnExport" class="btn btn-success" onclick="exportCSV()" style="display:none; margin-top: 10px;">
+                <span>📥 Download CSV (Final)</span>
+            </button>
+        </div>
+        
+        <div style="font-size: 11px; color: #9ca3af; margin-top: 10px; line-height: 1.4;">
+            <strong>Aturan Ketat:</strong><br>
+            • Title: 50-70 chars<br>
+            • Desc: 100-150 chars<br>
+            • Keyword: 45-48 words<br>
+            • CSV: Filename,Title,Desc,Kw,Cat
         </div>
     </div>
 
-    <div class="input-group" style="display: flex; gap: 10px; align-items: center;">
-        <button id="btnProcess" class="btn" onclick="startProcessing()">🚀 Mulai Proses AI</button>
-        <button id="btnExport" class="btn btn-success" onclick="exportCSV()" style="display:none;">📥 Download CSV</button>
-        <div id="statusArea" style="font-weight:bold; color: var(--primary);"></div>
+    <div class="content-area" id="resultsContainer">
+        <div class="empty-state">
+            <div style="font-size: 40px; margin-bottom: 10px;">📁</div>
+            <p>Silakan pilih folder video untuk memulai.</p>
+        </div>
     </div>
-
-    <table id="resultTable">
-        <thead>
-            <tr>
-                <th style="width: 200px;">Preview (3 Frame)</th>
-                <th style="width: 250px;">File & Category</th>
-                <th>Metadata (Title, Desc, Keywords)</th>
-                <th style="width: 100px;">Status</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
 </div>
 
 <video id="hiddenVideo" style="display:none;" muted playsinline></video>
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- DATABASE CATEGORIES ---
-    const CATEGORIES_LIST = `
-backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous
-bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous
-distortions
-elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous
-interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous
-lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous
-overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous
-particles
-revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous
-transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous
-water-and-fluid
-miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous
-infographics
-    `;
-
-    // --- MODEL BARU (UPDATED 2026) ---
-    // Menggunakan Llama 4 Scout karena 3.2-90b sudah decommissioned
+    // --- KONFIGURASI CONSTANTS ---
+    const MIN_TITLE = 50;
+    const MAX_TITLE = 70;
+    const MIN_DESC = 100;
+    const MAX_DESC = 150;
+    const MIN_KW = 45;
+    const MAX_KW = 48; // Hard limit agar tidak lebih
     const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+
+    const CATEGORIES_LIST = `backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
 
     let fileQueue = [];
     let isProcessing = false;
@@ -115,67 +147,122 @@ infographics
     // Load API Key
     if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
 
+    // --- FILE INPUT HANDLER ---
     document.getElementById('fileInput').addEventListener('change', function(e) {
         const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
-        const tbody = document.querySelector('#resultTable tbody');
-        tbody.innerHTML = '';
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = '';
         fileQueue = [];
 
-        if(files.length === 0) return alert("Tidak ada file video ditemukan.");
+        if(files.length === 0) {
+            container.innerHTML = `<div class="empty-state">❌ Tidak ada file video valid.</div>`;
+            return;
+        }
 
         files.forEach((file, index) => {
             fileQueue.push({ file, id: index, status: 'pending' });
-            
-            const tr = document.createElement('tr');
-            tr.id = `row-${index}`;
-            tr.innerHTML = `
-                <td>
-                    <div class="preview-placeholder" style="height:100px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; border-radius:6px; border:1px solid #e2e8f0;">
-                        Waiting...
-                    </div>
-                </td>
-                <td>
-                    <div style="font-weight:bold; margin-bottom:5px; word-break:break-all;">${file.name}</div>
-                    <label style="font-size:11px; color:#64748b; margin-bottom:2px;">CATEGORY</label>
-                    <input type="text" class="meta-input cat-input" placeholder="Category..." readonly style="background:#f8fafc;">
-                </td>
-                <td>
-                    <div class="char-count" id="cnt-title-${index}">Title: 0/70</div>
-                    <input type="text" class="meta-input title-input" placeholder="Generating Title..." oninput="updateLen(${index}, 'title', 70)">
-                    
-                    <div class="char-count" id="cnt-desc-${index}">Desc: 0/150</div>
-                    <textarea class="meta-input desc-input" placeholder="Generating Description..." oninput="updateLen(${index}, 'desc', 150)"></textarea>
-                    
-                    <div class="char-count" id="cnt-kw-${index}">Keywords: 0 (Min 45)</div>
-                    <textarea class="meta-input kw-input" placeholder="Generating Keywords..." oninput="updateLen(${index}, 'kw', 0)"></textarea>
-                    
-                    <div class="error-log"></div>
-                </td>
-                <td style="vertical-align:middle;">
-                    <span class="status-badge st-pending">PENDING</span>
-                </td>
-            `;
-            tbody.appendChild(tr);
+            createCard(index, file.name);
         });
 
-        document.getElementById('statusArea').innerText = `✅ ${files.length} Video siap diproses.`;
+        document.getElementById('globalStatus').innerText = `Siap memproses ${files.length} video.`;
     });
 
-    function updateLen(idx, type, max) {
-        const row = document.getElementById(`row-${idx}`);
-        const el = row.querySelector(`.${type}-input`);
-        const disp = document.getElementById(`cnt-${type}-${idx}`);
+    // --- CREATE CARD UI ---
+    function createCard(id, filename) {
+        const container = document.getElementById('resultsContainer');
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.id = `card-${id}`;
         
-        if (type === 'kw') {
-            const count = el.value.split(',').filter(w => w.trim().length > 0).length;
-            disp.innerText = `Keywords: ${count} (Min 45)`;
+        card.innerHTML = `
+            <div class="card-status-bar"></div>
+            <div class="card-media">
+                <div class="filename-text">${filename}</div>
+                <div id="preview-${id}" style="height:100px; background:#f3f4f6; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#9ca3af;">
+                    Waiting...
+                </div>
+                <div class="field-group">
+                    <div class="field-header"><span class="field-label">Category</span></div>
+                    <input type="text" class="meta-input cat-input" id="cat-${id}" placeholder="Auto-detected..." readonly style="background:#f3f4f6; color:#4b5563;">
+                </div>
+            </div>
+            <div class="card-data">
+                <div class="field-group">
+                    <div class="field-header">
+                        <span class="field-label">Title (Min ${MIN_TITLE} - Max ${MAX_TITLE})</span>
+                        <span class="field-counter" id="cnt-title-${id}">0/${MAX_TITLE}</span>
+                    </div>
+                    <input type="text" class="meta-input title-input" id="title-${id}" oninput="validateCard(${id})">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-header">
+                        <span class="field-label">Description (Min ${MIN_DESC} - Max ${MAX_DESC})</span>
+                        <span class="field-counter" id="cnt-desc-${id}">0/${MAX_DESC}</span>
+                    </div>
+                    <textarea class="meta-input desc-input" id="desc-${id}" oninput="validateCard(${id})"></textarea>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-header">
+                        <span class="field-label">Keywords (Min ${MIN_KW} - Max ${MAX_KW})</span>
+                        <span class="field-counter" id="cnt-kw-${id}">0 words</span>
+                    </div>
+                    <textarea class="meta-input kw-input" id="kw-${id}" style="height:80px;" oninput="validateCard(${id})"></textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    }
+
+    // --- VALIDATION LOGIC (Realtime) ---
+    function validateCard(id) {
+        // Title
+        const titleEl = document.getElementById(`title-${id}`);
+        const titleCnt = document.getElementById(`cnt-title-${id}`);
+        const titleLen = titleEl.value.length;
+        
+        titleCnt.innerText = `${titleLen}/${MAX_TITLE}`;
+        if(titleLen < MIN_TITLE || titleLen > MAX_TITLE) {
+            titleEl.classList.add('border-bad'); titleEl.classList.remove('border-good');
+            titleCnt.classList.add('valid-bad'); titleCnt.classList.remove('valid-good');
         } else {
-            disp.innerText = `${type === 'title' ? 'Title' : 'Desc'}: ${el.value.length}/${max}`;
-            if (el.value.length > max) disp.style.color = "red";
-            else disp.style.color = "#64748b";
+            titleEl.classList.remove('border-bad'); titleEl.classList.add('border-good');
+            titleCnt.classList.remove('valid-bad'); titleCnt.classList.add('valid-good');
+        }
+
+        // Desc
+        const descEl = document.getElementById(`desc-${id}`);
+        const descCnt = document.getElementById(`cnt-desc-${id}`);
+        const descLen = descEl.value.length;
+        
+        descCnt.innerText = `${descLen}/${MAX_DESC}`;
+        if(descLen < MIN_DESC || descLen > MAX_DESC) {
+            descEl.classList.add('border-bad'); descEl.classList.remove('border-good');
+            descCnt.classList.add('valid-bad'); descCnt.classList.remove('valid-good');
+        } else {
+            descEl.classList.remove('border-bad'); descEl.classList.add('border-good');
+            descCnt.classList.remove('valid-bad'); descCnt.classList.add('valid-good');
+        }
+
+        // Keywords
+        const kwEl = document.getElementById(`kw-${id}`);
+        const kwCnt = document.getElementById(`cnt-kw-${id}`);
+        // Hitung koma sebagai pemisah, filter string kosong
+        const kws = kwEl.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const kwCount = kws.length;
+
+        kwCnt.innerText = `${kwCount} words (Target: ${MIN_KW}-${MAX_KW})`;
+        if(kwCount < MIN_KW || kwCount > MAX_KW) {
+            kwEl.classList.add('border-bad'); kwEl.classList.remove('border-good');
+            kwCnt.classList.add('valid-bad'); kwCnt.classList.remove('valid-good');
+        } else {
+            kwEl.classList.remove('border-bad'); kwEl.classList.add('border-good');
+            kwCnt.classList.remove('valid-bad'); kwCnt.classList.add('valid-good');
         }
     }
 
+    // --- MAIN PROCESS ---
     async function startProcessing() {
         const apiKey = document.getElementById('apiKey').value.trim();
         if(!apiKey) return alert("Masukkan API Key Groq dulu!");
@@ -184,81 +271,79 @@ infographics
         if(isProcessing) return;
         isProcessing = true;
         document.getElementById('btnProcess').disabled = true;
-        document.getElementById('statusArea').innerText = "⏳ Sedang Memproses...";
+        document.getElementById('globalStatus').innerText = "⏳ Memproses...";
 
         for (const item of fileQueue) {
-            const row = document.getElementById(`row-${item.id}`);
-            const statusBadge = row.querySelector('.status-badge');
-            const previewCell = row.cells[0];
-            const errorLog = row.querySelector('.error-log');
-
-            statusBadge.className = 'status-badge st-proc';
-            statusBadge.innerText = 'SNAPSHOT';
+            const card = document.getElementById(`card-${item.id}`);
+            card.classList.add('status-processing');
+            
+            // Scroll to current card
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             try {
-                // 1. Ambil Snapshot 3 Frame
+                // 1. Snapshot
                 const base64Img = await getFilmstrip(item.file);
-                previewCell.innerHTML = `<img src="${base64Img}" class="preview-img">`;
+                document.getElementById(`preview-${item.id}`).innerHTML = `<img src="${base64Img}" class="filmstrip-img">`;
 
-                statusBadge.innerText = 'AI THINKING';
-                
-                // 2. Kirim ke Groq AI (Model Baru)
+                // 2. AI Request
                 const metadata = await analyzeWithAI(apiKey, base64Img);
 
-                // 3. Isi Form dengan Validasi Character
-                row.querySelector('.cat-input').value = metadata.category;
+                // 3. Post-Processing & Filling (Strict Logic)
                 
-                // Title trim (Max 70)
+                // CATEGORY
+                document.getElementById(`cat-${item.id}`).value = metadata.category;
+
+                // TITLE (Trim or Pad)
                 let finalTitle = metadata.title || "";
-                if(finalTitle.length > 70) finalTitle = finalTitle.substring(0, 67) + "...";
-                row.querySelector('.title-input').value = finalTitle;
-                updateLen(item.id, 'title', 70);
+                if(finalTitle.length > MAX_TITLE) finalTitle = finalTitle.substring(0, MAX_TITLE);
+                // Kita tidak bisa memaksa AI 'menambah' panjang jika kurang, tapi kita warnai merah nanti
+                document.getElementById(`title-${item.id}`).value = finalTitle;
 
-                // Desc trim (Max 150)
+                // DESC
                 let finalDesc = metadata.description || "";
-                if(finalDesc.length > 150) finalDesc = finalDesc.substring(0, 147) + "...";
-                row.querySelector('.desc-input').value = finalDesc;
-                updateLen(item.id, 'desc', 150);
+                if(finalDesc.length > MAX_DESC) finalDesc = finalDesc.substring(0, MAX_DESC);
+                document.getElementById(`desc-${item.id}`).value = finalDesc;
 
-                // Keywords Logic (Split single words & Deduplicate)
-                let rawKw = (metadata.keywords || "").replace(/,\s*/g, ',').split(',');
+                // KEYWORDS (Slice to Max 48)
+                let rawKw = (metadata.keywords || "").replace(/\./g, '').split(',');
                 let cleanKw = [];
+                // Split phrases & clean
                 rawKw.forEach(k => {
                     k = k.trim().toLowerCase();
-                    if(k.includes(' ')) {
-                        cleanKw.push(...k.split(' ')); // Pecah frase
-                    } else {
-                        cleanKw.push(k);
-                    }
+                    if(k.includes(' ')) cleanKw.push(...k.split(' '));
+                    else if(k.length > 1) cleanKw.push(k);
                 });
-                // Remove duplicates & empty strings & short words (optional)
-                cleanKw = [...new Set(cleanKw)].filter(k => k.length > 1);
-                row.querySelector('.kw-input').value = cleanKw.join(', ');
-                updateLen(item.id, 'kw', 0);
+                // Unique
+                cleanKw = [...new Set(cleanKw)];
+                // FORCE SLICE 48
+                if(cleanKw.length > MAX_KW) cleanKw = cleanKw.slice(0, MAX_KW);
+                
+                document.getElementById(`kw-${item.id}`).value = cleanKw.join(', ');
 
-                statusBadge.className = 'status-badge st-done';
-                statusBadge.innerText = 'SUCCESS';
+                // 4. Update Status & Validate
+                card.classList.remove('status-processing');
+                card.classList.add('status-success');
+                validateCard(item.id); // Trigger visual validation
 
             } catch (err) {
                 console.error(err);
-                statusBadge.className = 'status-badge st-error';
-                statusBadge.innerText = 'ERROR';
-                errorLog.style.display = 'block';
-                errorLog.innerText = err.message;
+                card.classList.remove('status-processing');
+                card.classList.add('status-error');
+                document.getElementById(`preview-${item.id}`).innerHTML = `<span style="color:red; font-size:11px;">Error: ${err.message}</span>`;
             }
 
-            // Jeda sedikit agar tidak kena limit rate API (penting untuk akun free)
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Anti-Rate Limit Delay
+            await new Promise(r => setTimeout(r, 2000));
         }
 
         isProcessing = false;
         document.getElementById('btnProcess').disabled = false;
-        document.getElementById('statusArea').innerText = "✅ Proses Selesai!";
-        document.getElementById('btnExport').style.display = 'inline-block';
-        alert("Semua video selesai diproses!");
+        document.getElementById('globalStatus').innerText = "✅ Selesai!";
+        document.getElementById('btnExport').style.display = 'inline-flex';
+        alert("Proses Selesai! Silakan cek kolom yang berwarna merah jika ada.");
     }
 
-    // --- FUNGSI SNAPSHOT (3 Frame) ---
+    // --- SNAPSHOT GENERATOR ---
     function getFilmstrip(file) {
         return new Promise((resolve, reject) => {
             const video = document.getElementById('hiddenVideo');
@@ -269,7 +354,7 @@ infographics
             video.src = url;
             video.muted = true;
             
-            // Ukuran diperkecil agar tidak berat kirim ke API (Total 960x180)
+            // 320x180 per frame * 3 = 960x180 strip
             const w = 320, h = 180;
             canvas.width = w * 3;
             canvas.height = h;
@@ -283,6 +368,7 @@ infographics
 
             video.onloadedmetadata = async () => {
                 try {
+                    // Frame 10%, 50%, 90%
                     await snap(video.duration * 0.1);
                     ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, w, h);
                     
@@ -292,35 +378,43 @@ infographics
                     await snap(video.duration * 0.9);
                     ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, w*2, 0, w, h);
 
-                    const data = canvas.toDataURL('image/jpeg', 0.8);
+                    const data = canvas.toDataURL('image/jpeg', 0.85);
                     URL.revokeObjectURL(url);
                     resolve(data);
                 } catch(e) { reject(e); }
             };
-            video.onerror = () => reject(new Error("Gagal load video (File corrupt/Codec tidak support)"));
+            video.onerror = () => reject(new Error("Video corrupt/unsupported"));
         });
     }
 
-    // --- FUNGSI AI (Robust JSON Parser) ---
+    // --- AI PROMPT (STRICT) ---
     async function analyzeWithAI(key, base64) {
+        // Prompt yang sangat spesifik untuk memaksa panjang karakter
         const systemPrompt = `
-        You are a Stock Footage Metadata Expert.
+        You are a Professional Microstock Metadata Specialist.
         
-        TASK:
-        1. Classify the video into ONE category from this list:
+        TASK: Analyze the 3 frames of the video and generate metadata.
+
+        STRICT CONSTRAINTS (Follow Exactly):
+        1. **CATEGORY**: Must match exactly one from this list:
            [${CATEGORIES_LIST}]
         
-        2. Create a TITLE (Max 70 chars). Concise, literal.
-        
-        3. Create a DESCRIPTION (Max 150 chars). Visual description.
-        
-        4. Create KEYWORDS (Min 45 words).
-           - RULE: ONE WORD PER KEYWORD. No phrases. 
-           - Example: "blue sky" -> "blue, sky".
-           - Include colors, objects, style (bokeh, macro), concepts.
+        2. **TITLE**: 
+           - MUST be between 55 and 70 characters long.
+           - If too short, add details about lighting, speed (slow motion), or angle.
+           - Example format: "Subject doing Action in Location with Lighting Style"
 
-        OUTPUT FORMAT:
-        Reply ONLY with valid JSON. Do NOT include markdown code blocks like \`\`\`json.
+        3. **DESCRIPTION**: 
+           - MUST be between 110 and 150 characters long.
+           - Describe action, subject, background, lighting, and camera movement.
+           - Do NOT start with "This video shows". Start directly with the subject.
+
+        4. **KEYWORDS**: 
+           - Generate exactly 50 keywords.
+           - ONE WORD ONLY per keyword (No phrases like "blue sky", use "blue, sky").
+           - Include: Objects, Colors, Emotions, Concepts, Technical (bokeh, 4k).
+
+        OUTPUT JSON ONLY:
         {
             "category": "string",
             "title": "string",
@@ -334,7 +428,7 @@ infographics
                 method: "POST",
                 headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    model: GROQ_MODEL, // Menggunakan Llama 4 Scout
+                    model: GROQ_MODEL, 
                     messages: [
                         { role: "system", content: systemPrompt },
                         { role: "user", content: [
@@ -342,64 +436,50 @@ infographics
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
-                    temperature: 0.1,
-                    max_tokens: 1024,
-                    response_format: { type: "json_object" } // Memaksa output JSON
+                    temperature: 0.1, // Rendah agar patuh aturan
+                    max_tokens: 1500,
+                    response_format: { type: "json_object" }
                 })
             });
 
-            if (!resp.ok) {
-                const errData = await resp.json();
-                throw new Error(errData.error?.message || "API Error");
-            }
+            if (!resp.ok) throw new Error("API Error / Key Invalid");
 
             const data = await resp.json();
-            let text = data.choices[0].message.content;
-
-            // --- PEMBERSIH JSON (ANTI ERROR / HALLUCINATION) ---
+            const text = data.choices[0].message.content;
+            
+            // Clean JSON
             const firstBrace = text.indexOf('{');
             const lastBrace = text.lastIndexOf('}');
-
             if (firstBrace !== -1 && lastBrace !== -1) {
-                const cleanJson = text.substring(firstBrace, lastBrace + 1);
-                return JSON.parse(cleanJson);
+                return JSON.parse(text.substring(firstBrace, lastBrace + 1));
             } else {
-                throw new Error("AI tidak memberikan JSON valid.");
+                throw new Error("Invalid AI Response Format");
             }
-        } catch (e) {
-            console.error("AI/Network Error:", e);
-            throw e;
-        }
+        } catch (e) { throw e; }
     }
 
+    // --- EXPORT CSV (FORMAT BARU) ---
     function exportCSV() {
-        let csv = "Filename,Category,Title,Description,Keywords\n";
+        // Format: Filename, Title, Description, Keywords, Category
+        let csv = "Filename,Title,Description,Keywords,Category\n";
         
-        const rows = document.querySelectorAll('#resultTable tbody tr');
-        let hasData = false;
+        fileQueue.forEach((item, index) => {
+            const card = document.getElementById(`card-${index}`);
+            // Ambil value langsung dari input box (mungkin sudah diedit user)
+            const filename = `"${item.file.name.replace(/"/g, '""')}"`;
+            const title = `"${document.getElementById(`title-${index}`).value.replace(/"/g, '""')}"`;
+            const desc = `"${document.getElementById(`desc-${index}`).value.replace(/"/g, '""')}"`;
+            const kw = `"${document.getElementById(`kw-${index}`).value.replace(/"/g, '""')}"`;
+            const cat = `"${document.getElementById(`cat-${index}`).value.replace(/"/g, '""')}"`;
 
-        rows.forEach((tr, index) => {
-            if(!fileQueue[index]) return;
-            const status = tr.querySelector('.status-badge').innerText;
-            if(status !== 'SUCCESS') return; // Skip yang gagal/pending
-
-            hasData = true;
-            const filename = `"${fileQueue[index].file.name.replace(/"/g, '""')}"`;
-            const cat = `"${tr.querySelector('.cat-input').value.replace(/"/g, '""')}"`;
-            const title = `"${tr.querySelector('.title-input').value.replace(/"/g, '""')}"`;
-            const desc = `"${tr.querySelector('.desc-input').value.replace(/"/g, '""')}"`;
-            const kw = `"${tr.querySelector('.kw-input').value.replace(/"/g, '""')}"`;
-
-            csv += `${filename},${cat},${title},${desc},${kw}\n`;
+            csv += `${filename},${title},${desc},${kw},${cat}\n`;
         });
-
-        if (!hasData) return alert("Belum ada data sukses untuk diexport!");
 
         const blob = new Blob([csv], {type: 'text/csv'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `metadata_microstock_${Date.now()}.csv`;
+        a.download = `microstock_metadata_pro_${Date.now()}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
