@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro</title>
+    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
@@ -23,24 +23,22 @@
         .header h1 { margin: 0; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         .badge-pro { background: var(--secondary); font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; font-weight: 800; }
         
-        /* Animasi Teks Videohive Project */
+        /* Animasi Videohive Project */
         .animated-subtitle {
             font-size: 13px;
-            font-weight: 500;
-            opacity: 0.9;
-            background: linear-gradient(90deg, #6366f1, #0ea5e9, #10b981, #6366f1);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b, #fff, #fbbf24);
             background-size: 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradient-anim 3s infinite linear;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            animation: shine 3s infinite linear;
         }
 
-        @keyframes gradient-anim {
+        @keyframes shine {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         .controls { padding: 25px; border-bottom: 1px solid var(--border); background: #f8fafc; }
@@ -48,15 +46,15 @@
         .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #64748b; text-transform: uppercase; }
         .input-field { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; }
         .action-area { display: flex; gap: 15px; align-items: center; margin-top: 15px; }
+        
         .btn { padding: 0 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.2s; height: 48px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--primary); } 
         .btn-success { background: var(--success); } 
         .btn-save { background: #334155; height: 45px; }
-        .btn-reset { background: #f59e0b; } /* Tombol Upload Lagi warna Orange */
+        .btn-reset { background: #f59e0b; } /* Tombol Upload Lagi Orange */
 
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        /* Header tabel dihapus/disembunyikan sesuai request agar bersih */
-        thead { display: none; } 
+        thead { display: none; } /* HEADER TABEL DIHILANGKAN */
         
         td { padding: 25px 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
         .meta-wrapper { position: relative; margin-bottom: 20px; }
@@ -69,15 +67,17 @@
         .preview-box img { width: 100%; display: block; }
         .cat-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: center; }
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; }
-        .status-pill.processing { background: #e0e7ff; color: #4338ca; } .status-pill.success { background: #dcfce7; color: #15803d; } .status-pill.error { background: #fee2e2; color: #b91c1c; }
+        .status-pill.processing { background: #e0e7ff; color: #4338ca; } 
+        .status-pill.success { background: #dcfce7; color: #15803d; } 
+        .status-pill.error { background: #fee2e2; color: #b91c1c; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <h1>🎞️ VIDEOHIVE PROJECT</span></h1>
-            <div class="animated-subtitle">✨ METADATA PRO ✨</div>
+            <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
+            <div class="animated-subtitle">✨ VIDEOHIVE PROJECT ✨</div>
         </div>
 
         <div class="controls">
@@ -94,7 +94,7 @@
             </div>
             <div class="input-group">
                 <label>📂 Pilih Folder Video</label>
-                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple style="background: white;">
+                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*,.mov,.mp4,.mkv" style="background: white;">
             </div>
             <div class="action-area">
                 <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">🚀 Mulai Proses</button>
@@ -126,7 +126,7 @@
 
         const BACKUP_KEYWORDS = ["video", "clip", "footage", "animation", "motion", "graphic", "render", "digital", "art", "design", "background", "loop", "seamless", "abstract", "creative", "concept", "modern", "futuristic", "style", "effect", "visual", "display", "presentation", "backdrop", "wallpaper", "texture", "pattern", "shape", "color", "light", "bright", "dark", "glow", "shine", "energy", "power", "tech", "technology", "cyber", "space", "business", "corporate", "event", "show", "broadcast"];
 
-        const STOP_WORDS = ["for", "and", "the", "with", "in", "on", "at", "to", "a", "an", "is", "of", "it", "this", "that", "image", "photo", "picture", "video", "clip", "saying", "reads"];
+        const STOP_WORDS = ["for", "and", "the", "with", "in", "on", "at", "to", "a", "an", "is", "of", "it", "this", "that", "image", "photo", "picture", "video", "clip", "saying", "reads", "showing"];
 
         const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
@@ -147,14 +147,18 @@
         function resetApp() {
             fileQueue = [];
             document.getElementById('resultBody').innerHTML = '';
-            document.getElementById('fileInput').value = ''; // Reset input file
+            document.getElementById('fileInput').value = '';
             document.getElementById('btnExport').style.display = 'none';
             document.getElementById('btnReset').style.display = 'none';
             document.getElementById('btnProcess').disabled = false;
         }
 
         document.getElementById('fileInput').addEventListener('change', function (e) {
-            const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
+            // FIX FILTERING: Cek Mime Type ATAU Ekstensi (Penting untuk .mov di Windows)
+            const files = Array.from(e.target.files).filter(f => {
+                return f.type.startsWith('video/') || f.name.toLowerCase().endsWith('.mov') || f.name.toLowerCase().endsWith('.mkv');
+            });
+
             const tbody = document.getElementById('resultBody');
             tbody.innerHTML = '';
             fileQueue = [];
@@ -223,6 +227,7 @@
                 const idx = item.id;
                 updateStatus(idx, 'processing', 'Analyzing...');
                 try {
+                    // ADDED TIMEOUT & ERROR HANDLING FOR MOV
                     const base64 = await getFilmstrip(item.file);
                     document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                     let data = await makeRequest(apiKeys[currentKeyIndex], base64);
@@ -257,7 +262,7 @@
                     }
                     document.getElementById(`kw-${idx}`).value = splitKws.join(', ');
 
-                    // 3. TITLE LOGIC (ORGANIC & DIRECT)
+                    // 3. TITLE LOGIC (SMART SUFFIX)
                     let title = (data.title || "").trim();
                     title = title.replace(/['":;,.!?-]/g, '');
                     title = title.replace(/\b(saying|reads|written|that says|showing)\b/gi, ""); 
@@ -307,12 +312,13 @@
                     validate(idx);
                 } catch (e) {
                     console.error(e);
-                    updateStatus(idx, 'error', 'Fail');
+                    // Jika error (misal codec MOV tidak support), tampilkan pesan
+                    updateStatus(idx, 'error', 'Format Error (Codec?)');
                 }
             }
             document.getElementById('btnProcess').disabled = false;
             document.getElementById('btnExport').style.display = 'inline-flex';
-            document.getElementById('btnReset').style.display = 'inline-flex'; // Munculkan tombol upload lagi
+            document.getElementById('btnReset').style.display = 'inline-flex';
         }
 
         async function makeRequest(key, base64) {
@@ -356,36 +362,56 @@
             document.getElementById(`status-text-${idx}`).innerText = text;
         }
 
+        // FUNGSI GETFILMSTRIP DENGAN TIMEOUT (Penting untuk .mov macet)
         function getFilmstrip(file) {
-            return new Promise(res => {
+            return new Promise((resolve, reject) => {
                 const v = document.getElementById('hiddenVideo');
                 const c = document.getElementById('hiddenCanvas');
                 const ctx = c.getContext('2d');
-                v.src = URL.createObjectURL(file);
+                
+                // Timeout 5 detik, jika browser gagal decode MOV
+                const timeout = setTimeout(() => {
+                    reject("Timeout: Codec not supported");
+                }, 5000);
+
                 v.onloadedmetadata = async () => {
-                    c.width = 960;
-                    c.height = 180;
-                    for (let i = 0; i < 3; i++) {
-                        v.currentTime = v.duration * (0.2 + i * 0.3);
-                        await new Promise(r => v.onseeked = r);
-                        ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
+                    clearTimeout(timeout); // Clear timeout jika berhasil load
+                    try {
+                        c.width = 960;
+                        c.height = 180;
+                        for (let i = 0; i < 3; i++) {
+                            v.currentTime = v.duration * (0.2 + i * 0.3);
+                            await new Promise(r => v.onseeked = r);
+                            ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
+                        }
+                        resolve(c.toDataURL('image/jpeg'));
+                    } catch (e) {
+                        reject(e);
                     }
-                    res(c.toDataURL('image/jpeg'));
                 };
+
+                v.onerror = () => {
+                    clearTimeout(timeout);
+                    reject("Video Error");
+                };
+
+                v.src = URL.createObjectURL(file);
             });
         }
 
         function exportCSV() {
             let csv = "Filename,Title,Description,Keywords,Category\n";
             fileQueue.forEach((item, idx) => {
-                const row = [
-                    item.file.name,
-                    document.getElementById(`title-${idx}`).value,
-                    document.getElementById(`desc-${idx}`).value,
-                    document.getElementById(`kw-${idx}`).value,
-                    document.getElementById(`cat-${idx}`).value
-                ];
-                csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
+                // Pastikan nilai tidak undefined jika error
+                const t = document.getElementById(`title-${idx}`)?.value || "";
+                const d = document.getElementById(`desc-${idx}`)?.value || "";
+                const k = document.getElementById(`kw-${idx}`)?.value || "";
+                const c = document.getElementById(`cat-${idx}`)?.value || "";
+                
+                if(t) { // Hanya export yang sukses
+                    const row = [item.file.name, t, d, k, c];
+                    csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
+                }
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const a = document.createElement('a');
