@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - V8 Ultimate</title>
+    <title>Microstock Metadata Pro - V9 Ultimate Light</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; }
@@ -30,9 +30,11 @@
         th { background: #f8fafc; padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 700; color: #475569; border-bottom: 2px solid var(--border); text-transform: uppercase; }
         td { padding: 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
 
-        /* PREVIEW & STATUS */
-        .preview-box { width: 260px; height: 146px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; position: relative; }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        /* FILMSTRIP PREVIEW (FIXED) */
+        .filmstrip { display: flex; gap: 2px; width: 300px; height: 60px; background: #000; border-radius: 6px; overflow: hidden; margin-bottom: 10px; border: 1px solid #cbd5e1; }
+        .filmstrip img { width: 33.33%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.2s; }
+        .filmstrip img:hover { opacity: 1; }
+
         .status-pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .st-pending { background: #e2e8f0; color: #64748b; }
         .st-proc { background: #e0e7ff; color: #4338ca; }
@@ -53,8 +55,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>Metadata Generator <span class="badge">V8 PRO FIX</span></h1>
-        <div style="font-size:11px; opacity:0.8;">2 Keys • 3 Snapshots • SPOK Logic</div>
+        <h1>Metadata Generator <span class="badge">V9 LIGHTWEIGHT</span></h1>
+        <div style="font-size:11px; opacity:0.8;">3-Snapshots Fixed • Anti-Error 400</div>
     </div>
 
     <div class="controls">
@@ -86,7 +88,7 @@
     <table>
         <thead>
             <tr>
-                <th width="300">Preview (3 Frames)</th>
+                <th width="320">Filmstrip (3 Frames)</th>
                 <th>Metadata Result</th>
             </tr>
         </thead>
@@ -139,7 +141,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>
-                    <div class="preview-box" id="preview-${idx}"></div>
+                    <div class="filmstrip" id="preview-${idx}"></div>
                     <div style="font-weight:600; font-size:12px; margin-top:5px;">${file.name}</div>
                     <div class="status-pill st-pending" id="status-${idx}">Pending</div>
                     <div style="font-size:10px; margin-top:4px;" id="cat-disp-${idx}">-</div>
@@ -194,34 +196,35 @@
 
         for (let item of fileQueue) {
             const idx = item.id;
-            updateStatus(idx, 'st-proc', 'Processing (3 Snaps)...');
+            updateStatus(idx, 'st-proc', 'Capturing 3 Frames...');
             
             try {
-                // STEP A: GET 3 SNAPSHOTS (Fixes Error 400 by compressing size)
+                // STEP A: GET 3 SNAPSHOTS (RESIZED TO PREVENT 400 ERROR)
                 const snapshots = await getSnapshots(item.file);
                 
-                // Show first snapshot in preview
-                document.getElementById(`preview-${idx}`).innerHTML = `<img src="${snapshots[0]}">`;
+                // SHOW ALL 3 FRAMES IN FILMSTRIP
+                let imgsHTML = '';
+                snapshots.forEach(s => imgsHTML += `<img src="${s}">`);
+                document.getElementById(`preview-${idx}`).innerHTML = imgsHTML;
 
-                // STEP B: CALL API (Round Robin Keys)
+                updateStatus(idx, 'st-proc', 'AI Analyzing...');
+
+                // STEP B: CALL API
                 const currentKey = apiKeys[currentKeyIndex];
                 const rawData = await callGroqAPI(currentKey, snapshots);
                 
-                // STEP C: APPLY SPOK & RULES
+                // STEP C: APPLY RULES
                 applyRules(idx, rawData);
 
                 updateStatus(idx, 'st-ok', 'Done');
-                
-                // Rotate Key
                 currentKeyIndex = (currentKeyIndex + 1) % apiKeys.length;
 
             } catch (error) {
                 console.error(error);
                 let msg = "Error";
-                if (error.message.includes("400")) msg = "400 Bad Request (Size)";
-                else if (error.message.includes("429")) msg = "429 Rate Limit";
+                if (error.message.includes("400")) msg = "Still Too Big (Try shorter video)";
+                else if (error.message.includes("413")) msg = "Payload Too Large";
                 else msg = error.message;
-                
                 updateStatus(idx, 'st-err', msg);
             }
         }
@@ -230,14 +233,12 @@
         document.getElementById('btnExport').style.display = 'inline-flex';
     }
 
-    // --- 4. API & AI LOGIC ---
+    // --- 4. API CALL ---
     async function callGroqAPI(key, images) {
-        // Construct User Content with Multiple Images
         const content = [
-            { type: "text", text: `Analyze these 3 video frames. Return JSON only: {"category": "string", "title": "string", "description": "string", "keywords": "string"}. RULES: Title & Desc must be SPOK sentences. Category must be strict.` }
+            { type: "text", text: `Analyze 3 frames. JSON only: {"category": "string", "title": "string", "description": "string", "keywords": "string"}. RULES: Title & Desc must be SPOK. Category must be strict.` }
         ];
         
-        // Add images to payload
         images.forEach(img => {
             content.push({ type: "image_url", image_url: { url: img } });
         });
@@ -246,22 +247,26 @@
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
-                model: "llama-3.2-11b-vision-preview", // Vision Model
+                model: "llama-3.2-11b-vision-preview",
                 messages: [{ role: "user", content: content }],
                 temperature: 0.1,
                 max_tokens: 350
             })
         });
 
-        if (!resp.ok) throw new Error(`API Fail: ${resp.status}`);
+        if (!resp.ok) {
+            const errText = await resp.text();
+            throw new Error(`API Fail: ${resp.status} - ${errText}`);
+        }
+        
         const data = await resp.json();
         let txt = data.choices[0].message.content;
         
-        // CLEANUP JSON (Manual parsing to avoid 400 error on strict mode)
+        // Manual Clean JSON
         txt = txt.replace(/```json/g, '').replace(/```/g, '').trim();
         const start = txt.indexOf('{');
         const end = txt.lastIndexOf('}');
-        if (start === -1 || end === -1) throw new Error("Invalid JSON Format");
+        if (start === -1 || end === -1) throw new Error("Invalid JSON");
         
         return JSON.parse(txt.substring(start, end + 1));
     }
@@ -299,7 +304,7 @@
         validate(idx);
     }
 
-    // --- 5. SNAPSHOT GENERATOR (3 FRAMES) ---
+    // --- 5. SNAPSHOT GENERATOR (LIGHTWEIGHT MODE) ---
     function getSnapshots(file) {
         return new Promise((resolve, reject) => {
             const v = document.getElementById('hiddenVideo');
@@ -309,11 +314,14 @@
             v.src = url;
             
             const shots = [];
-            const timestamps = [0.2, 0.5, 0.8]; // Awal, Tengah, Akhir
+            const timestamps = [0.2, 0.5, 0.8]; 
             let currentStep = 0;
 
             v.onloadedmetadata = () => {
-                c.width = 480; c.height = 270; // RESIZE 480p to prevent Payload Error 400
+                // AGGRESSIVE RESIZE UNTUK MENGHINDARI ERROR 400
+                // Width 320px cukup untuk AI mengenali konten, tapi ringan.
+                c.width = 320; 
+                c.height = 180; 
                 seekNext();
             };
 
@@ -328,8 +336,8 @@
 
             v.onseeked = () => {
                 ctx.drawImage(v, 0, 0, c.width, c.height);
-                // QUALITY 0.5 IS CRITICAL TO AVOID ERROR 400
-                shots.push(c.toDataURL('image/jpeg', 0.5)); 
+                // QUALITY 0.4 IS CRITICAL
+                shots.push(c.toDataURL('image/jpeg', 0.4)); 
                 currentStep++;
                 seekNext();
             };
@@ -357,7 +365,7 @@
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "metadata_v8_pro.csv";
+        a.download = "metadata_v9_light.csv";
         a.click();
     }
 </script>
