@@ -3,103 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Smart Fix</title>
+    <title>Microstock Metadata Pro - Dual Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #0ea5e9;
+            --bg: #f1f5f9;
             --surface: #ffffff;
             --border: #e2e8f0;
             --text: #0f172a;
-            --success: #22c55e;
+            --success: #10b981;
             --error: #ef4444;
             --warning: #f59e0b;
         }
         
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; background: var(--surface); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); overflow: hidden; }
+        .container { max-width: 1280px; margin: 0 auto; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid var(--border); overflow: hidden; }
         
         /* HEADER */
-        .header { background: #1e293b; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-        
+        .header { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+            color: white; padding: 25px 30px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 4px solid var(--secondary);
+        }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .badge-pro { background: var(--secondary); font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
         /* CONTROLS */
-        .controls { padding: 20px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end; background: #f1f5f9; }
-        .input-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #475569; text-transform: uppercase; }
-        .input-field { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+        .controls { padding: 25px; border-bottom: 1px solid var(--border); background: #f8fafc; }
         
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; transition: 0.2s; height: 42px; }
-        .btn-primary { background: var(--primary); }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-success { background: var(--success); }
-        .btn-success:hover { background: #16a34a; }
+        .api-box {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;
+            background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border);
+        }
+
+        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-field { 
+            width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-family: 'Monaco', monospace; transition: 0.2s; box-sizing: border-box;
+        }
+        .input-field:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        
+        .action-area { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
+        
+        .btn { padding: 0 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.2s; height: 46px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+        
+        .btn-success { background: var(--success); box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+
+        .key-indicator { font-size: 11px; margin-top: 5px; color: #64748b; display: flex; align-items: center; gap: 5px; }
+        .active-key-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
 
         /* TABLE */
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: #f8fafc; padding: 12px 15px; text-align: left; font-weight: 600; color: #64748b; border-bottom: 1px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        th { background: #f1f5f9; padding: 15px 20px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        td { padding: 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
         tr:hover { background: #f8fafc; }
 
         /* INPUTS IN TABLE */
-        .meta-wrapper { position: relative; margin-bottom: 10px; }
-        .meta-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; font-weight: 600; color: #64748b; }
+        .meta-wrapper { position: relative; margin-bottom: 15px; }
+        .meta-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 700; color: #475569; }
         
-        .meta-input { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13px; transition: 0.2s; background: #fff; }
-        .meta-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        textarea.meta-input { min-height: 60px; resize: vertical; line-height: 1.4; }
+        .meta-input { 
+            width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 13px; transition: 0.2s; background: #fff; line-height: 1.5; color: #334155;
+        }
+        .meta-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        textarea.meta-input { min-height: 70px; resize: vertical; }
 
         /* VALIDATION STYLES */
-        .count-ok { color: var(--success); }
-        .count-warn { color: var(--warning); }
-        .count-err { color: var(--error); font-weight: bold; }
-        .border-err { border-color: var(--error) !important; background: #fef2f2; }
+        .count-ok { color: var(--success); background: #ecfdf5; padding: 1px 6px; border-radius: 4px; }
+        .count-warn { color: var(--warning); background: #fffbeb; padding: 1px 6px; border-radius: 4px; }
+        .count-err { color: var(--error); font-weight: bold; background: #fef2f2; padding: 1px 6px; border-radius: 4px; }
+        .border-err { border-color: var(--error) !important; background: #fff5f5; }
         
-        .preview-box { width: 220px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
-        .preview-box img { width: 100%; display: block; }
-        .cat-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-top: 5px; border: 1px solid #bae6fd; }
+        .preview-box { width: 240px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #000; position: relative; }
+        .preview-box img { width: 100%; display: block; opacity: 0.9; }
+        .cat-badge { display: inline-block; background: #e0f2fe; color: #0284c7; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 8px; border: 1px solid #bae6fd; }
 
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .dot-grey { background: #cbd5e1; }
-        .dot-blue { background: #3b82f6; animation: pulse 1s infinite; }
-        .dot-green { background: #22c55e; }
-        .dot-red { background: #ef4444; }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .status-pill { 
+            display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; 
+            border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 8px;
+            background: #f1f5f9; color: #64748b;
+        }
+        .status-pill.processing { background: #e0e7ff; color: #4338ca; }
+        .status-pill.success { background: #dcfce7; color: #15803d; }
+        .status-pill.error { background: #fee2e2; color: #b91c1c; }
+        
+        .spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator (Smart Context Fix)</h1>
-        <div style="font-size: 12px; opacity: 0.8;">Format: Filename,Title,Desc,Kw,Category</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">Pro V2</span></h1>
+        <div style="font-size: 12px; opacity: 0.8;">Auto-Switch API Support</div>
     </div>
 
     <div class="controls">
-        <div class="input-group">
-            <label>1. Groq API Key (Llama 4 Vision)</label>
-            <input type="password" id="apiKey" class="input-field" placeholder="gsk_xxxxxxxx...">
+        <div class="api-box">
+            <div class="input-group">
+                <label>🔑 API Key 1 (Primary)</label>
+                <input type="password" id="apiKey1" class="input-field" placeholder="gsk_xxxxxxxx...">
+                <div class="key-indicator" id="indicator-1"><span class="active-key-dot" style="display:none;"></span> Active</div>
+            </div>
+            <div class="input-group">
+                <label>🔑 API Key 2 (Backup/Failover)</label>
+                <input type="password" id="apiKey2" class="input-field" placeholder="gsk_xxxxxxxx...">
+                <div class="key-indicator" id="indicator-2"><span class="active-key-dot" style="display:none;"></span> Standby</div>
+            </div>
         </div>
+
         <div class="input-group">
-            <label>2. Pilih Folder Video</label>
-            <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple>
+            <label>📂 Pilih Folder Video</label>
+            <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple style="background: white;">
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">🚀 Mulai Proses</button>
-            <button class="btn btn-success" id="btnExport" onclick="exportCSV()" style="display:none;">📥 Download CSV</button>
+        
+        <div class="action-area">
+            <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">
+                <span>🚀 Mulai Proses</span>
+            </button>
+            <button class="btn btn-success" id="btnExport" onclick="exportCSV()" style="display:none;">
+                <span>📥 Download CSV</span>
+            </button>
+            <div id="statusMsg" style="font-size: 13px; font-weight: 600; color: var(--primary);"></div>
         </div>
     </div>
     
-    <div id="statusMsg" style="padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--primary);"></div>
-
     <div class="table-container">
         <table id="resultTable">
             <thead>
                 <tr>
-                    <th style="width: 240px;">Media Info</th>
-                    <th>Metadata Editor (Auto-Corrected)</th>
+                    <th style="width: 260px;">Media Asset</th>
+                    <th>Metadata Optimization (Target: 45-48 Keywords)</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,7 +155,7 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- DATABASE KATEGORI (UPDATED FULL LIST) ---
+    // --- DATABASE KATEGORI ---
     const CATEGORIES_LIST = `
 backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous,
 bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous,
@@ -132,13 +175,18 @@ infographics
     // --- CONFIG ---
     const MIN_TITLE = 50, MAX_TITLE = 70;
     const MIN_DESC = 100, MAX_DESC = 150;
+    // TARGET KEYWORDS: 45 - 48
     const MIN_KW = 45, MAX_KW = 48; 
-    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; // Updated vision model
 
     let fileQueue = [];
     let isProcessing = false;
+    let apiKeys = [];
+    let currentKeyIndex = 0;
 
-    if(localStorage.getItem('GROQ_KEY')) document.getElementById('apiKey').value = localStorage.getItem('GROQ_KEY');
+    // Load saved keys
+    if(localStorage.getItem('API_KEY_1')) document.getElementById('apiKey1').value = localStorage.getItem('API_KEY_1');
+    if(localStorage.getItem('API_KEY_2')) document.getElementById('apiKey2').value = localStorage.getItem('API_KEY_2');
 
     // --- FILE HANDLING ---
     document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -157,13 +205,13 @@ infographics
             tr.innerHTML = `
                 <td>
                     <div class="preview-box" id="preview-${index}">
-                        <div style="height:120px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px;">Waiting...</div>
+                        <div style="height:135px; background:#1e293b; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">Waiting...</div>
                     </div>
-                    <div style="font-weight:600; font-size:12px; margin-top:8px; word-break:break-all;">${file.name}</div>
+                    <div style="font-weight:600; font-size:12px; margin-top:10px; color:#334155; word-break:break-all;">${file.name}</div>
                     <div class="cat-badge" id="cat-disp-${index}">Category: -</div>
-                    <div style="margin-top:5px; font-size:11px; display:flex; align-items:center;">
-                        <span class="status-dot dot-grey" id="dot-${index}"></span>
-                        <span id="status-${index}">Pending</span>
+                    <div class="status-pill" id="status-pill-${index}">
+                        <span id="status-icon-${index}">⚫</span> 
+                        <span id="status-text-${index}">Pending</span>
                     </div>
                     <input type="hidden" id="cat-${index}">
                 </td>
@@ -186,16 +234,16 @@ infographics
 
                     <div class="meta-wrapper">
                         <div class="meta-label">
-                            <span>KEYWORDS (45-48 Words)</span>
+                            <span>KEYWORDS (Target: 45-48 Words)</span>
                             <span id="cnt-kw-${index}">0 words</span>
                         </div>
-                        <textarea class="meta-input" id="kw-${index}" style="min-height:80px;" oninput="validate(${index})"></textarea>
+                        <textarea class="meta-input" id="kw-${index}" style="min-height:100px;" oninput="validate(${index})"></textarea>
                     </div>
                 </td>
             `;
             tbody.appendChild(tr);
         });
-        document.getElementById('statusMsg').innerText = `Siap memproses ${files.length} video.`;
+        document.getElementById('statusMsg').innerText = `Ready: ${files.length} videos.`;
     });
 
     // --- SMART VALIDATION ---
@@ -227,6 +275,8 @@ infographics
         const kCnt = document.getElementById(`cnt-kw-${idx}`);
         const kws = kEl.value.split(',').filter(x => x.trim().length > 0);
         kCnt.innerText = `${kws.length} words`;
+        
+        // Strict 45-48
         if(kws.length < MIN_KW || kws.length > MAX_KW) {
             kCnt.className = 'count-err'; kEl.classList.add('border-err');
         } else {
@@ -234,66 +284,64 @@ infographics
         }
     }
 
-    // --- AI LOGIC ---
+    // --- PROCESSING ENGINE ---
     async function startProcessing() {
-        const key = document.getElementById('apiKey').value;
-        if(!key) return alert("API Key Required");
-        localStorage.setItem('GROQ_KEY', key);
+        const key1 = document.getElementById('apiKey1').value.trim();
+        const key2 = document.getElementById('apiKey2').value.trim();
+        
+        apiKeys = [];
+        if(key1) apiKeys.push(key1);
+        if(key2) apiKeys.push(key2);
+
+        if(apiKeys.length === 0) return alert("Masukkan minimal 1 API Key!");
+        
+        localStorage.setItem('API_KEY_1', key1);
+        localStorage.setItem('API_KEY_2', key2);
+
+        currentKeyIndex = 0; // Reset to first key
+        updateKeyUI();
 
         isProcessing = true;
         document.getElementById('btnProcess').disabled = true;
         
         for(let item of fileQueue) {
             const idx = item.id;
-            updateStatus(idx, 'processing', 'Processing...');
+            updateStatus(idx, 'processing', 'AI Working...');
             
             try {
                 // 1. Snapshot
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 
-                // 2. AI Request
-                const data = await callAI(key, base64);
+                // 2. AI Request with Failover Logic
+                const data = await callAIWithFailover(base64);
                 
-                // 3. Populate & Smart Truncate
+                // 3. Populate & Normalize Data
                 
                 // Category
                 document.getElementById(`cat-${idx}`).value = data.category;
                 document.getElementById(`cat-disp-${idx}`).innerText = data.category;
                 
-                // Title (Smart Truncate Logic)
+                // Title
                 let title = data.title || "";
-                if (title.length > MAX_TITLE) {
-                    // Potong di spasi terakhir sebelum limit 70 agar kata tidak putus
-                    let sub = title.substring(0, MAX_TITLE);
-                    let lastSpace = sub.lastIndexOf(" ");
-                    if (lastSpace > 50) title = sub.substring(0, lastSpace); // Hanya potong jika sisa > 50
-                    else title = sub; // Terpaksa potong jika tidak ada spasi aman
-                }
+                if (title.length > MAX_TITLE) title = title.substring(0, MAX_TITLE).replace(/\s\w*$/, ""); // Potong aman
                 document.getElementById(`title-${idx}`).value = title;
 
-                // Description (Smart Truncate Logic)
+                // Description
                 let desc = data.description || "";
-                if (desc.length > MAX_DESC) {
-                    let sub = desc.substring(0, MAX_DESC);
-                    let lastSpace = sub.lastIndexOf(" ");
-                    if (lastSpace > 100) desc = sub.substring(0, lastSpace);
-                    else desc = sub;
-                }
+                if (desc.length > MAX_DESC) desc = desc.substring(0, MAX_DESC).replace(/\s\w*$/, ".");
                 document.getElementById(`desc-${idx}`).value = desc;
 
-                // Keywords (Force 48)
-                // AI diminta generate 60, kita ambil 48 pertama
-                let kws = (data.keywords || "").replace(/\./g, '').split(',');
-                let cleanKws = [];
-                kws.forEach(k => {
-                    let w = k.trim().toLowerCase();
-                    if(w.length > 1) cleanKws.push(w);
-                });
+                // Keywords Logic (STRICT 45-48)
+                let rawKws = (data.keywords || "").replace(/\./g, '').split(',');
+                let cleanKws = rawKws.map(k => k.trim().toLowerCase()).filter(k => k.length > 1);
                 cleanKws = [...new Set(cleanKws)]; // Unique
+                
+                // Force slice to 48 Max
                 if (cleanKws.length > MAX_KW) {
                     cleanKws = cleanKws.slice(0, MAX_KW);
                 }
+                
                 document.getElementById(`kw-${idx}`).value = cleanKws.join(', ');
 
                 updateStatus(idx, 'success', 'Done');
@@ -301,29 +349,50 @@ infographics
 
             } catch(e) {
                 console.error(e);
-                updateStatus(idx, 'error', 'Error');
-                alert(`Error on file ${item.file.name}: ${e.message}`);
+                updateStatus(idx, 'error', 'Failed');
+                alert(`Error file ${item.file.name}: ${e.message}`);
             }
 
-            // Delay 
-            await new Promise(r => setTimeout(r, 2000));
+            // Delay to be safe
+            await new Promise(r => setTimeout(r, 1500));
         }
         
         isProcessing = false;
         document.getElementById('btnProcess').disabled = false;
-        document.getElementById('btnExport').style.display = 'inline-block';
-        alert("Selesai!");
+        document.getElementById('btnExport').style.display = 'inline-flex';
+        alert("Semua proses selesai!");
+    }
+
+    function updateKeyUI() {
+        document.getElementById('indicator-1').querySelector('span').style.display = currentKeyIndex === 0 ? 'inline-block' : 'none';
+        document.getElementById('indicator-1').style.color = currentKeyIndex === 0 ? 'var(--success)' : '#64748b';
+        
+        if(apiKeys.length > 1) {
+            document.getElementById('indicator-2').querySelector('span').style.display = currentKeyIndex === 1 ? 'inline-block' : 'none';
+            document.getElementById('indicator-2').style.color = currentKeyIndex === 1 ? 'var(--success)' : '#64748b';
+        }
     }
 
     function updateStatus(idx, type, text) {
-        const dot = document.getElementById(`dot-${idx}`);
-        const lbl = document.getElementById(`status-${idx}`);
-        lbl.innerText = text;
+        const pill = document.getElementById(`status-pill-${idx}`);
+        const icon = document.getElementById(`status-icon-${idx}`);
+        const lbl = document.getElementById(`status-text-${idx}`);
         
-        dot.className = 'status-dot';
-        if(type === 'processing') dot.classList.add('dot-blue');
-        if(type === 'success') dot.classList.add('dot-green');
-        if(type === 'error') dot.classList.add('dot-red');
+        lbl.innerText = text;
+        pill.className = 'status-pill';
+        
+        if(type === 'processing') {
+            pill.classList.add('processing');
+            icon.innerHTML = '<div class="spinner"></div>';
+        } else if(type === 'success') {
+            pill.classList.add('success');
+            icon.innerText = '✅';
+        } else if(type === 'error') {
+            pill.classList.add('error');
+            icon.innerText = '❌';
+        } else {
+            icon.innerText = '⚫';
+        }
     }
 
     // --- VIDEO SNAPSHOT ---
@@ -357,39 +426,42 @@ infographics
         });
     }
 
-    // --- AI PROMPT (ENHANCED FOR CONTEXT) ---
-    async function callAI(key, base64) {
+    // --- AI LOGIC WITH FAILOVER ---
+    async function callAIWithFailover(base64) {
+        // Coba kunci saat ini
+        try {
+            return await makeRequest(apiKeys[currentKeyIndex], base64);
+        } catch (error) {
+            // Check for Rate Limit (429)
+            if (error.message.includes('429') || error.message.includes('Rate limit')) {
+                console.warn(`Key ${currentKeyIndex + 1} Limit Reached!`);
+                
+                // Jika masih ada kunci kedua dan kita sedang pakai kunci pertama
+                if (currentKeyIndex === 0 && apiKeys.length > 1) {
+                    console.log("Switching to Key 2...");
+                    currentKeyIndex = 1;
+                    updateKeyUI(); // Update UI visual
+                    
+                    // Retry dengan kunci baru
+                    return await makeRequest(apiKeys[currentKeyIndex], base64);
+                }
+            }
+            throw error; // Jika bukan rate limit atau tidak ada kunci cadangan, lempar error
+        }
+    }
+
+    async function makeRequest(key, base64) {
         const prompt = `
-        Role: Senior Microstock Metadata Specialist.
+        Role: Microstock Metadata Specialist.
+        Task: Analyze these 3 video frames and generate JSON.
         
-        Input: 3 frames of a video (Start, Middle, End).
-        
-        Task: Analyze the frames to detect content type (Transition, Revealer, Background, etc.) and generate strict metadata.
-
-        STRICT RULES (Do not violate):
-        
-        1. CATEGORY:
-           - Analyze visual flow. 
-           - If frames change from Black -> Image -> Black, it is likely 'revealer' or 'transition'.
-           - If frames look like a loop, it is 'background'.
-           - Pick EXACTLY ONE from this list:
-           [${CATEGORIES_LIST}]
-
-        2. TITLE (Length: 50 - 70 chars):
-           - Must be a COMPLETE sentence describing the visual.
-           - DO NOT truncate words. 
-           - If your sentence is > 70 chars, REWRITE IT to be shorter.
-           - Example: "Blue Circuit Board Background with Glowing Digital Lines" (54 chars)
-
-        3. DESCRIPTION (Length: 100 - 150 chars):
-           - Must be detailed but concise.
-           - Describe movement, colors, lighting, and style (3D, Abstract).
-           - Must end with a full stop.
-
-        4. KEYWORDS (Quantity: 60 words):
-           - Generate 60 single keywords. (I will filter them later).
-           - Separate by comma. NO phrases.
-           - Include: visual objects, colors, concepts, style (bokeh, 4k, loop).
+        STRICT RULES:
+        1. CATEGORY: Pick ONE from: [${CATEGORIES_LIST}] based on visual flow.
+        2. TITLE (50-70 chars): Complete sentence. No truncation.
+        3. DESCRIPTION (100-150 chars): Detailed visual description.
+        4. KEYWORDS: Generate exactly 60 high-relevance keywords. I need many so I can filter down to 48.
+           - Include: visual objects, color, style (bokeh, 4k), conceptual.
+           - Format: comma separated.
 
         OUTPUT JSON ONLY:
         { "category": "string", "title": "string", "description": "string", "keywords": "string" }
@@ -403,19 +475,22 @@ infographics
                 messages: [
                     { role: "system", content: prompt },
                     { role: "user", content: [
-                        { type: "text", text: "Analyze frames and output strict JSON." },
+                        { type: "text", text: "Analyze." },
                         { type: "image_url", image_url: { url: base64 } }
                     ]}
                 ],
-                temperature: 0.1,
+                temperature: 0.2,
                 response_format: { type: "json_object" }
             })
         });
 
+        if (!resp.ok) {
+            const errText = await resp.text();
+            throw new Error(`API Error ${resp.status}: ${errText}`);
+        }
+
         const data = await resp.json();
         const content = data.choices[0].message.content;
-        
-        // JSON Extraction (Robust)
         const first = content.indexOf('{');
         const last = content.lastIndexOf('}');
         return JSON.parse(content.substring(first, last+1));
@@ -425,8 +500,8 @@ infographics
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
-            const row = document.getElementById(`row-${idx}`);
-            if(!row.querySelector('.dot-green')) return; // Skip failed
+            const pill = document.getElementById(`status-pill-${idx}`);
+            if(!pill.classList.contains('success')) return;
 
             const fname = `"${item.file.name.replace(/"/g, '""')}"`;
             const tit = `"${document.getElementById(`title-${idx}`).value.replace(/"/g, '""')}"`;
@@ -441,7 +516,7 @@ infographics
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `metadata_final_${Date.now()}.csv`;
+        a.download = `metadata_pro_${Date.now()}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
