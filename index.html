@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
+    <title>Microstock Metadata Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -64,6 +64,7 @@
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; }
         .status-pill.processing { background: #e0e7ff; color: #4338ca; }
         .status-pill.success { background: #dcfce7; color: #15803d; }
+        .status-pill.error { background: #fee2e2; color: #b91c1c; }
         .spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
@@ -72,8 +73,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro (Fixed)</span></h1>
-        <div style="font-size: 12px; opacity: 0.8;">Strict Visual Description Mode</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro (Fixed Model)</span></h1>
+        <div style="font-size: 12px; opacity: 0.8;">Using llama-3.2-90b-vision</div>
     </div>
 
     <div class="controls">
@@ -134,9 +135,8 @@
 
     const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48; 
     
-    // SAYA GANTI MODELNYA KE VISION PREVIEW (Wajib untuk baca gambar)
-    // Model lama Anda 'llama-4-scout' sepertinya tidak valid/tidak dukung gambar
-    const GROQ_MODEL = "llama-3.2-11b-vision-preview";
+    // MODEL DIGANTI KE 90B VISION (PENGGANTI 11B YANG MATI)
+    const GROQ_MODEL = "llama-3.2-90b-vision-preview";
 
     let fileQueue = [];
     let apiKeys = [];
@@ -202,12 +202,17 @@
             try {
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
-                let data = await makeRequest(apiKeys[currentKeyIndex], base64);
+                
+                // --- SWITCH KEY JIKA PERLU ---
+                const key = apiKeys[currentKeyIndex];
+                currentKeyIndex = (currentKeyIndex + 1) % apiKeys.length;
+                
+                let data = await makeRequest(key, base64);
                 
                 // --- LOGIKA TITLE: SPOK, NO CUT, SENTENCE CASE ---
                 let title = (data.title || "").trim();
                 // Bersihkan sampah
-                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template"];
+                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template", "footage", "stock"];
                 trash.forEach(w => title = title.replace(new RegExp(w, "gi"), "").trim());
                 
                 // Rapikan spasi & Sentence Case
@@ -217,7 +222,6 @@
                 // Potong aman di spasi (Max 70)
                 if(title.length > 70) {
                     let tmp = title.substring(0, 70);
-                    // Cari spasi terakhir
                     let lastSpace = tmp.lastIndexOf(" ");
                     if(lastSpace > 40) {
                          title = tmp.substring(0, lastSpace);
@@ -226,9 +230,11 @@
                     }
                 }
                 
-                // Jika kependekan, tambah filler
+                // Jika kependekan, tambah filler yang relevan
                 if(title.length < 50) {
                     title = (title + " video loop for creative projects").substring(0, 70);
+                    let lastSpace = title.lastIndexOf(" ");
+                    title = title.substring(0, lastSpace); // Rapikan lagi
                 }
                 document.getElementById(`title-${idx}`).value = title;
 
@@ -261,7 +267,7 @@
                 // --- CATEGORY MATCHING ---
                 let aiCat = data.category || "backgrounds";
                 if(!ALL_CATEGORIES.includes(aiCat)) {
-                    // Cari yang mirip
+                    // Cari yang mirip (partial match)
                     let found = ALL_CATEGORIES.find(c => aiCat.includes(c));
                     aiCat = found || "backgrounds";
                 }
@@ -272,8 +278,10 @@
                 validate(idx);
             } catch(e) { 
                 console.error(e);
-                updateStatus(idx, 'error', 'Fail'); 
-                alert("Error: " + e.message);
+                let msg = e.message;
+                if(msg.includes("400") || msg.includes("Bad Request")) msg = "API/Model Error";
+                updateStatus(idx, 'error', msg); 
+                alert("Error pada file " + item.file.name + ": " + e.message);
             }
         }
         document.getElementById('btnProcess').disabled = false;
@@ -281,34 +289,41 @@
     }
 
     async function makeRequest(key, base64) {
-        // PROMPT UPDATE DENGAN LIST KATEGORI BARU
+        // PROMPT DENGAN INSTRUKSI KETAT
         const prompt = `Senior Microstock Expert. Analyze frames. 
         VALID CATEGORIES: ${JSON.stringify(ALL_CATEGORIES)}.
         
-        Return JSON: {
-            "category": "pick exact string from VALID CATEGORIES", 
-            "title": "SPOK sentence visual description, no filler words, max 60 chars", 
-            "description": "Visual details only, max 8 words", 
-            "keywords": "50 relevant keywords"
-        }. Focus on visual details.`;
+        Return STRICT JSON: {
+            "category": "pick one string from VALID CATEGORIES list", 
+            "title": "A single SPOK sentence describing the visuals. Start with Subject. No 'Abstract background' at start. Max 60 chars.", 
+            "description": "Visual details only, max 8 words, no filler.", 
+            "keywords": "50 relevant keywords comma separated"
+        }.`;
 
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Strict JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "JSON ONLY." }, { type: "image_url", image_url: { url: base64 } }] }],
                 response_format: { type: "json_object" }
             })
         });
         
         if(!resp.ok) {
             const err = await resp.json();
-            throw new Error(err.error?.message || "API Error");
+            throw new Error(err.error?.message || "API Request Failed");
         }
         
         const d = await resp.json();
-        return JSON.parse(d.choices[0].message.content);
+        let content = d.choices[0].message.content;
+        
+        // PEMBERSIH JSON (Jaga-jaga jika AI nambah teks)
+        if(content.includes("{")) {
+            content = content.substring(content.indexOf("{"), content.lastIndexOf("}") + 1);
+        }
+        
+        return JSON.parse(content);
     }
 
     function updateStatus(idx, type, text) {
@@ -318,19 +333,23 @@
     }
 
     function getFilmstrip(file) {
-        return new Promise(res => {
+        return new Promise((res, rej) => {
             const v = document.getElementById('hiddenVideo');
             const c = document.getElementById('hiddenCanvas');
             const ctx = c.getContext('2d');
+            
+            v.onerror = () => rej(new Error("Video format not supported"));
             v.src = URL.createObjectURL(file);
             v.onloadedmetadata = async () => {
                 c.width = 960; c.height = 180;
-                for(let i=0; i<3; i++) {
-                    v.currentTime = v.duration * (0.2 + i * 0.3);
-                    await new Promise(r => v.onseeked = r);
-                    ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
-                }
-                res(c.toDataURL('image/jpeg'));
+                try {
+                    for(let i=0; i<3; i++) {
+                        v.currentTime = v.duration * (0.2 + i * 0.3);
+                        await new Promise(r => v.onseeked = r);
+                        ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i*320, 0, 320, 180);
+                    }
+                    res(c.toDataURL('image/jpeg'));
+                } catch(e) { rej(e); }
             };
         });
     }
