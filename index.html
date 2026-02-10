@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - V7 Strict SEO</title>
+    <title>Microstock Metadata Pro - V8 Context Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -47,8 +47,7 @@
 
         .count-ok { color: #15803d; background: #dcfce7; padding: 2px 6px; border-radius: 4px; border: 1px solid #86efac; }
         .count-err { color: #b91c1c; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-weight: bold; border: 1px solid #fca5a5; }
-        .border-err { border-color: var(--error) !important; background: #fff5f5; }
-
+        
         .preview-box { width: 280px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #000; }
         .preview-box img { width: 100%; display: block; opacity: 0.9; }
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 10px; border: 1px solid #cbd5e1; }
@@ -64,20 +63,20 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span style="font-size: 10px; vertical-align: middle; background: #0ea5e9; padding: 3px 8px; border-radius: 10px;">V7 AUTO-RECOVERY</span></h1>
+        <h1>🎞️ Metadata Generator <span style="font-size: 10px; vertical-align: middle; background: #0ea5e9; padding: 3px 8px; border-radius: 10px;">V8 RELEVANCE FIX</span></h1>
     </div>
 
     <div class="controls">
         <div class="api-box">
             <div class="input-group">
-                <label>🔑 API Key 1 (Primary)</label>
+                <label>🔑 API Key 1</label>
                 <input type="password" id="apiKey1" class="input-field" placeholder="gsk_xxxxxxxx...">
             </div>
             <div class="input-group">
-                <label>🔑 API Key 2 (Auto-Switch)</label>
+                <label>🔑 API Key 2</label>
                 <input type="password" id="apiKey2" class="input-field" placeholder="gsk_xxxxxxxx...">
             </div>
-            <button class="btn btn-save" onclick="manualSaveKeys()">💾 Simpan API Key</button>
+            <button class="btn btn-save" onclick="manualSaveKeys()">💾 Simpan Key</button>
         </div>
 
         <div class="input-group">
@@ -97,7 +96,7 @@
             <thead>
                 <tr>
                     <th style="width: 300px;">Media Asset</th>
-                    <th>Metadata Output (Wajib: 50-70 Title | 100-150 Desc | 45-48 KW)</th>
+                    <th>Metadata Output (Smart Truncate & Relevant Context)</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -111,10 +110,16 @@
 <script>
     const CATEGORIES_LIST = `backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous, bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous, distortions, elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous, interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous, lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous, overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous, particles, revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous, transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous, water-and-fluid, miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous, infographics`;
 
-    // High quality fillers for strict microstock compliance
-    const BACKUP_KEYWORDS = ["cinematic", "background", "graphic", "motion", "design", "visual", "loop", "creative", "modern", "dynamic", "abstract", "backdrop", "clip", "seamless", "style", "digital", "concept", "effect", "render", "artistic", "premium", "quality", "professional", "elements", "multimedia"];
-    const TITLE_PAD = " cinematic high quality footage stock asset";
-    const DESC_PAD = " This high resolution clip is perfectly suitable for professional video production, commercial marketing projects, and creative multimedia social media content.";
+    // Cadangan Keywords yang lebih banyak dan umum (Agar pasti sampai 45)
+    const BACKUP_KEYWORDS = [
+        "background", "motion", "graphic", "design", "abstract", "visual", "art", 
+        "creative", "modern", "dynamic", "texture", "pattern", "element", "backdrop", 
+        "seamless", "style", "digital", "concept", "effect", "render", "artistic", 
+        "premium", "quality", "professional", "multimedia", "presentation", "business",
+        "technology", "futuristic", "clean", "minimal", "looping", "animation", "clip",
+        "overlay", "interface", "template", "media", "generated", "virtual", "screen",
+        "display", "monitor", "graphic design", "wallpaper", "layout", "composition"
+    ];
 
     const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
     const MIN_TITLE = 50, MAX_TITLE = 70;
@@ -131,7 +136,7 @@
     function manualSaveKeys() {
         localStorage.setItem('API_KEY_1', document.getElementById('apiKey1').value.trim());
         localStorage.setItem('API_KEY_2', document.getElementById('apiKey2').value.trim());
-        alert("API Keys berhasil disimpan!");
+        alert("API Keys disimpan!");
     }
 
     document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -143,16 +148,16 @@
             tr.id = `row-${index}`;
             tr.innerHTML = `
                 <td>
-                    <div class="preview-box" id="preview-${index}"><div style="height:140px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">Menyiapkan...</div></div>
+                    <div class="preview-box" id="preview-${index}"><div style="height:140px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">Waiting...</div></div>
                     <div style="font-weight:600; font-size:12px; margin-top:10px; word-break:break-all;">${file.name}</div>
                     <div class="cat-badge" id="cat-disp-${index}">-</div>
                     <div class="status-pill" id="status-pill-${index}"><span id="status-icon-${index}">⚫</span> <span id="status-text-${index}">Pending</span></div>
                     <input type="hidden" id="cat-${index}">
                 </td>
                 <td>
-                    <div class="meta-wrapper"><div class="meta-label">TITLE (Wajib: 50-70)<span id="cnt-title-${index}">0/70</span></div><input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})"></div>
-                    <div class="meta-wrapper"><div class="meta-label">DESC (Wajib: 100-150)<span id="cnt-desc-${index}">0/150</span></div><textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea></div>
-                    <div class="meta-wrapper"><div class="meta-label">KEYWORDS (Wajib: 45-48)<span id="cnt-kw-${index}">0 kata</span></div><textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea></div>
+                    <div class="meta-wrapper"><div class="meta-label">TITLE (50-70)<span id="cnt-title-${index}">0/70</span></div><input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})"></div>
+                    <div class="meta-wrapper"><div class="meta-label">DESC (100-150)<span id="cnt-desc-${index}">0/150</span></div><textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea></div>
+                    <div class="meta-wrapper"><div class="meta-label">KEYWORDS (45-48)<span id="cnt-kw-${index}">0 words</span></div><textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea></div>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -163,77 +168,103 @@
 
     function validate(idx) {
         const tVal = document.getElementById(`title-${idx}`).value.length;
-        const tSpan = document.getElementById(`cnt-title-${idx}`);
-        tSpan.className = (tVal >= MIN_TITLE && tVal <= MAX_TITLE) ? 'count-ok' : 'count-err';
-        tSpan.innerText = `${tVal}/70`;
+        document.getElementById(`cnt-title-${idx}`).className = (tVal >= MIN_TITLE && tVal <= MAX_TITLE) ? 'count-ok' : 'count-err';
+        document.getElementById(`cnt-title-${idx}`).innerText = `${tVal}/70`;
 
         const dVal = document.getElementById(`desc-${idx}`).value.length;
-        const dSpan = document.getElementById(`cnt-desc-${idx}`);
-        dSpan.className = (dVal >= MIN_DESC && dVal <= MAX_DESC) ? 'count-ok' : 'count-err';
-        dSpan.innerText = `${dVal}/150`;
+        document.getElementById(`cnt-desc-${idx}`).className = (dVal >= MIN_DESC && dVal <= MAX_DESC) ? 'count-ok' : 'count-err';
+        document.getElementById(`cnt-desc-${idx}`).innerText = `${dVal}/150`;
 
         const kws = document.getElementById(`kw-${idx}`).value.split(',').filter(x => x.trim().length > 0).length;
-        const kSpan = document.getElementById(`cnt-kw-${idx}`);
-        kSpan.className = (kws >= MIN_KW && kws <= MAX_KW) ? 'count-ok' : 'count-err';
-        kSpan.innerText = `${kws} kata`;
+        document.getElementById(`cnt-kw-${idx}`).className = (kws >= MIN_KW && kws <= MAX_KW) ? 'count-ok' : 'count-err';
+        document.getElementById(`cnt-kw-${idx}`).innerText = `${kws} words`;
     }
 
     async function startProcessing() {
         const k1 = document.getElementById('apiKey1').value.trim();
         const k2 = document.getElementById('apiKey2').value.trim();
         apiKeys = [k1, k2].filter(k => k);
-        if(!apiKeys.length) return alert("Masukkan minimal 1 API Key!");
+        if(!apiKeys.length) return alert("API Key Required!");
 
         document.getElementById('btnProcess').disabled = true;
         for(let item of fileQueue) {
-            updateStatus(item.id, 'processing', 'AI Sedang Menganalisis...');
+            updateStatus(item.id, 'processing', 'AI Analyzing...');
             try {
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${item.id}`).innerHTML = `<img src="${base64}">`;
                 
                 let data = null, attempts = 0;
                 while(attempts < 3 && !data) {
-                    try { 
-                        data = await callAIWithFailover(base64); 
-                    } catch (e) { 
-                        attempts++; 
-                        console.warn(`Retry attempt ${attempts} for ${item.file.name}`);
-                        await new Promise(r => setTimeout(r, 2000)); 
-                    }
+                    try { data = await callAIWithFailover(base64); } 
+                    catch (e) { attempts++; console.warn("Retry..."); await new Promise(r => setTimeout(r, 2000)); }
                 }
 
-                if(!data) throw new Error("Gagal generate JSON setelah 3 percobaan.");
+                if(!data) throw new Error("AI Failed");
 
-                // --- STRICT TITLE LOGIC ---
+                // --- 1. TITLE LOGIC (Context Aware Padding) ---
                 let title = (data.title || "").trim();
-                if(title.length < MIN_TITLE) title += TITLE_PAD;
+                
+                // Jika judul terlalu pendek, tambahkan padding yang SESUAI (bukan 'cinematic footage' sembarangan)
+                if(title.length < MIN_TITLE) {
+                    // Cek apakah judul mengandung kata-kata digital/animasi
+                    const isDigital = /animation|motion|loading|graphic|interface|abstract/i.test(title);
+                    if(isDigital) {
+                         title += " - Motion Graphics Background Design Element";
+                    } else {
+                         title += " - High Quality Video Stock Footage Asset";
+                    }
+                }
+                
+                // Cut max
                 if(title.length > MAX_TITLE) title = title.substring(0, MAX_TITLE).replace(/\s\w*$/, "");
                 document.getElementById(`title-${item.id}`).value = title;
 
-                // --- STRICT DESC LOGIC ---
+                // --- 2. DESCRIPTION LOGIC (No Cut-off) ---
                 let desc = (data.description || "").trim();
-                // Context Fix: Hapus "Video footage of" jika berulang
+                // Hapus awalan malas
                 if (desc.toLowerCase().startsWith("video footage of")) desc = desc.substring(16).trim();
                 desc = desc.charAt(0).toUpperCase() + desc.slice(1);
                 
-                if(desc.length < MIN_DESC) desc += DESC_PAD;
+                // Jika terlalu pendek, tambah kalimat kedua yang generik tapi relevan
+                if(desc.length < 90) {
+                     desc += " This clip is perfect for creative multimedia projects and professional video editing.";
+                }
+
+                // Smart Truncate: Potong di titik/spasi terakhir sebelum 150
                 if(desc.length > MAX_DESC) {
                     let sub = desc.substring(0, MAX_DESC);
-                    desc = sub.substring(0, MAX_DESC).replace(/\s\w*$/, ".") + (sub.endsWith('.') ? '' : '.');
+                    // Prioritas 1: Potong di titik terakhir
+                    let lastDot = sub.lastIndexOf(".");
+                    if(lastDot > 100) {
+                         desc = sub.substring(0, lastDot + 1);
+                    } else {
+                        // Prioritas 2: Potong di spasi terakhir dan tambah titik
+                         desc = sub.substring(0, sub.lastIndexOf(" ")) + ".";
+                    }
                 }
+                // Pastikan diakhiri titik
+                if(!desc.endsWith(".")) desc += ".";
                 document.getElementById(`desc-${item.id}`).value = desc;
 
-                // --- STRICT KEYWORDS LOGIC ---
+                // --- 3. KEYWORD LOGIC (Force 45-48) ---
                 let rawKws = (data.keywords || "").replace(/\./g, '').split(',').map(k => k.trim().toLowerCase());
-                let cleanKws = rawKws.filter(k => k.length > 2 && !/\d/.test(k)); // Hapus angka/4k/HD
-                cleanKws = [...new Set(cleanKws)]; // Hapus duplikat
-                
-                // Inject backup if below 45
+                // Filter: Hapus angka, hapus '4k', hapus kata terlalu pendek
+                let cleanKws = rawKws.filter(k => k.length > 2 && !/\d/.test(k) && k !== '4k' && k !== 'hd');
+                cleanKws = [...new Set(cleanKws)]; // Unique
+
+                // INJECT BACKUP (Wajib sampai 45)
+                // Kita ambil dari list BACKUP_KEYWORDS secara acak agar variatif
+                let shuffledBackup = BACKUP_KEYWORDS.sort(() => 0.5 - Math.random());
                 let bIdx = 0;
-                while(cleanKws.length < MIN_KW && bIdx < BACKUP_KEYWORDS.length) {
-                    if(!cleanKws.includes(BACKUP_KEYWORDS[bIdx])) cleanKws.push(BACKUP_KEYWORDS[bIdx]);
+                
+                while(cleanKws.length < MIN_KW && bIdx < shuffledBackup.length) {
+                    if(!cleanKws.includes(shuffledBackup[bIdx])) {
+                        cleanKws.push(shuffledBackup[bIdx]);
+                    }
                     bIdx++;
                 }
+
+                // Slice max 48
                 document.getElementById(`kw-${item.id}`).value = cleanKws.slice(0, MAX_KW).join(', ');
 
                 document.getElementById(`cat-${item.id}`).value = data.category || "miscellaneous";
@@ -243,7 +274,7 @@
                 validate(item.id);
             } catch(e) { 
                 console.error(e);
-                updateStatus(item.id, 'error', 'Error API'); 
+                updateStatus(item.id, 'error', 'Error'); 
             }
         }
         document.getElementById('btnProcess').disabled = false;
@@ -272,7 +303,6 @@
         catch (e) {
             if (apiKeys.length > 1) { 
                 currentKeyIndex = (currentKeyIndex + 1) % apiKeys.length; 
-                console.log("Switching API Key...");
                 return await makeRequest(apiKeys[currentKeyIndex], base64); 
             }
             throw e;
@@ -280,34 +310,37 @@
     }
 
     async function makeRequest(key, base64) {
-        const prompt = `Role: Senior Microstock SEO Specialist. Input: 3 video frames.
-        Requirements:
-        1. Identification: Start Desc with medium type (3D Render, Animation, Time-lapse, Close-up) NOT "Video footage".
-        2. Description: Detailed, 2 full sentences.
-        3. Keywords: 100 relevant words (STRICT: NO digits, NO 4k, NO HD).
-        4. Category: Select from: [${CATEGORIES_LIST}].
-        Output ONLY valid JSON: {"category":"","title":"","description":"","keywords":""}`;
+        // Prompt diperbarui: Minta AI mengenali "Visual Type" (Footage vs Animation)
+        const prompt = `Role: Senior Stock Video Metadata Expert. 
+        TASK: Analyze 3 frames. Determine if it is Real Footage, 3D Render, or Flat Animation.
+        
+        RULES:
+        1. TITLE: Be precise. If it's a "Loading Bar", say "Loading Bar Animation", NOT "Cinematic Footage".
+        2. DESCRIPTION: Write full sentences. NO "...". Start with style (e.g., "A 3D render of...", "Animation showing...").
+        3. KEYWORDS: Generate 60+ keywords. (NO numbers, NO '4k', NO 'resolution').
+        4. CATEGORY: Pick from: [${CATEGORIES_LIST}].
+        
+        Output JSON: {"category":"","title":"","description":"","keywords":""}`;
 
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Analyze strict JSON output." }, { type: "image_url", image_url: { url: base64 } }] }],
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Analyze JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
                 temperature: 0.3, response_format: { type: "json_object" }
             })
         });
-        if(!resp.ok) throw new Error("API Error " + resp.status);
+        if(!resp.ok) throw new Error("API Err");
         const res = await resp.json();
         return JSON.parse(res.choices[0].message.content);
     }
 
     function updateStatus(idx, type, text) {
         const pill = document.getElementById(`status-pill-${idx}`);
-        const icon = document.getElementById(`status-icon-${idx}`);
         document.getElementById(`status-text-${idx}`).innerText = text;
         pill.className = `status-pill ${type}`;
-        icon.innerHTML = type === 'processing' ? '<div class="spinner"></div>' : (type === 'success' ? '✅' : '❌');
+        document.getElementById(`status-icon-${idx}`).innerHTML = type === 'processing' ? '<div class="spinner"></div>' : (type === 'success' ? '✅' : '❌');
     }
 
     function exportCSV() {
@@ -318,7 +351,7 @@
             }
         });
         const blob = new Blob([csv], {type:'text/csv'}), url = URL.createObjectURL(blob), a = document.createElement('a');
-        a.href = url; a.download = `metadata_microstock_v7.csv`; a.click();
+        a.href = url; a.download = `metadata_v8_fixed.csv`; a.click();
     }
 </script>
 </body>
