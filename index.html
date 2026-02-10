@@ -23,7 +23,6 @@
         .header h1 { margin: 0; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         .badge-pro { background: var(--secondary); font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; font-weight: 800; }
         
-        /* Animasi Videohive Project */
         .animated-subtitle {
             font-size: 13px;
             font-weight: 800;
@@ -36,10 +35,7 @@
             animation: shine 3s infinite linear;
         }
 
-        @keyframes shine {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+        @keyframes shine { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
         .controls { padding: 25px; border-bottom: 1px solid var(--border); background: #f8fafc; }
         .api-box { display: grid; grid-template-columns: 1fr 1fr auto; gap: 20px; margin-bottom: 20px; align-items: end; background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
@@ -51,10 +47,10 @@
         .btn-primary { background: var(--primary); } 
         .btn-success { background: var(--success); } 
         .btn-save { background: #334155; height: 45px; }
-        .btn-reset { background: #f59e0b; } /* Tombol Upload Lagi Orange */
+        .btn-reset { background: #f59e0b; }
 
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        thead { display: none; } /* HEADER TABEL DIHILANGKAN */
+        thead { display: none; }
         
         td { padding: 25px 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
         .meta-wrapper { position: relative; margin-bottom: 20px; }
@@ -94,7 +90,7 @@
             </div>
             <div class="input-group">
                 <label>📂 Pilih Folder Video</label>
-                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*,.mov,.mp4,.mkv" style="background: white;">
+                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*,.mov,.mp4,.mkv,.avi" style="background: white;">
             </div>
             <div class="action-area">
                 <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">🚀 Mulai Proses</button>
@@ -143,7 +139,6 @@
             alert("Simpan Berhasil!");
         }
 
-        // FUNGSI RESET / UPLOAD LAGI
         function resetApp() {
             fileQueue = [];
             document.getElementById('resultBody').innerHTML = '';
@@ -154,11 +149,10 @@
         }
 
         document.getElementById('fileInput').addEventListener('change', function (e) {
-            // FIX FILTERING: Cek Mime Type ATAU Ekstensi (Penting untuk .mov di Windows)
             const files = Array.from(e.target.files).filter(f => {
+                // FORCE ACCEPT .MOV
                 return f.type.startsWith('video/') || f.name.toLowerCase().endsWith('.mov') || f.name.toLowerCase().endsWith('.mkv');
             });
-
             const tbody = document.getElementById('resultBody');
             tbody.innerHTML = '';
             fileQueue = [];
@@ -218,6 +212,57 @@
             return str.trim().replace(/[\s,]+(and|or|with|the|a|an|is|at|of|in|to|for)[\s,.]*$/i, "").replace(/[,\s]+$/, "");
         }
 
+        // FUNGSI UTAMA GENERATE FILMSTRIP (DENGAN FALLBACK UNTUK MOV)
+        function getFilmstrip(file) {
+            return new Promise((resolve) => { // Perhatikan: Resolve even on fail
+                const v = document.getElementById('hiddenVideo');
+                const c = document.getElementById('hiddenCanvas');
+                const ctx = c.getContext('2d');
+                
+                // Fallback Function jika Video Gagal (Codec Error)
+                const useFallback = () => {
+                    c.width = 960;
+                    c.height = 180;
+                    ctx.fillStyle = "#111"; // Background Hitam
+                    ctx.fillRect(0, 0, 960, 180);
+                    ctx.font = "30px Arial";
+                    ctx.fillStyle = "#fff";
+                    ctx.fillText("FILENAME:", 20, 50);
+                    ctx.fillText(file.name, 20, 100);
+                    // Kirim gambar berisi teks nama file ke AI
+                    resolve(c.toDataURL('image/jpeg')); 
+                };
+
+                // Timeout 4 detik: Jika browser tidak bisa baca, pakai fallback
+                const timeout = setTimeout(useFallback, 4000);
+
+                v.onloadeddata = async () => {
+                    clearTimeout(timeout);
+                    try {
+                        c.width = 960;
+                        c.height = 180;
+                        // Ambil 3 frame sederhana
+                        for (let i = 0; i < 3; i++) {
+                            v.currentTime = v.duration * (0.1 + i * 0.4); 
+                            await new Promise(r => setTimeout(r, 200)); // Delay dikit biar buffer
+                            ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
+                        }
+                        resolve(c.toDataURL('image/jpeg'));
+                    } catch (e) {
+                        useFallback(); // Jika error saat draw, pakai fallback
+                    }
+                };
+
+                v.onerror = () => {
+                    clearTimeout(timeout);
+                    useFallback(); // Error codec -> Fallback
+                };
+
+                v.src = URL.createObjectURL(file);
+                v.load();
+            });
+        }
+
         async function startProcessing() {
             apiKeys = [document.getElementById('apiKey1').value, document.getElementById('apiKey2').value].filter(k => k);
             if (!apiKeys.length) return alert("Isi API Key!");
@@ -226,10 +271,12 @@
             for (let item of fileQueue) {
                 const idx = item.id;
                 updateStatus(idx, 'processing', 'Analyzing...');
+                
+                // Get Filmstrip (Never fails now, returns black image with text if codec error)
+                const base64 = await getFilmstrip(item.file);
+                document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
+                
                 try {
-                    // ADDED TIMEOUT & ERROR HANDLING FOR MOV
-                    const base64 = await getFilmstrip(item.file);
-                    document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                     let data = await makeRequest(apiKeys[currentKeyIndex], base64);
 
                     // 1. CATEGORY
@@ -241,7 +288,7 @@
                     document.getElementById(`cat-${idx}`).value = finalCat;
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
-                    // 2. KEYWORDS LOGIC
+                    // 2. KEYWORDS
                     let rawKw = data.keywords;
                     let kws = Array.isArray(rawKw) ? rawKw : (typeof rawKw === 'string' ? rawKw.split(',') : []);
                     let splitKws = [];
@@ -262,7 +309,7 @@
                     }
                     document.getElementById(`kw-${idx}`).value = splitKws.join(', ');
 
-                    // 3. TITLE LOGIC (SMART SUFFIX)
+                    // 3. TITLE LOGIC
                     let title = (data.title || "").trim();
                     title = title.replace(/['":;,.!?-]/g, '');
                     title = title.replace(/\b(saying|reads|written|that says|showing)\b/gi, ""); 
@@ -294,7 +341,7 @@
                     title = cleanTrailing(title);
                     document.getElementById(`title-${idx}`).value = title;
 
-                    // 4. DESCRIPTION LOGIC
+                    // 4. DESC LOGIC
                     let desc = (data.description || "Video clip.").trim();
                     desc = desc.replace(/\b(static image|still photo|picture)\b/gi, "motion graphic video");
                     desc = desc.replace(/^High quality video clip\.?/i, "This video features");
@@ -312,8 +359,7 @@
                     validate(idx);
                 } catch (e) {
                     console.error(e);
-                    // Jika error (misal codec MOV tidak support), tampilkan pesan
-                    updateStatus(idx, 'error', 'Format Error (Codec?)');
+                    updateStatus(idx, 'error', 'AI Error');
                 }
             }
             document.getElementById('btnProcess').disabled = false;
@@ -323,7 +369,7 @@
 
         async function makeRequest(key, base64) {
             const prompt = `You are a Stock Video Metadata Expert. 
-            Input: Filmstrip of a VIDEO clip.
+            Input: Filmstrip of a VIDEO clip. (If image is black with text, analyze the TEXT/FILENAME provided in image).
             
             STRICT RULES:
             1. Title: Create an ORGANIC formula: [Adjective] + [Color] + [Subject] + [Action] + [Context].
@@ -345,7 +391,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze visuals. Organic title. No 'saying'. JSON only." },
+                            { type: "text", text: "Analyze visuals/filename. Organic title. JSON only." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
@@ -354,70 +400,6 @@
             });
             const d = await resp.json();
             return JSON.parse(d.choices[0].message.content);
-        }
-
-        function updateStatus(idx, type, text) {
-            const p = document.getElementById(`status-pill-${idx}`);
-            p.className = `status-pill ${type}`;
-            document.getElementById(`status-text-${idx}`).innerText = text;
-        }
-
-        // FUNGSI GETFILMSTRIP DENGAN TIMEOUT (Penting untuk .mov macet)
-        function getFilmstrip(file) {
-            return new Promise((resolve, reject) => {
-                const v = document.getElementById('hiddenVideo');
-                const c = document.getElementById('hiddenCanvas');
-                const ctx = c.getContext('2d');
-                
-                // Timeout 5 detik, jika browser gagal decode MOV
-                const timeout = setTimeout(() => {
-                    reject("Timeout: Codec not supported");
-                }, 5000);
-
-                v.onloadedmetadata = async () => {
-                    clearTimeout(timeout); // Clear timeout jika berhasil load
-                    try {
-                        c.width = 960;
-                        c.height = 180;
-                        for (let i = 0; i < 3; i++) {
-                            v.currentTime = v.duration * (0.2 + i * 0.3);
-                            await new Promise(r => v.onseeked = r);
-                            ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
-                        }
-                        resolve(c.toDataURL('image/jpeg'));
-                    } catch (e) {
-                        reject(e);
-                    }
-                };
-
-                v.onerror = () => {
-                    clearTimeout(timeout);
-                    reject("Video Error");
-                };
-
-                v.src = URL.createObjectURL(file);
-            });
-        }
-
-        function exportCSV() {
-            let csv = "Filename,Title,Description,Keywords,Category\n";
-            fileQueue.forEach((item, idx) => {
-                // Pastikan nilai tidak undefined jika error
-                const t = document.getElementById(`title-${idx}`)?.value || "";
-                const d = document.getElementById(`desc-${idx}`)?.value || "";
-                const k = document.getElementById(`kw-${idx}`)?.value || "";
-                const c = document.getElementById(`cat-${idx}`)?.value || "";
-                
-                if(t) { // Hanya export yang sukses
-                    const row = [item.file.name, t, d, k, c];
-                    csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
-                }
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `microstock_video_v6.csv`;
-            a.click();
         }
     </script>
 </body>
