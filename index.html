@@ -73,7 +73,7 @@
 <div class="container">
     <div class="header">
         <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-        <div style="font-size: 12px; opacity: 0.8;">Strict Visual Description Mode</div>
+        <div style="font-size: 12px; opacity: 0.8;">Strict SPOK Visual Mode</div>
     </div>
 
     <div class="controls">
@@ -102,7 +102,7 @@
         <thead>
             <tr>
                 <th style="width: 300px;">Media Asset</th>
-                <th>Metadata (Sentence Case & Strict Keywords)</th>
+                <th>Metadata (SPOK & Strict Limits)</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -113,7 +113,18 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    const CATEGORIES_LIST = `backgrounds, backgrounds/abstract, backgrounds/nature, elements, overlays, transitions, infographics`;
+    const ALLOWED_CATEGORIES = [
+        "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
+        "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
+        "distortions", "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
+        "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", "interface-effects/miscellaneous",
+        "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
+        "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
+        "particles", "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
+        "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", "transitions/miscellaneous",
+        "water-and-fluid", "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous", "infographics"
+    ];
+
     const BACKUP_KEYWORDS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "render", "digital", "design", "creative", "concept", "modern", "effect", "futuristic", "pattern", "glow", "texture", "dynamic", "element", "colorful", "artistic", "display", "presentation", "backdrop", "overlay", "energy", "flow", "clean", "soft", "sharp", "gradient", "composition", "style", "cinematic", "technology", "shapes", "geometry", "bright", "vibrant", "elegant", "smooth", "ambient", "high tech", "decoration", "wallpaper", "studio", "pro", "visuals"];
 
     const MIN_TITLE = 50, MAX_TITLE = 70, MIN_DESC = 100, MAX_DESC = 150, MIN_KW = 45, MAX_KW = 48; 
@@ -185,26 +196,30 @@
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 let data = await makeRequest(apiKeys[currentKeyIndex], base64);
                 
-                // --- TITLE LOGIC: NO DASH, SENTENCE CASE, UNIQUE ---
-                let title = (data.title || "").replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
-                const trash = ["seamless loop", "motion graphic", "animation", "background", "video clip", "template"];
-                trash.forEach(w => title = title.split(w).join('').trim());
-                
-                if(title.length < 50) {
-                    title += " " + (data.description || "").toLowerCase().replace(/[.,]/g, '').split(' ').slice(0, 8).join(' ');
-                }
-                title = title.replace(/\s+/g, ' ').trim();
+                // --- TITLE LOGIC (SPOK, ANTI-POTONG, 50-70) ---
+                let title = data.title.replace(/[".]/g, '').trim();
+                // Ensure Sentence Case
                 title = title.charAt(0).toUpperCase() + title.slice(1);
-                if(title.length > 70) title = title.substring(0, 70).replace(/\s\w*$/, "");
-                if(title.length < 50) title += " for creative professional projects";
+                
+                if(title.length > 70) {
+                    title = title.substring(0, 70).split(' ').slice(0, -1).join(' ');
+                }
+                if(title.length < 50) {
+                    title = (title + " features premium quality motion graphic elements").substring(0, 70);
+                }
                 document.getElementById(`title-${idx}`).value = title;
 
-                // --- DESC LOGIC ---
-                let desc = (data.description || "High quality visual.").trim();
-                if(desc.length < 100) desc += " This unique visual asset is designed for high-end video production and digital signage applications.";
-                document.getElementById(`desc-${idx}`).value = desc.substring(0, 150);
+                // --- DESC LOGIC (SPOK, ANTI-POTONG, 100-150) ---
+                let desc = data.description.trim();
+                if(desc.length > 150) {
+                    desc = desc.substring(0, 150).split(' ').slice(0, -1).join(' ');
+                }
+                if(desc.length < 100) {
+                    desc = (desc + " This unique visual asset is designed for high-end video production and professional digital signage applications.").substring(0, 150);
+                }
+                document.getElementById(`desc-${idx}`).value = desc;
 
-                // --- KEYWORDS LOGIC: STRICT 45-48 ---
+                // --- KEYWORDS LOGIC (45-48) ---
                 let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w && !/\d/.test(w) && w.length > 2);
                 kws = [...new Set(kws)];
                 let bIdx = 0;
@@ -214,24 +229,49 @@
                 }
                 document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
 
-                document.getElementById(`cat-${idx}`).value = data.category || "backgrounds";
-                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "backgrounds";
+                // --- CATEGORY LOGIC (DETEKSI OTOMATIS DARI LIST) ---
+                let finalCat = ALLOWED_CATEGORIES.includes(data.category) ? data.category : "backgrounds";
+                document.getElementById(`cat-${idx}`).value = finalCat;
+                document.getElementById(`cat-disp-${idx}`).innerText = "Category: " + finalCat;
+
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
-            } catch(e) { updateStatus(idx, 'error', 'Fail'); }
+            } catch(e) { 
+                console.error(e);
+                updateStatus(idx, 'error', 'Fail'); 
+            }
         }
         document.getElementById('btnProcess').disabled = false;
         document.getElementById('btnExport').style.display = 'inline-flex';
     }
 
     async function makeRequest(key, base64) {
-        const prompt = `Senior Microstock Expert. Analyze frames. Return JSON: {category, title, description, keywords}. Focus on visual details.`;
+        const prompt = `You are a Senior Microstock Metadata Expert. Analyze these video frames.
+        Return ONLY a JSON object: {"category": "...", "title": "...", "description": "...", "keywords": "..."}
+        
+        RULES:
+        1. CATEGORY: Pick exactly one from this list: [${ALLOWED_CATEGORIES.join(", ")}].
+        2. TITLE: Create a complete SPOK sentence (Subject-Verb-Object-Adverb). 
+           - DO NOT use words like "thanks", "watching", "template".
+           - Focus on what the subject is doing.
+           - LENGTH: 50-70 characters.
+        3. DESCRIPTION: Professional SPOK description.
+           - Focus on visual style and technical usage.
+           - LENGTH: 100-150 characters.
+        4. KEYWORDS: Provide exactly 48 relevant words.`;
+
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: GROQ_MODEL,
-                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Strict JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
+                messages: [
+                    { role: "system", content: prompt }, 
+                    { role: "user", content: [
+                        { type: "text", text: "Provide SPOK metadata in JSON format." }, 
+                        { type: "image_url", image_url: { url: base64 } }
+                    ] }
+                ],
                 response_format: { type: "json_object" }
             })
         });
@@ -266,13 +306,19 @@
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
-            const row = [item.file.name, document.getElementById(`title-${idx}`).value, document.getElementById(`desc-${idx}`).value, document.getElementById(`kw-${idx}`).value, document.getElementById(`cat-${idx}`).value];
+            const row = [
+                item.file.name, 
+                document.getElementById(`title-${idx}`).value, 
+                document.getElementById(`desc-${idx}`).value, 
+                document.getElementById(`kw-${idx}`).value, 
+                document.getElementById(`cat-${idx}`).value
+            ];
             csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
         });
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `microstock_v6.csv`;
+        a.download = `microstock_metadata_pro.csv`;
         a.click();
     }
 </script>
