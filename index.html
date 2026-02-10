@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
+    <title>ENVANTO</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #0ea5e9; --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --success: #10b981; --error: #ef4444; }
@@ -40,7 +40,7 @@
     <div class="container">
         <div class="header">
             <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Pro</span></h1>
-            <div style="font-size: 12px; opacity: 0.8;">Smart Text Recognition & SPOK Titles</div>
+            <div style="font-size: 12px; opacity: 0.8;">Perfect SPOK Logic & Complete Categories</div>
         </div>
 
         <div class="controls">
@@ -69,7 +69,7 @@
             <thead>
                 <tr>
                     <th style="width: 300px;">Media Asset</th>
-                    <th>Metadata (Strict Logic)</th>
+                    <th>Metadata (Strict 70-90 Chars & Split Keywords)</th>
                 </tr>
             </thead>
             <tbody id="resultBody"></tbody>
@@ -81,14 +81,17 @@
 
     <script>
         const ALL_CATEGORIES = [
-            "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", 
-            "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", 
-            "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", 
-            "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", 
-            "backgrounds/miscellaneous", "bugs", "elements", "interface-effects", "lower-thirds", "overlays", "particles", "revealer", "transitions", "water-and-fluid", "miscellaneous", "infographics"
+            "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
+            "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
+            "distortions", "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
+            "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", "interface-effects/miscellaneous",
+            "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
+            "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
+            "particles", "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
+            "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", "transitions/miscellaneous",
+            "water-and-fluid", "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous", "infographics"
         ];
 
-        // Backup keywords standar (hanya dipakai jika hasil AI < 45)
         const BACKUP_KEYWORDS = ["video", "clip", "footage", "animation", "motion", "graphic", "render", "digital", "art", "design", "background", "loop", "seamless", "abstract", "creative", "concept", "modern", "futuristic", "style", "effect", "visual", "display", "presentation", "backdrop", "wallpaper", "texture", "pattern", "shape", "color", "light", "bright", "dark", "glow", "shine", "energy", "power", "tech", "technology", "cyber", "space", "business", "corporate", "event", "show", "broadcast"];
 
         const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
@@ -132,7 +135,7 @@
                             <textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea>
                         </div>
                         <div class="meta-wrapper">
-                            <div class="meta-label"><span>KEYWORDS (First 10 Priority)</span><span id="cnt-kw-${index}">0 words</span></div>
+                            <div class="meta-label"><span>KEYWORDS (Min 45 Words)</span><span id="cnt-kw-${index}">0 words</span></div>
                             <textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea>
                         </div>
                     </td>`;
@@ -145,15 +148,23 @@
             const d = document.getElementById(`desc-${idx}`).value.length;
             const kVal = document.getElementById(`kw-${idx}`).value;
             const k = kVal ? kVal.split(',').filter(x => x.trim()).length : 0;
-            
             document.getElementById(`cnt-title-${idx}`).innerText = `${t} chars`;
             document.getElementById(`cnt-title-${idx}`).className = (t < 70 || t > 90) ? 'count-err' : 'count-ok';
-            
             document.getElementById(`cnt-desc-${idx}`).innerText = `${d}/150`;
             document.getElementById(`cnt-desc-${idx}`).className = (d < 100 || d > 150) ? 'count-err' : 'count-ok';
-            
             document.getElementById(`cnt-kw-${idx}`).innerText = `${k} words`;
             document.getElementById(`cnt-kw-${idx}`).className = (k < 45) ? 'count-err' : 'count-ok';
+        }
+
+        // FUNGSI POTONG PINTAR: Menghindari kata terpotong di tengah
+        function smartTrim(str, min, max) {
+            str = str.replace(/['":;,.!?-]/g, '').trim(); // Hapus simbol terlarang
+            if (str.length >= min && str.length <= max) return str;
+            if (str.length > max) {
+                let trimmed = str.substring(0, max);
+                return trimmed.substring(0, trimmed.lastIndexOf(" ")).trim();
+            }
+            return str;
         }
 
         function cleanTrailing(str) {
@@ -176,95 +187,62 @@
                     // 1. CATEGORY
                     let finalCat = "backgrounds";
                     if (data.category) {
-                       const match = ALL_CATEGORIES.find(c => c.includes(data.category.toLowerCase()));
+                       const match = ALL_CATEGORIES.find(c => c === data.category.toLowerCase() || c.endsWith('/' + data.category.toLowerCase()));
                        if (match) finalCat = match;
                     }
                     document.getElementById(`cat-${idx}`).value = finalCat;
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
-                    // =========================================================
-                    // 2. KEYWORDS LOGIC (PRIORITIZED)
-                    // =========================================================
+                    // 2. KEYWORDS LOGIC (SPLIT TO SINGLE WORDS)
                     let rawKw = data.keywords;
-                    let kws = [];
-                    if (Array.isArray(rawKw)) {
-                        kws = rawKw.map(w => w.toString().trim().toLowerCase());
-                    } else if (typeof rawKw === 'string') {
-                        kws = rawKw.split(',').map(w => w.trim().toLowerCase());
-                    }
-                    
-                    // Bersihkan keyword dari simbol aneh
-                    let cleanKws = [];
+                    let kws = Array.isArray(rawKw) ? rawKw : (typeof rawKw === 'string' ? rawKw.split(',') : []);
+                    let splitKws = [];
                     kws.forEach(word => {
-                         let clean = word.replace(/[^a-z0-9]/g, ''); // Hapus simbol
-                         if (clean.length > 2) cleanKws.push(clean);
+                        let parts = word.toString().toLowerCase().split(/[\s_-]+/);
+                        parts.forEach(p => {
+                            let clean = p.replace(/[^a-z]/g, '');
+                            if (clean.length > 2) splitKws.push(clean);
+                        });
                     });
-                    
-                    const stopWords = ["the", "and", "video", "clip", "footage", "image"];
-                    cleanKws = cleanKws.filter(w => !stopWords.includes(w));
-                    cleanKws = [...new Set(cleanKws)]; // Unique
-
-                    // Tambahkan backup jika kurang dari 45
+                    const stopWords = ["the", "and", "video", "clip", "footage", "image", "with", "this", "that"];
+                    splitKws = [...new Set(splitKws.filter(w => !stopWords.includes(w)))];
                     let bIdx = 0;
-                    while (cleanKws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
-                        if (!cleanKws.includes(BACKUP_KEYWORDS[bIdx])) cleanKws.push(BACKUP_KEYWORDS[bIdx]);
+                    while (splitKws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
+                        if (!splitKws.includes(BACKUP_KEYWORDS[bIdx])) splitKws.push(BACKUP_KEYWORDS[bIdx]);
                         bIdx++;
                     }
-                    document.getElementById(`kw-${idx}`).value = cleanKws.join(', ');
+                    document.getElementById(`kw-${idx}`).value = splitKws.join(', ');
 
-                    // =========================================================
-                    // 3. TITLE LOGIC (SPOK + READING TEXT + CLEANING)
-                    // =========================================================
+                    // 3. TITLE LOGIC (STRICT 70-90 & FULL SENTENCE)
                     let title = (data.title || "").trim();
-
-                    // Hapus Simbol Terlarang (' " - :)
-                    title = title.replace(/['":;,.!?-]/g, '');
-
-                    // Standard Cleaning
-                    title = title.replace(/\s+/g, ' '); // Hapus spasi ganda
                     title = title.replace(/^(the|this|a|an)\s+(video|clip|animation)\s+/i, "");
-                    
-                    // Sentence Case
-                    title = title.toLowerCase();
-                    title = title.charAt(0).toUpperCase() + title.slice(1);
+                    title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
 
-                    // Logic Perpanjangan (Padding) jika kurang 70 chars
+                    // Perpanjang jika terlalu pendek dengan kalimat utuh
                     if (title.length < 70) {
-                        if (title.toLowerCase().includes("thanks")) {
-                            title += " animation for youtube end screen";
-                        } else if (finalCat.includes("background")) {
-                            title += " in seamless loop style";
-                        } else if (finalCat.includes("overlay")) {
-                            title += " with alpha channel transparency";
-                        } else {
-                            title += " for professional video projects";
+                        const suffixes = [
+                            " suitable for professional video production",
+                            " created for cinematic broadcast projects",
+                            " in high quality modern digital style",
+                            " designed for multimedia presentation use"
+                        ];
+                        for(let s of suffixes) {
+                            if ((title + s).length >= 70 && (title + s).length <= 90) {
+                                title += s;
+                                break;
+                            }
                         }
                     }
-
-                    // Logic Tambahan lagi jika masih kurang
-                    if (title.length < 70) {
-                        title += " and digital display";
-                    }
-
-                    // Logic Pemotongan (Hard Limit 90)
-                    if (title.length > 90) {
-                        let trimmed = title.substring(0, 90);
-                        title = trimmed.substring(0, trimmed.lastIndexOf(" ")); // Potong di spasi terakhir
-                    }
-
+                    
+                    // Final Smart Trim (Pasti utuh kalimatnya)
+                    title = smartTrim(title, 70, 90);
                     title = cleanTrailing(title);
                     document.getElementById(`title-${idx}`).value = title;
 
                     // 4. DESCRIPTION LOGIC
                     let desc = (data.description || "High quality video clip.").trim();
                     desc = desc.replace(/^(The|This)\s+image\s+/i, "This video ");
-                    desc = cleanTrailing(desc);
-                    if (!desc.endsWith('.')) desc += ".";
-                    
-                    if (desc.length < 100) {
-                        desc += " Ideally created for cinematic sequences, event displays, and multimedia projects requiring high quality visuals.";
-                    }
-                    
+                    if (desc.length < 100) desc += " This unique visual asset is designed for high-end video production and digital signage applications.";
                     let finalDesc = desc.substring(0, 150);
                     if (finalDesc.length < desc.length) finalDesc = finalDesc.replace(/\s\w*$/, ""); 
                     finalDesc = cleanTrailing(finalDesc);
@@ -283,19 +261,15 @@
         }
 
         async function makeRequest(key, base64) {
-            const categoriesStr = ALL_CATEGORIES.join(", ");
-            // PROMPT BARU: STRICT TEXT READING & KEYWORD PRIORITY
+            const categoriesStr = ALL_CATEGORIES.slice(0, 50).join(", "); // Sample list for prompt
             const prompt = `You are a Stock Video Metadata Expert. 
-            Input: A filmstrip of a VIDEO clip.
+            Input: Filmstrip of a VIDEO clip.
             
-            CRITICAL RULES:
-            1. READ THE TEXT: If there is text in the video (e.g., "Thanks For Watching", "Sale", "Subscribe"), YOU MUST INCLUDE IT in the Title and first Keywords.
-            2. Title: Create a SUBJECT-VERB-OBJECT sentence. 
-               Structure: [Adjective Subject] + [Action/Verb] + [Specific Text/Object] + [Context].
-               Example: "Golden 3d text saying thanks for watching rotates on dark brown background".
-            3. Keywords: The FIRST 10 keywords MUST be the most important ones (The text content, the main object, the animation style). Return 45+ single words.
-            4. Category: Pick ONE from: [${categoriesStr}].
-            5. Description: Use "This video features...".
+            STRICT RULES:
+            1. READ THE TEXT: Detect any text like "Thanks for Watching" and include it in the Title.
+            2. Title: Create a FULL SUBJECT-VERB-OBJECT sentence. No symbols. No cut-off words. Target 80 chars.
+            3. Keywords: Provide 40+ relevant SINGLE words (split all phrases).
+            4. Category: Select most relevant from the provided category list.
             
             Return STRICT JSON: {category, title, description, keywords}`;
             
@@ -307,7 +281,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze visuals. If text exists, include it in title! JSON only." },
+                            { type: "text", text: "Analyze visuals. Ensure title is a complete sentence. JSON only." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
