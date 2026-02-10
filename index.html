@@ -90,7 +90,7 @@
             </div>
             <div class="input-group">
                 <label>📂 Pilih Folder Video</label>
-                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*,.mov,.mp4,.mkv,.avi" style="background: white;">
+                <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*, .mkv, .flv, .avi, .mov, .wmv, .webm, .mpeg, .mpg, .3gp, .m4v" style="background: white;">
             </div>
             <div class="action-area">
                 <button class="btn btn-primary" id="btnProcess" onclick="startProcessing()">🚀 Mulai Proses</button>
@@ -149,10 +149,12 @@
         }
 
         document.getElementById('fileInput').addEventListener('change', function (e) {
+            // FILTER UNIVERSAL: Ambil semua file yang terlihat seperti video berdasarkan ekstensi atau mime type
+            const allowedExt = /\.(mp4|mov|avi|mkv|flv|wmv|webm|mpg|mpeg|3gp|m4v|m2ts|mts|vob|ogv|ts)$/i;
             const files = Array.from(e.target.files).filter(f => {
-                // FORCE ACCEPT .MOV
-                return f.type.startsWith('video/') || f.name.toLowerCase().endsWith('.mov') || f.name.toLowerCase().endsWith('.mkv');
+                return f.type.startsWith('video/') || allowedExt.test(f.name);
             });
+
             const tbody = document.getElementById('resultBody');
             tbody.innerHTML = '';
             fileQueue = [];
@@ -212,54 +214,54 @@
             return str.trim().replace(/[\s,]+(and|or|with|the|a|an|is|at|of|in|to|for)[\s,.]*$/i, "").replace(/[,\s]+$/, "");
         }
 
-        // FUNGSI UTAMA GENERATE FILMSTRIP (DENGAN FALLBACK UNTUK MOV)
+        // FUNGSI GET FILMSTRIP DENGAN UNIVERSAL FALLBACK
         function getFilmstrip(file) {
-            return new Promise((resolve) => { // Perhatikan: Resolve even on fail
+            return new Promise((resolve) => {
                 const v = document.getElementById('hiddenVideo');
                 const c = document.getElementById('hiddenCanvas');
                 const ctx = c.getContext('2d');
                 
-                // Fallback Function jika Video Gagal (Codec Error)
-                const useFallback = () => {
+                // Fallback function: Bikin gambar teks nama file
+                const fallback = () => {
                     c.width = 960;
                     c.height = 180;
-                    ctx.fillStyle = "#111"; // Background Hitam
+                    ctx.fillStyle = "#111";
                     ctx.fillRect(0, 0, 960, 180);
-                    ctx.font = "30px Arial";
+                    ctx.font = "bold 20px Inter";
                     ctx.fillStyle = "#fff";
-                    ctx.fillText("FILENAME:", 20, 50);
-                    ctx.fillText(file.name, 20, 100);
-                    // Kirim gambar berisi teks nama file ke AI
-                    resolve(c.toDataURL('image/jpeg')); 
+                    ctx.textAlign = "center";
+                    ctx.fillText("PREVIEW NOT AVAILABLE", 480, 80);
+                    ctx.font = "14px Inter";
+                    ctx.fillStyle = "#aaa";
+                    ctx.fillText(file.name, 480, 110);
+                    resolve(c.toDataURL('image/jpeg')); // Tetap resolve, jangan reject!
                 };
 
-                // Timeout 4 detik: Jika browser tidak bisa baca, pakai fallback
-                const timeout = setTimeout(useFallback, 4000);
+                const timeout = setTimeout(fallback, 4000); // 4 detik limit
 
                 v.onloadeddata = async () => {
                     clearTimeout(timeout);
                     try {
                         c.width = 960;
                         c.height = 180;
-                        // Ambil 3 frame sederhana
                         for (let i = 0; i < 3; i++) {
                             v.currentTime = v.duration * (0.1 + i * 0.4); 
-                            await new Promise(r => setTimeout(r, 200)); // Delay dikit biar buffer
+                            await new Promise(r => setTimeout(r, 200)); 
                             ctx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, i * 320, 0, 320, 180);
                         }
                         resolve(c.toDataURL('image/jpeg'));
                     } catch (e) {
-                        useFallback(); // Jika error saat draw, pakai fallback
+                        fallback();
                     }
                 };
 
                 v.onerror = () => {
                     clearTimeout(timeout);
-                    useFallback(); // Error codec -> Fallback
+                    fallback(); // Format tidak didukung browser -> Pakai fallback
                 };
 
                 v.src = URL.createObjectURL(file);
-                v.load();
+                v.load(); // Paksa load
             });
         }
 
@@ -272,7 +274,7 @@
                 const idx = item.id;
                 updateStatus(idx, 'processing', 'Analyzing...');
                 
-                // Get Filmstrip (Never fails now, returns black image with text if codec error)
+                // Ambil snapshot (atau fallback jika format aneh)
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 
@@ -288,7 +290,7 @@
                     document.getElementById(`cat-${idx}`).value = finalCat;
                     document.getElementById(`cat-disp-${idx}`).innerText = finalCat;
 
-                    // 2. KEYWORDS
+                    // 2. KEYWORDS LOGIC
                     let rawKw = data.keywords;
                     let kws = Array.isArray(rawKw) ? rawKw : (typeof rawKw === 'string' ? rawKw.split(',') : []);
                     let splitKws = [];
@@ -341,7 +343,7 @@
                     title = cleanTrailing(title);
                     document.getElementById(`title-${idx}`).value = title;
 
-                    // 4. DESC LOGIC
+                    // 4. DESCRIPTION LOGIC
                     let desc = (data.description || "Video clip.").trim();
                     desc = desc.replace(/\b(static image|still photo|picture)\b/gi, "motion graphic video");
                     desc = desc.replace(/^High quality video clip\.?/i, "This video features");
@@ -369,7 +371,7 @@
 
         async function makeRequest(key, base64) {
             const prompt = `You are a Stock Video Metadata Expert. 
-            Input: Filmstrip of a VIDEO clip. (If image is black with text, analyze the TEXT/FILENAME provided in image).
+            Input: Filmstrip of a VIDEO clip.
             
             STRICT RULES:
             1. Title: Create an ORGANIC formula: [Adjective] + [Color] + [Subject] + [Action] + [Context].
@@ -391,7 +393,7 @@
                     messages: [
                         { role: "system", content: prompt },
                         { role: "user", content: [
-                            { type: "text", text: "Analyze visuals/filename. Organic title. JSON only." },
+                            { type: "text", text: "Analyze visuals. Organic title. No 'saying'. JSON only." },
                             { type: "image_url", image_url: { url: base64 } }
                         ]}
                     ],
@@ -400,6 +402,31 @@
             });
             const d = await resp.json();
             return JSON.parse(d.choices[0].message.content);
+        }
+
+        function updateStatus(idx, type, text) {
+            const p = document.getElementById(`status-pill-${idx}`);
+            p.className = `status-pill ${type}`;
+            document.getElementById(`status-text-${idx}`).innerText = text;
+        }
+
+        function exportCSV() {
+            let csv = "Filename,Title,Description,Keywords,Category\n";
+            fileQueue.forEach((item, idx) => {
+                const row = [
+                    item.file.name,
+                    document.getElementById(`title-${idx}`).value,
+                    document.getElementById(`desc-${idx}`).value,
+                    document.getElementById(`kw-${idx}`).value,
+                    document.getElementById(`cat-${idx}`).value
+                ];
+                csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(',') + "\n";
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `microstock_video_v6.csv`;
+            a.click();
         }
     </script>
 </body>
