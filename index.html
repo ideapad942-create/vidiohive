@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
+    <title>Microstock Metadata Pro - Motion Graphic Edition V6.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,7 +22,6 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
         .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid var(--border); overflow: hidden; }
         
-        /* HEADER */
         .header { 
             background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); 
             color: white; padding: 25px 30px; 
@@ -32,7 +31,6 @@
         .header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .badge-pro { background: var(--secondary); font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; color: white; }
 
-        /* CONTROLS */
         .controls { padding: 25px; border-bottom: 1px solid var(--border); background: #f8fafc; }
         
         .api-box {
@@ -61,14 +59,12 @@
 
         .key-indicator { font-size: 11px; margin-top: 5px; color: #64748b; display: flex; align-items: center; gap: 5px; font-weight: 500; }
         
-        /* TABLE */
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #f1f5f9; padding: 15px 20px; text-align: left; font-weight: 700; color: #475569; border-bottom: 2px solid var(--border); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
         td { padding: 25px 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
         tr:hover { background: #f8fafc; }
 
-        /* INPUTS IN TABLE */
         .meta-wrapper { position: relative; margin-bottom: 20px; }
         .meta-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: 700; color: #475569; }
         
@@ -78,9 +74,7 @@
         .meta-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
         textarea.meta-input { min-height: 100px; resize: vertical; }
 
-        /* VALIDATION STYLES */
         .count-ok { color: #15803d; background: #dcfce7; padding: 2px 8px; border-radius: 4px; border: 1px solid #bbf7d0; font-weight: 600; }
-        .count-warn { color: #b45309; background: #fef3c7; padding: 2px 8px; border-radius: 4px; border: 1px solid #fde68a; }
         .count-err { color: #b91c1c; font-weight: bold; background: #fee2e2; padding: 2px 8px; border-radius: 4px; border: 1px solid #fecaca; }
         .border-err { border-color: var(--error) !important; background: #fff5f5; }
         
@@ -104,8 +98,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Graphic</span></h1>
-        <div style="font-size: 12px; opacity: 0.8; font-weight: 500;">Strict Title & Direct Context</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V6.1 Motion Strict</span></h1>
+        <div style="font-size: 12px; opacity: 0.8; font-weight: 500;">Direct Title & Locked Keywords</div>
     </div>
 
     <div class="controls">
@@ -146,7 +140,7 @@
             <thead>
                 <tr>
                     <th style="width: 300px;">Media Asset</th>
-                    <th>Metadata Optimization (Motion Graphic Focus)</th>
+                    <th>Metadata Optimization (Motion Graphic Only)</th>
                 </tr>
             </thead>
             <tbody>
@@ -159,34 +153,17 @@
 <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
 <script>
-    // --- DATABASE KATEGORI ---
-    const CATEGORIES_LIST = `
-backgrounds, backgrounds/3d-object, backgrounds/abstract, backgrounds/cartoons, backgrounds/corporate, backgrounds/electric, backgrounds/events, backgrounds/fire, backgrounds/grunge, backgrounds/industrial, backgrounds/kids, backgrounds/light, backgrounds/medical, backgrounds/nature, backgrounds/retro, backgrounds/sky-clouds, backgrounds/space, backgrounds/sports, backgrounds/technology, backgrounds/water, backgrounds/miscellaneous,
-bugs, bugs/3d-object, bugs/abstract, bugs/cartoons, bugs/corporate, bugs/electric, bugs/events, bugs/fire, bugs/grunge, bugs/industrial, bugs/kids, bugs/light, bugs/medical, bugs/nature, bugs/retro, bugs/sky-clouds, bugs/space, bugs/sports, bugs/technology, bugs/water, bugs/miscellaneous,
-distortions,
-elements, elements/3d-object, elements/abstract, elements/cartoons, elements/corporate, elements/electric, elements/events, elements/fire, elements/grunge, elements/industrial, elements/kids, elements/light, elements/medical, elements/nature, elements/retro, elements/sky-clouds, elements/space, elements/sports, elements/technology, elements/water, elements/miscellaneous,
-interface-effects, interface-effects/3d-object, interface-effects/abstract, interface-effects/cartoons, interface-effects/corporate, interface-effects/electric, interface-effects/events, interface-effects/fire, interface-effects/grunge, interface-effects/industrial, interface-effects/kids, interface-effects/light, interface-effects/medical, interface-effects/nature, interface-effects/retro, interface-effects/sky-clouds, interface-effects/space, interface-effects/sports, interface-effects/technology, interface-effects/water, interface-effects/miscellaneous,
-lower-thirds, lower-thirds/3d-object, lower-thirds/abstract, lower-thirds/cartoons, lower-thirds/corporate, lower-thirds/electric, lower-thirds/events, lower-thirds/fire, lower-thirds/grunge, lower-thirds/industrial, lower-thirds/kids, lower-thirds/light, lower-thirds/medical, lower-thirds/nature, lower-thirds/retro, lower-thirds/sky-clouds, lower-thirds/space, lower-thirds/sports, lower-thirds/technology, lower-thirds/water, lower-thirds/miscellaneous,
-overlays, overlays/3d-object, overlays/abstract, overlays/cartoons, overlays/corporate, overlays/electric, overlays/events, overlays/fire, overlays/grunge, overlays/industrial, overlays/kids, overlays/light, overlays/medical, overlays/nature, overlays/retro, overlays/sky-clouds, overlays/space, overlays/sports, overlays/technology, overlays/water, overlays/miscellaneous,
-particles,
-revealer, revealer/3d-object, revealer/abstract, revealer/cartoons, revealer/corporate, revealer/electric, revealer/events, revealer/fire, revealer/grunge, revealer/industrial, revealer/kids, revealer/light, revealer/medical, revealer/nature, revealer/retro, revealer/sky-clouds, revealer/space, revealer/sports, revealer/technology, revealer/water, revealer/miscellaneous,
-transitions, transitions/3d-object, transitions/abstract, transitions/cartoons, transitions/corporate, transitions/electric, transitions/events, transitions/fire, transitions/grunge, transitions/industrial, transitions/kids, transitions/light, transitions/medical, transitions/nature, transitions/retro, transitions/sky-clouds, transitions/space, transitions/sports, transitions/technology, transitions/water, transitions/miscellaneous,
-water-and-fluid,
-miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/cartoons, miscellaneous/corporate, miscellaneous/electric, miscellaneous/events, miscellaneous/fire, miscellaneous/grunge, miscellaneous/industrial, miscellaneous/kids, miscellaneous/light, miscellaneous/medical, miscellaneous/nature, miscellaneous/retro, miscellaneous/sky-clouds, miscellaneous/space, miscellaneous/sports, miscellaneous/technology, miscellaneous/water, miscellaneous/miscellaneous,
-infographics
-    `;
+    const CATEGORIES_LIST = `backgrounds/abstract, interface-effects/abstract, overlays/abstract, transitions/abstract, miscellaneous/abstract`;
 
-    // --- CADANGAN KEYWORD (MOTION GRAPHIC FOCUSED) ---
-    // Update: Dihilangkan kata-kata 'image', 'photo'
     const BACKUP_KEYWORDS = [
         "background", "motion", "graphic", "design", "abstract", "texture", "wallpaper", 
         "visual", "art", "creative", "concept", "digital", "modern", "style", "pattern", 
         "element", "loop", "seamless", "video", "clip", "animation", "render", "3d", 
         "generated", "dynamic", "effect", "technology", "futuristic", "grid", "glow",
-        "geometric", "composition", "colorful", "artistic"
+        "geometric", "composition", "colorful", "artistic", "backdrop", "overlay",
+        "vfx", "motion design", "minimalist", "clean", "shapes", "gradient", "bright"
     ];
 
-    // --- CONFIG ---
     const MIN_TITLE = 50, MAX_TITLE = 70;
     const MIN_DESC = 100, MAX_DESC = 150;
     const MIN_KW = 45, MAX_KW = 48; 
@@ -213,262 +190,147 @@ infographics
         const tbody = document.querySelector('#resultTable tbody');
         tbody.innerHTML = '';
         fileQueue = [];
-
         if(files.length === 0) return;
-
         files.forEach((file, index) => {
             fileQueue.push({ file, id: index });
-            
             const tr = document.createElement('tr');
             tr.id = `row-${index}`;
             tr.innerHTML = `
                 <td>
-                    <div class="preview-box" id="preview-${index}">
-                        <div style="height:140px; background:#1e293b; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">Waiting...</div>
-                    </div>
+                    <div class="preview-box" id="preview-${index}"><div style="height:140px; background:#1e293b; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">Waiting...</div></div>
                     <div style="font-weight:600; font-size:12px; margin-top:10px; color:#334155; word-break:break-all;">${file.name}</div>
                     <div class="cat-badge" id="cat-disp-${index}">Category: -</div>
-                    <div class="status-pill" id="status-pill-${index}">
-                        <span id="status-icon-${index}">⚫</span> 
-                        <span id="status-text-${index}">Pending</span>
-                    </div>
+                    <div class="status-pill" id="status-pill-${index}"><span id="status-icon-${index}">⚫</span><span id="status-text-${index}">Pending</span></div>
                     <input type="hidden" id="cat-${index}">
                 </td>
                 <td>
-                    <div class="meta-wrapper">
-                        <div class="meta-label">
-                            <span>TITLE (Wajib 50-70 Char)</span>
-                            <span id="cnt-title-${index}">0/70</span>
-                        </div>
-                        <input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})">
-                    </div>
-
-                    <div class="meta-wrapper">
-                        <div class="meta-label">
-                            <span>DESCRIPTION (Wajib 100-150 Char)</span>
-                            <span id="cnt-desc-${index}">0/150</span>
-                        </div>
-                        <textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea>
-                    </div>
-
-                    <div class="meta-wrapper">
-                        <div class="meta-label">
-                            <span>KEYWORDS (Wajib 45-48 Kata)</span>
-                            <span id="cnt-kw-${index}">0 words</span>
-                        </div>
-                        <textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea>
-                    </div>
+                    <div class="meta-wrapper"><div class="meta-label"><span>TITLE (50-70)</span><span id="cnt-title-${index}">0/70</span></div>
+                    <input type="text" class="meta-input" id="title-${index}" oninput="validate(${index})"></div>
+                    <div class="meta-wrapper"><div class="meta-label"><span>DESCRIPTION (100-150)</span><span id="cnt-desc-${index}">0/150</span></div>
+                    <textarea class="meta-input" id="desc-${index}" oninput="validate(${index})"></textarea></div>
+                    <div class="meta-wrapper"><div class="meta-label"><span>KEYWORDS (45-48 Words)</span><span id="cnt-kw-${index}">0 words</span></div>
+                    <textarea class="meta-input" id="kw-${index}" oninput="validate(${index})"></textarea></div>
                 </td>
             `;
             tbody.appendChild(tr);
         });
-        document.getElementById('statusMsg').innerText = `Siap memproses ${files.length} video.`;
     });
 
     function validate(idx) {
-        // Title Check
         const tEl = document.getElementById(`title-${idx}`);
-        const tCnt = document.getElementById(`cnt-title-${idx}`);
         const tLen = tEl.value.length;
-        tCnt.innerText = `${tLen}/70`;
-        if(tLen < MIN_TITLE || tLen > MAX_TITLE) {
-            tCnt.className = 'count-err'; tEl.classList.add('border-err');
-        } else {
-            tCnt.className = 'count-ok'; tEl.classList.remove('border-err');
-        }
+        document.getElementById(`cnt-title-${idx}`).innerText = `${tLen}/70`;
+        tEl.classList.toggle('border-err', tLen < MIN_TITLE || tLen > MAX_TITLE);
 
-        // Desc Check
         const dEl = document.getElementById(`desc-${idx}`);
-        const dCnt = document.getElementById(`cnt-desc-${idx}`);
         const dLen = dEl.value.length;
-        dCnt.innerText = `${dLen}/150`;
-        if(dLen < MIN_DESC || dLen > MAX_DESC) {
-            dCnt.className = 'count-err'; dEl.classList.add('border-err');
-        } else {
-            dCnt.className = 'count-ok'; dEl.classList.remove('border-err');
-        }
+        document.getElementById(`cnt-desc-${idx}`).innerText = `${dLen}/150`;
+        dEl.classList.toggle('border-err', dLen < MIN_DESC || dLen > MAX_DESC);
 
-        // KW Check
         const kEl = document.getElementById(`kw-${idx}`);
-        const kCnt = document.getElementById(`cnt-kw-${idx}`);
         const kws = kEl.value.split(',').filter(x => x.trim().length > 0);
-        kCnt.innerText = `${kws.length} words`;
-        
-        if(kws.length < MIN_KW || kws.length > MAX_KW) {
-            kCnt.className = 'count-err'; kEl.classList.add('border-err');
-        } else {
-            kCnt.className = 'count-ok'; kEl.classList.remove('border-err');
-        }
+        document.getElementById(`cnt-kw-${idx}`).innerText = `${kws.length} words`;
+        kEl.classList.toggle('border-err', kws.length < MIN_KW || kws.length > MAX_KW);
     }
 
     async function startProcessing() {
-        const key1 = document.getElementById('apiKey1').value.trim();
-        const key2 = document.getElementById('apiKey2').value.trim();
-        
-        apiKeys = [];
-        if(key1) apiKeys.push(key1);
-        if(key2) apiKeys.push(key2);
-
+        apiKeys = [document.getElementById('apiKey1').value.trim(), document.getElementById('apiKey2').value.trim()].filter(k => k);
         if(apiKeys.length === 0) return alert("API Key wajib diisi!");
         
-        localStorage.setItem('API_KEY_1', key1);
-        localStorage.setItem('API_KEY_2', key2);
-
-        currentKeyIndex = 0;
-        updateKeyUI();
-
         isProcessing = true;
         document.getElementById('btnProcess').disabled = true;
         
         for(let item of fileQueue) {
             const idx = item.id;
-            updateStatus(idx, 'processing', 'AI Analyzing...');
-            
+            updateStatus(idx, 'processing', 'Processing...');
             try {
-                // 1. Snapshot
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 
-                // 2. AI Request with RETRY LOGIC
-                let data = null;
-                let attempts = 0;
-                while(attempts < 3 && data === null) {
-                    try {
-                        data = await callAIWithFailover(base64);
-                    } catch (err) {
-                        console.warn(`Attempt ${attempts + 1} failed:`, err);
-                        attempts++;
-                        await new Promise(r => setTimeout(r, 2000));
-                        if(attempts === 3) throw err;
-                    }
-                }
+                let data = await callAIWithFailover(base64);
                 
-                // 3. FORCE PROCESSING LOGIC (MOTION GRAPHIC FOCUSED)
+                // CATEGORY
+                document.getElementById(`cat-${idx}`).value = data.category || "backgrounds/abstract";
+                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "backgrounds/abstract";
                 
-                // Category
-                document.getElementById(`cat-${idx}`).value = data.category || "miscellaneous";
-                document.getElementById(`cat-disp-${idx}`).innerText = data.category || "miscellaneous";
-                
-                // TITLE PROCESSING (DIRECT & CONCISE)
-                let title = data.title || "Abstract motion graphic background";
-                title = title.replace(/\s+/g, ' ').trim();
-                
-                // Force Length (Min 50) - NO GENERIC FOOTAGE TERMS
+                // TITLE (CLEAN - NO DASH)
+                let title = (data.title || "").replace(/[-]/g, ' ').replace(/\s+/g, ' ').trim();
                 if (title.length < 50) {
-                     // Tambahkan suffix yang relevan dengan motion graphic, bukan "Asset"
-                     title += " - Seamless Loop Motion Graphic Animation"; 
+                    title += " Seamless Loop Motion Graphic Animation Background";
                 }
-                // Force Cut (Max 70)
-                if (title.length > MAX_TITLE) {
-                    title = title.substring(0, MAX_TITLE).replace(/\s\w*$/, "");
-                }
+                if (title.length > MAX_TITLE) title = title.substring(0, MAX_TITLE).replace(/\s\w*$/, "");
                 document.getElementById(`title-${idx}`).value = title;
 
-
-                // DESCRIPTION PROCESSING (VISUAL FOCUSED)
-                let desc = data.description || "A high quality abstract animation.";
-                desc = desc.replace(/\s+/g, ' ').trim();
-                
-                // Force Context Start (Hapus "Video footage of" jika ada)
-                const forbiddenStarts = ["video footage of", "a video of", "stock footage of"];
-                forbiddenStarts.forEach(badStart => {
-                    if (desc.toLowerCase().startsWith(badStart)) {
-                        desc = desc.substring(badStart.length).trim();
-                        desc = desc.charAt(0).toUpperCase() + desc.slice(1);
-                    }
-                });
-                
-                // Force Length (Min 100)
-                if (desc.length < 100) {
-                    // Suffix yang relevan untuk Motion Graphics
-                    desc += " This abstract motion background is ideal for events, digital displays, and creative video editing projects.";
-                }
-                
-                // Force Cut (Max 150)
-                if (desc.length > MAX_DESC) {
-                    let sub = desc.substring(0, MAX_DESC);
-                    let lastDot = sub.lastIndexOf(".");
-                    if (lastDot > 100) desc = sub.substring(0, lastDot + 1);
-                    else desc = sub.substring(0, MAX_DESC).replace(/\s\w*$/, ".");
-                }
-                // Ensure ends with dot
-                if(!desc.endsWith('.')) desc += '.';
+                // DESCRIPTION
+                let desc = (data.description || "").replace(/video footage of|a video of/gi, "").trim();
+                desc = desc.charAt(0).toUpperCase() + desc.slice(1);
+                if (desc.length < 100) desc += " This abstract motion graphic background is perfect for creative projects and digital displays.";
+                if (desc.length > MAX_DESC) desc = desc.substring(0, MAX_DESC).replace(/\s\w*$/, ".");
                 document.getElementById(`desc-${idx}`).value = desc;
 
-
-                // KEYWORD PROCESSING (NO IMAGES/PHOTOS)
+                // KEYWORDS (HARD LOCKED 45-48)
                 let rawKws = (data.keywords || "").replace(/\./g, '').split(',');
                 let cleanKws = [];
-                
                 rawKws.forEach(k => {
                     let w = k.trim().toLowerCase();
-                    // Filter angka dan kata "photo/image"
-                    if (/\d/.test(w)) return; 
-                    if (w === 'photo' || w === 'image' || w === 'shot' || w === 'photograph') return;
-                    if (w.length > 2) cleanKws.push(w);
-                });
-                cleanKws = [...new Set(cleanKws)]; // Unique
-                
-                // INJECT BACKUP jika kurang dari 45
-                let backupIdx = 0;
-                while(cleanKws.length < 45 && backupIdx < BACKUP_KEYWORDS.length) {
-                    let word = BACKUP_KEYWORDS[backupIdx];
-                    if(!cleanKws.includes(word)) {
-                        cleanKws.push(word);
+                    if (!/\d/.test(w) && !['photo','image','shot','camera','photograph'].includes(w) && w.length > 2) {
+                        cleanKws.push(w);
                     }
-                    backupIdx++;
+                });
+                cleanKws = [...new Set(cleanKws)];
+
+                // Force Fill to 45 words
+                let bIdx = 0;
+                while(cleanKws.length < 45 && bIdx < BACKUP_KEYWORDS.length) {
+                    if(!cleanKws.includes(BACKUP_KEYWORDS[bIdx])) cleanKws.push(BACKUP_KEYWORDS[bIdx]);
+                    bIdx++;
                 }
-                
-                // Trim jika lebih dari 48
-                if (cleanKws.length > MAX_KW) {
-                    cleanKws = cleanKws.slice(0, MAX_KW);
-                }
+                // Strict Slice to 48
+                if (cleanKws.length > 48) cleanKws = cleanKws.slice(0, 48);
                 
                 document.getElementById(`kw-${idx}`).value = cleanKws.join(', ');
-
                 updateStatus(idx, 'success', 'Done');
                 validate(idx);
 
             } catch(e) {
-                console.error(e);
                 updateStatus(idx, 'error', 'Error');
-                alert(`Gagal memproses file: ${item.file.name}. Cek Console.`);
             }
-
-            await new Promise(r => setTimeout(r, 1000));
         }
-        
-        isProcessing = false;
         document.getElementById('btnProcess').disabled = false;
         document.getElementById('btnExport').style.display = 'inline-flex';
-        alert("Proses Selesai!");
     }
 
-    function updateKeyUI() {
-        document.getElementById('indicator-1').style.color = currentKeyIndex === 0 ? 'var(--success)' : '#64748b';
-        if(apiKeys.length > 1) {
-            document.getElementById('indicator-2').style.color = currentKeyIndex === 1 ? 'var(--success)' : '#64748b';
+    async function callAIWithFailover(base64) {
+        try { return await makeRequest(apiKeys[currentKeyIndex], base64); }
+        catch (e) {
+            if (apiKeys.length > 1 && currentKeyIndex === 0) {
+                currentKeyIndex = 1; updateKeyUI();
+                return await makeRequest(apiKeys[currentKeyIndex], base64);
+            }
+            throw e;
         }
     }
 
-    function updateStatus(idx, type, text) {
-        const pill = document.getElementById(`status-pill-${idx}`);
-        const icon = document.getElementById(`status-icon-${idx}`);
-        const lbl = document.getElementById(`status-text-${idx}`);
-        lbl.innerText = text;
-        pill.className = 'status-pill';
-        if(type === 'processing') {
-            pill.classList.add('processing');
-            icon.innerHTML = '<div class="spinner"></div>';
-        } else if(type === 'success') {
-            pill.classList.add('success');
-            icon.innerText = '✅';
-        } else if(type === 'error') {
-            pill.classList.add('error');
-            icon.innerText = '❌';
-        } else {
-            icon.innerText = '⚫';
-        }
+    async function makeRequest(key, base64) {
+        const prompt = `Role: Motion Graphics Specialist.
+        TASK: Analyze 3 frames.
+        TITLE (50-70 chars): No "4K", "HD", "Asset", "Footage", "Video". Use direct description. No dashes (-).
+        DESC (100-150 chars): Describe visual/motion. Start with "An abstract" or similar.
+        KEYWORDS: Generate 100 descriptive words for motion graphics. NO image/photo terms.
+        CATEGORY: Pick from [${CATEGORIES_LIST}].
+        OUTPUT JSON ONLY: { "category": "", "title": "", "description": "", "keywords": "" }`;
+
+        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: GROQ_MODEL,
+                messages: [{ role: "system", content: prompt }, { role: "user", content: [{ type: "text", text: "Direct JSON." }, { type: "image_url", image_url: { url: base64 } }] }],
+                temperature: 0.3, response_format: { type: "json_object" }
+            })
+        });
+        const d = await resp.json();
+        return JSON.parse(d.choices[0].message.content);
     }
 
     function getFilmstrip(file) {
@@ -478,127 +340,44 @@ infographics
             const ctx = canvas.getContext('2d');
             const url = URL.createObjectURL(file);
             video.src = url;
-            video.muted = true;
             const w = 320, h = 180;
             canvas.width = w*3; canvas.height = h;
-            const snap = (t) => new Promise(r => { video.currentTime=t; video.onseeked=()=>r(); });
             video.onloadedmetadata = async () => {
-                try {
-                    await snap(video.duration * 0.1);
-                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, w, h);
-                    await snap(video.duration * 0.5);
-                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, w, 0, w, h);
-                    await snap(video.duration * 0.9);
-                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, w*2, 0, w, h);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8));
-                    URL.revokeObjectURL(url);
-                } catch(e) { reject(e); }
+                const snap = (t) => new Promise(r => { video.currentTime=t; video.onseeked=()=>r(); });
+                await snap(video.duration * 0.1); ctx.drawImage(video,0,0,video.videoWidth,video.videoHeight,0,0,w,h);
+                await snap(video.duration * 0.5); ctx.drawImage(video,0,0,video.videoWidth,video.videoHeight,w,0,w,h);
+                await snap(video.duration * 0.9); ctx.drawImage(video,0,0,video.videoWidth,video.videoHeight,w*2,0,w,h);
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
             };
-            video.onerror = () => reject(new Error("Video corrupt"));
         });
     }
 
-    async function callAIWithFailover(base64) {
-        try {
-            return await makeRequest(apiKeys[currentKeyIndex], base64);
-        } catch (error) {
-            if (error.message.includes('429') || error.message.includes('Rate limit')) {
-                if (currentKeyIndex === 0 && apiKeys.length > 1) {
-                    currentKeyIndex = 1;
-                    updateKeyUI(); 
-                    return await makeRequest(apiKeys[currentKeyIndex], base64);
-                }
-            }
-            throw error; 
-        }
+    function updateKeyUI() {
+        document.getElementById('indicator-1').style.color = currentKeyIndex === 0 ? 'var(--success)' : '#64748b';
+        document.getElementById('indicator-2').style.color = currentKeyIndex === 1 ? 'var(--success)' : '#64748b';
     }
 
-    async function makeRequest(key, base64) {
-        // PROMPT SPECIFIC MOTION GRAPHICS - NO RESOLUTION FLUFF
-        const prompt = `
-        Role: Senior Motion Graphics & Microstock Metadata Specialist.
-        
-        TASK: Analyze 3 video frames of a Motion Graphic/Animation.
-        
-        STRICT TITLE RULES (50-70 chars):
-        1. FORMAT: [Adjective] [Subject] [Action/Context].
-        2. EXAMPLE: "Abstract orange digital background with thank you message".
-        3. FORBIDDEN: Do NOT use "4K", "HD", "HQ", "High Quality", "Stock Footage", "Asset", "Video Clip".
-        4. FOCUS: Describe the visual elements, colors, and movement directly. Concise and punchy.
-
-        STRICT DESCRIPTION RULES (100-150 chars):
-        1. Start directly with the visual style (e.g., "A 3D abstract render...", "Seamless loop animation of...").
-        2. Do NOT start with "Video footage of" or "A video of".
-        3. Describe the movement, lighting, and texture.
-
-        KEYWORDS RULES (Generate 100):
-        1. Focus on: abstract, motion, graphic, design, loop, seamless, animation, render, digital, technology, futuristic, glow, grid, pattern.
-        2. Avoid: photo, image, photography, shot, camera.
-        
-        3. CATEGORY: Pick ONE from list: [${CATEGORIES_LIST}]
-
-        OUTPUT JSON:
-        { "category": "string", "title": "string", "description": "string", "keywords": "string" }
-        `;
-
-        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                messages: [
-                    { role: "system", content: prompt },
-                    { role: "user", content: [
-                        { type: "text", text: "Analyze strict JSON." },
-                        { type: "image_url", image_url: { url: base64 } }
-                    ]}
-                ],
-                temperature: 0.4,
-                response_format: { type: "json_object" }
-            })
-        });
-
-        if (!resp.ok) {
-            const errText = await resp.text();
-            throw new Error(`API Fail: ${resp.status} ${errText}`);
-        }
-
-        const data = await resp.json();
-        let content = data.choices[0].message.content;
-        
-        try {
-            const first = content.indexOf('{');
-            const last = content.lastIndexOf('}');
-            if (first === -1 || last === -1) throw new Error("No JSON found");
-            return JSON.parse(content.substring(first, last+1));
-        } catch (e) {
-            throw new Error("Invalid JSON Syntax from AI");
-        }
+    function updateStatus(idx, type, text) {
+        const pill = document.getElementById(`status-pill-${idx}`);
+        const lbl = document.getElementById(`status-text-${idx}`);
+        lbl.innerText = text;
+        pill.className = `status-pill ${type}`;
     }
 
     function exportCSV() {
         let csv = "Filename,Title,Description,Keywords,Category\n";
         fileQueue.forEach((item, idx) => {
-            const pill = document.getElementById(`status-pill-${idx}`);
-            if(!pill.classList.contains('success')) return;
-
-            const fname = `"${item.file.name.replace(/"/g, '""')}"`;
-            const tit = `"${document.getElementById(`title-${idx}`).value.replace(/"/g, '""')}"`;
-            const desc = `"${document.getElementById(`desc-${idx}`).value.replace(/"/g, '""')}"`;
-            const kw = `"${document.getElementById(`kw-${idx}`).value.replace(/"/g, '""')}"`;
-            const cat = `"${document.getElementById(`cat-${idx}`).value.replace(/"/g, '""')}"`;
-            
-            csv += `${fname},${tit},${desc},${kw},${cat}\n`;
+            if(!document.getElementById(`status-pill-${idx}`).classList.contains('success')) return;
+            const f = `"${item.file.name}"`, t = `"${document.getElementById(`title-${idx}`).value}"`, 
+                  d = `"${document.getElementById(`desc-${idx}`).value}"`, k = `"${document.getElementById(`kw-${idx}`).value}"`, 
+                  c = `"${document.getElementById(`cat-${idx}`).value}"`;
+            csv += `${f},${t},${d},${k},${c}\n`;
         });
-        
         const blob = new Blob([csv], {type: 'text/csv'});
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `metadata_motion_v6_${Date.now()}.csv`;
-        document.body.appendChild(a);
+        a.href = URL.createObjectURL(blob);
+        a.download = `motion_metadata_${Date.now()}.csv`;
         a.click();
-        document.body.removeChild(a);
     }
 </script>
 </body>
