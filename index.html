@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - Anti-Error V5</title>
+    <title>Microstock Metadata Pro - Motion Graphic Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -104,8 +104,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎞️ Metadata Generator <span class="badge-pro">V5 Anti-Error</span></h1>
-        <div style="font-size: 12px; opacity: 0.8; font-weight: 500;">Strict Length & Context Fix</div>
+        <h1>🎞️ Metadata Generator <span class="badge-pro">V6 Motion Graphic</span></h1>
+        <div style="font-size: 12px; opacity: 0.8; font-weight: 500;">Strict Title & Direct Context</div>
     </div>
 
     <div class="controls">
@@ -146,11 +146,11 @@
             <thead>
                 <tr>
                     <th style="width: 300px;">Media Asset</th>
-                    <th>Metadata Optimization (Strict Enforcement)</th>
+                    <th>Metadata Optimization (Motion Graphic Focus)</th>
                 </tr>
             </thead>
             <tbody>
-                </tbody>
+            </tbody>
         </table>
     </div>
 </div>
@@ -176,20 +176,21 @@ miscellaneous, miscellaneous/3d-object, miscellaneous/abstract, miscellaneous/ca
 infographics
     `;
 
-    // --- CADANGAN KEYWORD (Jika AI Pelit) ---
+    // --- CADANGAN KEYWORD (MOTION GRAPHIC FOCUSED) ---
+    // Update: Dihilangkan kata-kata 'image', 'photo'
     const BACKUP_KEYWORDS = [
         "background", "motion", "graphic", "design", "abstract", "texture", "wallpaper", 
         "visual", "art", "creative", "concept", "digital", "modern", "style", "pattern", 
-        "element", "loop", "seamless", "video", "clip", "footage", "hd", "high definition", 
-        "resolution", "quality", "backdrop", "dynamic", "effect", "generated", "render",
-        "artistic", "beautiful", "colorful", "composition", "detail", "image"
+        "element", "loop", "seamless", "video", "clip", "animation", "render", "3d", 
+        "generated", "dynamic", "effect", "technology", "futuristic", "grid", "glow",
+        "geometric", "composition", "colorful", "artistic"
     ];
 
     // --- CONFIG ---
     const MIN_TITLE = 50, MAX_TITLE = 70;
     const MIN_DESC = 100, MAX_DESC = 150;
     const MIN_KW = 45, MAX_KW = 48; 
-    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; // Menggunakan model ini karena lebih stabil untuk JSON
+    const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
     let fileQueue = [];
     let isProcessing = false;
@@ -328,7 +329,7 @@ infographics
                 const base64 = await getFilmstrip(item.file);
                 document.getElementById(`preview-${idx}`).innerHTML = `<img src="${base64}">`;
                 
-                // 2. AI Request with RETRY LOGIC (Anti Error 400)
+                // 2. AI Request with RETRY LOGIC
                 let data = null;
                 let attempts = 0;
                 while(attempts < 3 && data === null) {
@@ -337,24 +338,25 @@ infographics
                     } catch (err) {
                         console.warn(`Attempt ${attempts + 1} failed:`, err);
                         attempts++;
-                        await new Promise(r => setTimeout(r, 2000)); // Wait before retry
-                        if(attempts === 3) throw err; // Give up after 3 tries
+                        await new Promise(r => setTimeout(r, 2000));
+                        if(attempts === 3) throw err;
                     }
                 }
                 
-                // 3. FORCE PROCESSING LOGIC
+                // 3. FORCE PROCESSING LOGIC (MOTION GRAPHIC FOCUSED)
                 
                 // Category
                 document.getElementById(`cat-${idx}`).value = data.category || "miscellaneous";
                 document.getElementById(`cat-disp-${idx}`).innerText = data.category || "miscellaneous";
                 
-                // TITLE PROCESSING
-                let title = data.title || "Abstract video background";
+                // TITLE PROCESSING (DIRECT & CONCISE)
+                let title = data.title || "Abstract motion graphic background";
                 title = title.replace(/\s+/g, ' ').trim();
                 
-                // Force Length (Min 50)
+                // Force Length (Min 50) - NO GENERIC FOOTAGE TERMS
                 if (title.length < 50) {
-                     title += " - High Quality Cinematic Stock Video Footage Asset";
+                     // Tambahkan suffix yang relevan dengan motion graphic, bukan "Asset"
+                     title += " - Seamless Loop Motion Graphic Animation"; 
                 }
                 // Force Cut (Max 70)
                 if (title.length > MAX_TITLE) {
@@ -363,19 +365,23 @@ infographics
                 document.getElementById(`title-${idx}`).value = title;
 
 
-                // DESCRIPTION PROCESSING
-                let desc = data.description || "A high quality video clip.";
+                // DESCRIPTION PROCESSING (VISUAL FOCUSED)
+                let desc = data.description || "A high quality abstract animation.";
                 desc = desc.replace(/\s+/g, ' ').trim();
                 
                 // Force Context Start (Hapus "Video footage of" jika ada)
-                if (desc.toLowerCase().startsWith("video footage of")) {
-                    desc = desc.substring(16).trim();
-                    desc = desc.charAt(0).toUpperCase() + desc.slice(1);
-                }
+                const forbiddenStarts = ["video footage of", "a video of", "stock footage of"];
+                forbiddenStarts.forEach(badStart => {
+                    if (desc.toLowerCase().startsWith(badStart)) {
+                        desc = desc.substring(badStart.length).trim();
+                        desc = desc.charAt(0).toUpperCase() + desc.slice(1);
+                    }
+                });
                 
                 // Force Length (Min 100)
                 if (desc.length < 100) {
-                    desc += " This clip is perfect for video editing, commercial projects, marketing content, and creative multimedia production.";
+                    // Suffix yang relevan untuk Motion Graphics
+                    desc += " This abstract motion background is ideal for events, digital displays, and creative video editing projects.";
                 }
                 
                 // Force Cut (Max 150)
@@ -390,14 +396,15 @@ infographics
                 document.getElementById(`desc-${idx}`).value = desc;
 
 
-                // KEYWORD PROCESSING (ANTI PELIT)
+                // KEYWORD PROCESSING (NO IMAGES/PHOTOS)
                 let rawKws = (data.keywords || "").replace(/\./g, '').split(',');
                 let cleanKws = [];
                 
                 rawKws.forEach(k => {
                     let w = k.trim().toLowerCase();
-                    // Filter angka
+                    // Filter angka dan kata "photo/image"
                     if (/\d/.test(w)) return; 
+                    if (w === 'photo' || w === 'image' || w === 'shot' || w === 'photograph') return;
                     if (w.length > 2) cleanKws.push(w);
                 });
                 cleanKws = [...new Set(cleanKws)]; // Unique
@@ -507,21 +514,26 @@ infographics
     }
 
     async function makeRequest(key, base64) {
-        // PROMPT SANGAT SPESIFIK: GAYA VISUAL + ANTI VIDEO FOOTAGE
+        // PROMPT SPECIFIC MOTION GRAPHICS - NO RESOLUTION FLUFF
         const prompt = `
-        Role: Senior Microstock Metadata AI.
+        Role: Senior Motion Graphics & Microstock Metadata Specialist.
         
-        TASK: Analyze 3 video frames.
+        TASK: Analyze 3 video frames of a Motion Graphic/Animation.
         
-        CRITICAL RULES:
-        1. DESCRIPTION START: Identify style (Real Life, 3D Render, Animation, Time-lapse). Start description with THAT style.
-           - NO: "Video footage of...", "A video of...".
-           - YES: "A 3D abstract animation of...", "Cinematic time-lapse view of...", "Slow motion shot of...".
-           - Length: Must be long (2 sentences).
-        
-        2. KEYWORDS: Generate 100 keywords.
-           - NO NUMBERS (No 4k, 8k, 2024).
-           - Include concepts, style, colors, mood.
+        STRICT TITLE RULES (50-70 chars):
+        1. FORMAT: [Adjective] [Subject] [Action/Context].
+        2. EXAMPLE: "Abstract orange digital background with thank you message".
+        3. FORBIDDEN: Do NOT use "4K", "HD", "HQ", "High Quality", "Stock Footage", "Asset", "Video Clip".
+        4. FOCUS: Describe the visual elements, colors, and movement directly. Concise and punchy.
+
+        STRICT DESCRIPTION RULES (100-150 chars):
+        1. Start directly with the visual style (e.g., "A 3D abstract render...", "Seamless loop animation of...").
+        2. Do NOT start with "Video footage of" or "A video of".
+        3. Describe the movement, lighting, and texture.
+
+        KEYWORDS RULES (Generate 100):
+        1. Focus on: abstract, motion, graphic, design, loop, seamless, animation, render, digital, technology, futuristic, glow, grid, pattern.
+        2. Avoid: photo, image, photography, shot, camera.
         
         3. CATEGORY: Pick ONE from list: [${CATEGORIES_LIST}]
 
@@ -541,13 +553,12 @@ infographics
                         { type: "image_url", image_url: { url: base64 } }
                     ]}
                 ],
-                temperature: 0.4, // Sedikit kreatif
+                temperature: 0.4,
                 response_format: { type: "json_object" }
             })
         });
 
         if (!resp.ok) {
-            // Tangani error API level
             const errText = await resp.text();
             throw new Error(`API Fail: ${resp.status} ${errText}`);
         }
@@ -555,7 +566,6 @@ infographics
         const data = await resp.json();
         let content = data.choices[0].message.content;
         
-        // JSON CLEANUP (Anti Error 400 parsing)
         try {
             const first = content.indexOf('{');
             const last = content.lastIndexOf('}');
@@ -585,7 +595,7 @@ infographics
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `metadata_v5_final_${Date.now()}.csv`;
+        a.download = `metadata_motion_v6_${Date.now()}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
