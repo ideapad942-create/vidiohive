@@ -3,78 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microstock Metadata Pro - V9 Ultimate Light</title>
+    <title>Microstock Metadata Pro - V10 Object Detect</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #6366f1; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; }
+        :root { --primary: #4f46e5; --bg: #f8fafc; --surface: #ffffff; --border: #cbd5e1; --text: #1e293b; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
-        .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .container { max-width: 1400px; margin: 0 auto; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         
         /* HEADER */
-        .header { background: #1e1b4b; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header { background: #111827; color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
         .header h1 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .badge { background: #0ea5e9; font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
+        .badge { background: #3b82f6; font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* CONTROLS */
-        .controls { padding: 20px; background: #f1f5f9; border-bottom: 1px solid var(--border); }
-        .api-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #64748b; }
-        .input-field { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
-        .btn { padding: 0 20px; height: 42px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+        .controls { padding: 25px; background: #f3f4f6; border-bottom: 1px solid var(--border); }
+        .api-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: #64748b; text-transform: uppercase; }
+        .input-field { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box; transition: 0.2s; }
+        .input-field:focus { border-color: var(--primary); outline: none; }
+        
+        .btn { padding: 0 24px; height: 44px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; }
         .btn-blue { background: var(--primary); }
         .btn-green { background: #10b981; }
-        .btn-dark { background: #334155; }
+        .btn-dark { background: #374151; }
 
         /* TABLE */
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 700; color: #475569; border-bottom: 2px solid var(--border); text-transform: uppercase; }
+        th { background: #f9fafb; padding: 15px 20px; text-align: left; font-size: 11px; font-weight: 700; color: #6b7280; border-bottom: 2px solid var(--border); text-transform: uppercase; }
         td { padding: 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
 
-        /* FILMSTRIP PREVIEW (FIXED) */
-        .filmstrip { display: flex; gap: 2px; width: 300px; height: 60px; background: #000; border-radius: 6px; overflow: hidden; margin-bottom: 10px; border: 1px solid #cbd5e1; }
-        .filmstrip img { width: 33.33%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.2s; }
-        .filmstrip img:hover { opacity: 1; }
+        /* FILMSTRIP (3 FRAMES) */
+        .filmstrip-container { width: 300px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #000; }
+        .filmstrip { display: flex; height: 60px; }
+        .filmstrip img { width: 33.33%; height: 100%; object-fit: cover; border-right: 1px solid #333; opacity: 0.8; }
+        .filmstrip img:last-child { border: none; }
+        .filmstrip-label { font-size: 9px; color: #fff; background: #222; text-align: center; padding: 2px; }
 
-        .status-pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
-        .st-pending { background: #e2e8f0; color: #64748b; }
+        .status-pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin-top: 8px; }
+        .st-pending { background: #e5e7eb; color: #4b5563; }
         .st-proc { background: #e0e7ff; color: #4338ca; }
-        .st-ok { background: #dcfce7; color: #15803d; }
-        .st-err { background: #fee2e2; color: #b91c1c; }
+        .st-ok { background: #dcfce7; color: #166534; }
+        .st-err { background: #fee2e2; color: #991b1b; }
 
-        /* INPUTS */
-        .meta-row { margin-bottom: 15px; position: relative; }
-        .meta-head { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 5px; }
-        .meta-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; font-family: inherit; }
-        textarea.meta-input { min-height: 70px; resize: vertical; }
+        /* METADATA INPUTS */
+        .meta-row { margin-bottom: 18px; position: relative; }
+        .meta-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 6px; }
+        .meta-input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box; font-family: inherit; line-height: 1.5; }
+        .meta-input:focus { border-color: var(--primary); outline: none; }
+        textarea.meta-input { min-height: 80px; resize: vertical; }
         
         .count-ok { color: #10b981; }
-        .count-bad { color: #ef4444; font-weight: bold; }
+        .count-bad { color: #ef4444; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>Metadata Generator <span class="badge">V9 LIGHTWEIGHT</span></h1>
-        <div style="font-size:11px; opacity:0.8;">3-Snapshots Fixed • Anti-Error 400</div>
+        <h1>Metadata Generator <span class="badge">V10 ULTRA LIGHT</span></h1>
+        <div style="font-size:11px; opacity:0.8; font-weight:500;">Object Detection • 3-Snapshots</div>
     </div>
 
     <div class="controls">
         <div class="api-grid">
             <div class="input-group">
-                <label>🔑 API Key 1 (Primary)</label>
+                <label>🔑 API Key 1</label>
                 <input type="password" id="apiKey1" class="input-field" placeholder="gsk_...">
             </div>
             <div class="input-group">
-                <label>🔑 API Key 2 (Rotation)</label>
+                <label>🔑 API Key 2</label>
                 <input type="password" id="apiKey2" class="input-field" placeholder="gsk_...">
             </div>
             <div style="display:flex; align-items:end;">
-                <button class="btn btn-dark" onclick="saveKeys()">💾 Save Keys</button>
+                <button class="btn btn-dark" onclick="saveKeys()">💾 Save</button>
             </div>
         </div>
         
-        <div class="input-group" style="margin-bottom: 15px;">
+        <div class="input-group" style="margin-bottom: 20px;">
             <label>📂 Select Video Folder</label>
             <input type="file" id="fileInput" class="input-field" webkitdirectory directory multiple accept="video/*">
         </div>
@@ -88,8 +94,8 @@
     <table>
         <thead>
             <tr>
-                <th width="320">Filmstrip (3 Frames)</th>
-                <th>Metadata Result</th>
+                <th width="320">Visual Context (3 Frames)</th>
+                <th>AI Generated Metadata</th>
             </tr>
         </thead>
         <tbody id="resultBody"></tbody>
@@ -102,24 +108,20 @@
 <script>
     // --- 1. CONFIGURATION ---
     const CATEGORIES = [
-        "backgrounds", "backgrounds/3d-object", "backgrounds/abstract", "backgrounds/cartoons", "backgrounds/corporate", "backgrounds/electric", "backgrounds/events", "backgrounds/fire", "backgrounds/grunge", "backgrounds/industrial", "backgrounds/kids", "backgrounds/light", "backgrounds/medical", "backgrounds/nature", "backgrounds/retro", "backgrounds/sky-clouds", "backgrounds/space", "backgrounds/sports", "backgrounds/technology", "backgrounds/water", "backgrounds/miscellaneous",
-        "bugs", "bugs/3d-object", "bugs/abstract", "bugs/cartoons", "bugs/corporate", "bugs/electric", "bugs/events", "bugs/fire", "bugs/grunge", "bugs/industrial", "bugs/kids", "bugs/light", "bugs/medical", "bugs/nature", "bugs/retro", "bugs/sky-clouds", "bugs/space", "bugs/sports", "bugs/technology", "bugs/water", "bugs/miscellaneous",
-        "distortions", "elements", "elements/3d-object", "elements/abstract", "elements/cartoons", "elements/corporate", "elements/electric", "elements/events", "elements/fire", "elements/grunge", "elements/industrial", "elements/kids", "elements/light", "elements/medical", "elements/nature", "elements/retro", "elements/sky-clouds", "elements/space", "elements/sports", "elements/technology", "elements/water", "elements/miscellaneous",
-        "interface-effects", "interface-effects/3d-object", "interface-effects/abstract", "interface-effects/cartoons", "interface-effects/corporate", "interface-effects/electric", "interface-effects/events", "interface-effects/fire", "interface-effects/grunge", "interface-effects/industrial", "interface-effects/kids", "interface-effects/light", "interface-effects/medical", "interface-effects/nature", "interface-effects/retro", "interface-effects/sky-clouds", "interface-effects/space", "interface-effects/sports", "interface-effects/technology", "interface-effects/water", "interface-effects/miscellaneous",
-        "lower-thirds", "lower-thirds/3d-object", "lower-thirds/abstract", "lower-thirds/cartoons", "lower-thirds/corporate", "lower-thirds/electric", "lower-thirds/events", "lower-thirds/fire", "lower-thirds/grunge", "lower-thirds/industrial", "lower-thirds/kids", "lower-thirds/light", "lower-thirds/medical", "lower-thirds/nature", "lower-thirds/retro", "lower-thirds/sky-clouds", "lower-thirds/space", "lower-thirds/sports", "lower-thirds/technology", "lower-thirds/water", "lower-thirds/miscellaneous",
-        "overlays", "overlays/3d-object", "overlays/abstract", "overlays/cartoons", "overlays/corporate", "overlays/electric", "overlays/events", "overlays/fire", "overlays/grunge", "overlays/industrial", "overlays/kids", "overlays/light", "overlays/medical", "overlays/nature", "overlays/retro", "overlays/sky-clouds", "overlays/space", "overlays/sports", "overlays/technology", "overlays/water", "overlays/miscellaneous",
-        "particles", "revealer", "revealer/3d-object", "revealer/abstract", "revealer/cartoons", "revealer/corporate", "revealer/electric", "revealer/events", "revealer/fire", "revealer/grunge", "revealer/industrial", "revealer/kids", "revealer/light", "revealer/medical", "revealer/nature", "revealer/retro", "revealer/sky-clouds", "revealer/space", "revealer/sports", "revealer/technology", "revealer/water", "revealer/miscellaneous",
-        "transitions", "transitions/3d-object", "transitions/abstract", "transitions/cartoons", "transitions/corporate", "transitions/electric", "transitions/events", "transitions/fire", "transitions/grunge", "transitions/industrial", "transitions/kids", "transitions/light", "transitions/medical", "transitions/nature", "transitions/retro", "transitions/sky-clouds", "transitions/space", "transitions/sports", "transitions/technology", "transitions/water", "transitions/miscellaneous",
-        "water-and-fluid", "miscellaneous", "miscellaneous/3d-object", "miscellaneous/abstract", "miscellaneous/cartoons", "miscellaneous/corporate", "miscellaneous/electric", "miscellaneous/events", "miscellaneous/fire", "miscellaneous/grunge", "miscellaneous/industrial", "miscellaneous/kids", "miscellaneous/light", "miscellaneous/medical", "miscellaneous/nature", "miscellaneous/retro", "miscellaneous/sky-clouds", "miscellaneous/space", "miscellaneous/sports", "miscellaneous/technology", "miscellaneous/water", "miscellaneous/miscellaneous", "infographics"
-    ];
-
-    const BACKUP_KWS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "digital", "design", "creative", "concept", "modern", "technology", "futuristic", "background", "overlay", "element", "dynamic", "glow", "energy", "clean", "smooth", "cinematic", "presentation", "display", "style", "artistic", "colorful", "bright", "soft", "sharp", "pattern", "texture", "geometry", "shapes", "line", "curve", "flow", "liquid", "tech", "data", "network", "cyber", "space", "science", "business", "corporate"];
+        "backgrounds", "backgrounds/abstract", "backgrounds/nature", "backgrounds/technology", "backgrounds/business", 
+        "elements", "overlays", "lower-thirds", "transitions", "infographics", 
+        "interface-effects", "particles", "revealer", "water-and-fluid", 
+        "backgrounds/3d-object", "backgrounds/cartoons", "backgrounds/light", "backgrounds/space"
+    ]; // (List disederhanakan agar tidak terlalu panjang di kode, AI akan memilih yang paling relevan)
+    
+    // Backup jika AI gagal memberi keywords
+    const BACKUP_KWS = ["motion", "graphic", "abstract", "visual", "loop", "seamless", "animation", "digital", "design", "creative", "modern", "technology", "futuristic", "background", "overlay", "dynamic", "glow", "clean", "cinematic", "presentation", "style", "artistic", "colorful", "bright", "soft", "sharp", "pattern", "texture"];
 
     let fileQueue = [];
     let apiKeys = [];
     let currentKeyIndex = 0;
 
-    // Load Saved Keys
+    // Load Keys
     if(localStorage.getItem('KEY1')) document.getElementById('apiKey1').value = localStorage.getItem('KEY1');
     if(localStorage.getItem('KEY2')) document.getElementById('apiKey2').value = localStorage.getItem('KEY2');
 
@@ -141,10 +143,13 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>
-                    <div class="filmstrip" id="preview-${idx}"></div>
-                    <div style="font-weight:600; font-size:12px; margin-top:5px;">${file.name}</div>
+                    <div class="filmstrip-container">
+                        <div class="filmstrip" id="preview-${idx}"></div>
+                        <div class="filmstrip-label">START &bull; MIDDLE &bull; END</div>
+                    </div>
+                    <div style="font-weight:600; font-size:12px; margin-top:8px;">${file.name}</div>
                     <div class="status-pill st-pending" id="status-${idx}">Pending</div>
-                    <div style="font-size:10px; margin-top:4px;" id="cat-disp-${idx}">-</div>
+                    <div style="font-size:10px; margin-top:4px; color:#666;" id="cat-disp-${idx}">Category: -</div>
                     <input type="hidden" id="cat-${idx}">
                 </td>
                 <td>
@@ -184,36 +189,37 @@
         kEl.className = (k >= 45 && k <= 48) ? 'count-ok' : 'count-bad';
     }
 
-    // --- 3. PROCESSING LOGIC ---
+    // --- 3. CORE PROCESSING ---
     async function startProcessing() {
         const k1 = document.getElementById('apiKey1').value.trim();
         const k2 = document.getElementById('apiKey2').value.trim();
         apiKeys = [k1, k2].filter(k => k);
 
-        if (apiKeys.length === 0) return alert("Please enter at least one API Key!");
+        if (apiKeys.length === 0) return alert("Please enter API Key!");
 
         document.getElementById('btnStart').disabled = true;
 
         for (let item of fileQueue) {
             const idx = item.id;
-            updateStatus(idx, 'st-proc', 'Capturing 3 Frames...');
+            updateStatus(idx, 'st-proc', 'Reading Video Object...');
             
             try {
-                // STEP A: GET 3 SNAPSHOTS (RESIZED TO PREVENT 400 ERROR)
+                // STEP A: GET 3 TINY SNAPSHOTS (240px Width)
+                // Ini kuncinya: Ukuran kecil agar payload muat
                 const snapshots = await getSnapshots(item.file);
                 
-                // SHOW ALL 3 FRAMES IN FILMSTRIP
+                // Show Filmstrip
                 let imgsHTML = '';
                 snapshots.forEach(s => imgsHTML += `<img src="${s}">`);
                 document.getElementById(`preview-${idx}`).innerHTML = imgsHTML;
 
-                updateStatus(idx, 'st-proc', 'AI Analyzing...');
+                updateStatus(idx, 'st-proc', 'AI Identifying...');
 
-                // STEP B: CALL API
+                // STEP B: SEND TO API
                 const currentKey = apiKeys[currentKeyIndex];
                 const rawData = await callGroqAPI(currentKey, snapshots);
                 
-                // STEP C: APPLY RULES
+                // STEP C: FORMATTING
                 applyRules(idx, rawData);
 
                 updateStatus(idx, 'st-ok', 'Done');
@@ -222,8 +228,8 @@
             } catch (error) {
                 console.error(error);
                 let msg = "Error";
-                if (error.message.includes("400")) msg = "Still Too Big (Try shorter video)";
-                else if (error.message.includes("413")) msg = "Payload Too Large";
+                if (error.message.includes("400")) msg = "Video File too Heavy (Skip)";
+                else if (error.message.includes("413")) msg = "Payload Limit";
                 else msg = error.message;
                 updateStatus(idx, 'st-err', msg);
             }
@@ -235,13 +241,18 @@
 
     // --- 4. API CALL ---
     async function callGroqAPI(key, images) {
-        const content = [
-            { type: "text", text: `Analyze 3 frames. JSON only: {"category": "string", "title": "string", "description": "string", "keywords": "string"}. RULES: Title & Desc must be SPOK. Category must be strict.` }
-        ];
-        
-        images.forEach(img => {
-            content.push({ type: "image_url", image_url: { url: img } });
-        });
+        // PROMPT KHUSUS UNTUK MENGENALI OBJEK DARI 3 FRAME
+        const prompt = `Analyze these 3 sequential frames (Start, Middle, End) to identify the specific object, motion, and context.
+        Return raw JSON:
+        {
+            "category": "choose best matching category string",
+            "title": "A precise SPOK sentence describing the object and its action. 50-70 chars. No 'Thanks for watching'.",
+            "description": "A detailed SPOK description of the visual style and usage. 100-150 chars.",
+            "keywords": "48 comma-separated words describing the object and style"
+        }`;
+
+        const content = [{ type: "text", text: prompt }];
+        images.forEach(img => content.push({ type: "image_url", image_url: { url: img } }));
 
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
@@ -250,19 +261,19 @@
                 model: "llama-3.2-11b-vision-preview",
                 messages: [{ role: "user", content: content }],
                 temperature: 0.1,
-                max_tokens: 350
+                max_tokens: 400
             })
         });
 
         if (!resp.ok) {
-            const errText = await resp.text();
-            throw new Error(`API Fail: ${resp.status} - ${errText}`);
+            const err = await resp.text();
+            throw new Error(`API Error ${resp.status}`);
         }
         
         const data = await resp.json();
         let txt = data.choices[0].message.content;
         
-        // Manual Clean JSON
+        // Bersihkan JSON dari Markdown
         txt = txt.replace(/```json/g, '').replace(/```/g, '').trim();
         const start = txt.indexOf('{');
         const end = txt.lastIndexOf('}');
@@ -272,18 +283,19 @@
     }
 
     function applyRules(idx, data) {
-        // 1. TITLE
+        // Logic Title
         let title = (data.title || "").replace(/thanks for watching|video background/gi, "").trim();
         title = title.charAt(0).toUpperCase() + title.slice(1);
+        // Pastikan panjang pas 50-70
         if (title.length > 70) title = title.substring(0, 70).split(' ').slice(0, -1).join(' ');
-        if (title.length < 50) title = (title + " features abstract motion elements for professional video projects").substring(0, 70);
+        if (title.length < 50) title = (title + " features professional motion graphic elements for video").substring(0, 70);
         
-        // 2. DESC
+        // Logic Desc
         let desc = (data.description || "").trim();
         if (desc.length > 150) desc = desc.substring(0, 150).split(' ').slice(0, -1).join(' ');
         if (desc.length < 100) desc = (desc + " This high quality visual asset is designed for digital signage and broadcast production.").substring(0, 150);
 
-        // 3. KEYWORDS
+        // Logic Keywords
         let kws = (data.keywords || "").split(',').map(w => w.trim().toLowerCase()).filter(w => w.length > 2);
         kws = [...new Set(kws)];
         let b = 0;
@@ -292,9 +304,17 @@
             b++;
         }
 
-        // 4. CATEGORY
-        let cat = CATEGORIES.includes(data.category) ? data.category : "backgrounds";
-
+        // Logic Category
+        // Simpelkan: Jika kategori dari AI ada di daftar kita, pakai. Jika tidak, "backgrounds".
+        let cat = "backgrounds";
+        // Cek manual sederhana
+        const aiCat = (data.category || "").toLowerCase();
+        if(aiCat.includes("techno")) cat = "backgrounds/technology";
+        else if(aiCat.includes("abstract")) cat = "backgrounds/abstract";
+        else if(aiCat.includes("nature")) cat = "backgrounds/nature";
+        else if(aiCat.includes("particle")) cat = "particles";
+        else if(aiCat.includes("overlay")) cat = "overlays";
+        
         document.getElementById(`title-${idx}`).value = title;
         document.getElementById(`desc-${idx}`).value = desc;
         document.getElementById(`kw-${idx}`).value = kws.slice(0, 48).join(', ');
@@ -304,7 +324,7 @@
         validate(idx);
     }
 
-    // --- 5. SNAPSHOT GENERATOR (LIGHTWEIGHT MODE) ---
+    // --- 5. ULTRA LIGHT SNAPSHOT GENERATOR ---
     function getSnapshots(file) {
         return new Promise((resolve, reject) => {
             const v = document.getElementById('hiddenVideo');
@@ -318,10 +338,10 @@
             let currentStep = 0;
 
             v.onloadedmetadata = () => {
-                // AGGRESSIVE RESIZE UNTUK MENGHINDARI ERROR 400
-                // Width 320px cukup untuk AI mengenali konten, tapi ringan.
-                c.width = 320; 
-                c.height = 180; 
+                // ULTRA COMPRESSION: 240px Width
+                // AI tetap bisa mengenali objek di ukuran ini
+                c.width = 240; 
+                c.height = 135; // Aspect Ratio 16:9 approx
                 seekNext();
             };
 
@@ -336,8 +356,8 @@
 
             v.onseeked = () => {
                 ctx.drawImage(v, 0, 0, c.width, c.height);
-                // QUALITY 0.4 IS CRITICAL
-                shots.push(c.toDataURL('image/jpeg', 0.4)); 
+                // QUALITY 0.35 -> Sangat Kecil tapi Object masih terlihat
+                shots.push(c.toDataURL('image/jpeg', 0.35)); 
                 currentStep++;
                 seekNext();
             };
@@ -365,7 +385,7 @@
         const blob = new Blob([csv], {type: 'text/csv'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "metadata_v9_light.csv";
+        a.download = "metadata_v10_final.csv";
         a.click();
     }
 </script>
